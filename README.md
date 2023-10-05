@@ -2,11 +2,11 @@
 
 - refer to [wiki](https://github.com/xyw0025/CS520_group_project/wiki) for git flow
 
-
+### Setting Up and Running the Development Environment
 
 ```
 cp src/main/resources/.env.example src/main/resources/.env
-# entering the configs including database username and password
+# entering the credentials -> @ wen if you dont have them yet
 
 mvn package -Dmaven.test.skip
 # target folder created 
