@@ -53,3 +53,6 @@ buildNumber.properties
 
 mvnw
 mvnw.cmd
+
+### .idea ###
+../.idea
