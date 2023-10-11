@@ -5,10 +5,10 @@
 ### Setting Up and Running the Development Environment
 
 ```
+cd ./backend
 cp src/main/resources/.env.example src/main/resources/.env
 # entering the credentials -> @ wen if you dont have them yet
 
-cd ./backend
 mvn package -Dmaven.test.skip
 # target folder created
 
