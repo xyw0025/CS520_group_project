@@ -19,6 +19,9 @@
     "next-themes": "^0.2.1",
     "react": "^18",
     "react-dom": "^18",
+    "react-swagger": "^1.0.13",
+    "request": "^2.79.0",
+    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-react": "^5.9.0",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7"
