@@ -2,7 +2,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Reference
 
-- [Fullstack Discord Clone](https://www.youtube.com/watch?v=5PdEmeopJVQ&t=6642&ab_channel=freeCodeCamp.org)
+- [Fullstack Discord Clone](https://www.youtube.com/watch?v=ZbX4Ok9YX94&t=3392s&ab_channel=CodeWithAn)
 - [ui.shadcn](https://ui.shadcn.com/)
 
 ## Getting Started

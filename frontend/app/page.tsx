@@ -5,10 +5,10 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>Po | MSCS Student and Full-Stack Developer</title>
+        <title>UMassenger | Connect Students Together</title>
         <meta
-          name="description"
-          content="I’m a MSCS Student specializing in building web applications."
+          name="UMassenger"
+          content="A project for Connecting students together"
         />
         <link rel="icon" href="/fav.png" />
       </Head>
