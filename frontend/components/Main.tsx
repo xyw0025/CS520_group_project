@@ -18,7 +18,7 @@ const Main = () => {
             at UMass Amherst
           </h1>
 
-          <Link href="/">
+          <Link href="/login">
             <Button
               className="mx-auto place-self-center w-full lg:w-1/3"
               variant={'umass'}
