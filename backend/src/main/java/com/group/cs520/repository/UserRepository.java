@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends MongoRepository<User, ObjectId> {
-//    List<Optional<User>> findActiveUsers();
+    List<User> findByIsActiveTrue();
     Optional<User> findUserByEmail(String email);
+
 }

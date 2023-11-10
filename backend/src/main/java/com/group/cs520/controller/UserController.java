@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -19,33 +21,42 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("all")
+    @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        return new ResponseEntity<List<User>>(userService.allUsers(), HttpStatus.OK);
+        List<User> users = userService.allUsers();
+        return ResponseEntity.ok(users);
     }
 
-    // Single item
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Optional<User>> getSingleUser(@PathVariable ObjectId id) {
-        return new ResponseEntity<>(userService.singleUser(id), HttpStatus.OK);
+    @GetMapping("/active")
+    public ResponseEntity<List<User>> getActiveUsers() {
+        List<User> activeUsers = userService.activeUsers();
+        return ResponseEntity.ok(activeUsers);
     }
-
 
     // TODO: handle different filter
-    @GetMapping
-    public ResponseEntity<Optional<User>> getSingleUserByParam(@RequestParam(name = "email") String email) {
-        return new ResponseEntity<>(userService.singleUserByEmail(email), HttpStatus.OK);
+    @GetMapping("/search")
+    public ResponseEntity<User> getSingleUserByParam(@RequestParam(name = "email") String email) {
+        User user = userService.singleUserByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        return ResponseEntity.ok(user);
     }
 
-
     @PostMapping("/register")
-    public ResponseEntity<User> createUser(@RequestBody Map<String, String> payload) {
-        User user = userService.createUser(payload.get("email"), payload.get("password"));
-        if (user != null) {
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+    public ResponseEntity<?> createUser(@RequestBody Map<String, String> payload) {
+        try {
+            User user = userService.createUser(payload.get("email"), payload.get("password"));
+            return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        } catch (IllegalArgumentException e) {
+            // Handle the case where email is already in use
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap("error", e.getMessage()));
         }
+    }
+
+    // find single user by id
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getSingleUser(@PathVariable ObjectId id) {
+        User user = userService.singleUser(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        return ResponseEntity.ok(user);
     }
 }

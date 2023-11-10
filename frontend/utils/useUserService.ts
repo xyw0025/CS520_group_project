@@ -26,10 +26,13 @@ function useUserService(): IUserService {
     login: async (email, password) => {
       alertService.clear();
       try {
-        const currentUser = await fetch.post('/api/v1/users/login', {
-          email,
-          password,
-        });
+        const currentUser = await fetch.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/login`,
+          {
+            email,
+            password,
+          }
+        );
         userStore.setState({ ...initialState, currentUser });
 
         // get return url from query parameters or default to '/'
@@ -41,13 +44,16 @@ function useUserService(): IUserService {
     },
     logout: async () => {
       await fetch.post('/api/v1/users/logout');
-      router.push('/account/login');
+      router.push('/login');
     },
     register: async (user) => {
       try {
-        await fetch.post('/api/v1/users/register', user);
+        await fetch.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/register`,
+          user
+        );
         alertService.success('Registration successful', true);
-        router.push('/account/login');
+        router.push('/login');
       } catch (error: any) {
         alertService.error(error);
       }

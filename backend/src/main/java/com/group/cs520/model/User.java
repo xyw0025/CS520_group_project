@@ -33,21 +33,20 @@ public class User {
 
     private Boolean isActive;
     private Boolean isDeleted;
-    private String created_time;
-    private String updated_time;
+    private Instant createdTime;
+    private Instant updatedTime;
 
     @DocumentReference
     private List<Profile> profileIds;
-
 
     public User(String email,String password) {
         if (email.isBlank() || password.isBlank()) {
             throw new IllegalArgumentException("Name and password cannot be null.");
         }
         this.email = email;
-        this.password = password; // TODO
-        this.created_time = Instant.now().toString(); // UTC
-        this.updated_time = Instant.now().toString();;
+        this.password = password;
+        this.createdTime = Instant.now(); // UTC
+        this.updatedTime = Instant.now();
 
     }
 }
