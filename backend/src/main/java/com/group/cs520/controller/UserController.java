@@ -1,6 +1,5 @@
 package com.group.cs520.controller;
 
-
 import com.group.cs520.model.User;
 import com.group.cs520.service.UserService;
 import org.bson.types.ObjectId;
@@ -9,11 +8,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Collections;
+
+
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -52,18 +55,24 @@ public class UserController {
         }
     }
 
+
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> credentials) {
+    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> credentials, HttpServletResponse response) {
         try {
             String email = credentials.get("email");
             String password = credentials.get("password");
             String token = userService.authenticateUser(email, password);
-            System.out.println("token"+token);
+
+            Cookie cookie = new Cookie("authorization", token);
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
+
             return ResponseEntity.ok(Collections.singletonMap("token", token));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("error", e.getMessage()));
         }
     }
+
 
     // find single user by id
     @GetMapping("/{id}")
