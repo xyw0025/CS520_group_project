@@ -52,6 +52,19 @@ public class UserController {
         }
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> credentials) {
+        try {
+            String email = credentials.get("email");
+            String password = credentials.get("password");
+            String token = userService.authenticateUser(email, password);
+            System.out.println("token"+token);
+            return ResponseEntity.ok(Collections.singletonMap("token", token));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("error", e.getMessage()));
+        }
+    }
+
     // find single user by id
     @GetMapping("/{id}")
     public ResponseEntity<User> getSingleUser(@PathVariable ObjectId id) {

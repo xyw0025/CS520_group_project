@@ -6,6 +6,11 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import java.util.Date;
+
 
 import java.time.Instant;
 import java.util.List;
@@ -13,6 +18,8 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+    @Value("${jwt.secret}")
+    private String jwtSecret;
     @Autowired
     private UserRepository userRepository;
 
@@ -46,6 +53,23 @@ public class UserService {
         System.out.println("User created successfully: " + newUser);
 
         return newUser;
+    }
+
+    public String authenticateUser(String email, String password) {
+        Optional<User> user = userRepository.findUserByEmail(email);
+
+        if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
+            Date issuedAt = new Date();
+            Date expiresAt = new Date(issuedAt.getTime() + 24 * 60 * 60 * 1000); // expire after one days
+
+            return JWT.create()
+                    .withSubject(email)
+                    .withIssuedAt(issuedAt)
+                    .withExpiresAt(expiresAt)
+                    .sign(Algorithm.HMAC256(jwtSecret));
+        } else {
+            throw new IllegalArgumentException("Invalid credentials");
+        }
     }
 
     public List<User> activeUsers() {
