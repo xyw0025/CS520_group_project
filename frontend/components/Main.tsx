@@ -1,9 +1,22 @@
+'use client';
+
 import Link from 'next/link';
-import React from 'react';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { useUserService } from '../utils';
+import Dashboard from './Dashboard';
 
 const Main = () => {
-  return (
+  const userService = useUserService();
+  const { currentUser } = useUserService();
+
+  useEffect(() => {
+    userService.getCurrent();
+  }, []);
+
+  return currentUser ? (
+    <Dashboard />
+  ) : (
     <div className=" w-full h-screen text-center">
       <div className="max-w-[1240px] h-full mx-auto p-2 place-self-center w-1/2">
         <div>
@@ -18,7 +31,7 @@ const Main = () => {
             at UMass Amherst
           </h1>
 
-          <Link href="/">
+          <Link href="/login">
             <Button
               className="mx-auto place-self-center w-full lg:w-1/3"
               variant={'umass'}

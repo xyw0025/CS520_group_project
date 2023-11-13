@@ -18,15 +18,25 @@ function useUserService(): IUserService {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { users, user, currentUser } = userStore();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   return {
     users,
     user,
     currentUser,
+    register: async (user) => {
+      try {
+        await fetch.post(`${API_URL}/api/v1/users/register`, user);
+        alertService.success('Registration successful', true);
+        router.push('/login');
+      } catch (error: any) {
+        alertService.error(error);
+      }
+    },
     login: async (email, password) => {
       alertService.clear();
       try {
-        const currentUser = await fetch.post('/api/v1/users/login', {
+        const currentUser = await fetch.post(`${API_URL}/api/v1/users/login`, {
           email,
           password,
         });
@@ -40,17 +50,9 @@ function useUserService(): IUserService {
       }
     },
     logout: async () => {
-      await fetch.post('/api/v1/users/logout');
-      router.push('/account/login');
-    },
-    register: async (user) => {
-      try {
-        await fetch.post('/api/v1/users/register', user);
-        alertService.success('Registration successful', true);
-        router.push('/account/login');
-      } catch (error: any) {
-        alertService.error(error);
-      }
+      await fetch.post(`${API_URL}/api/v1/users/logout`);
+      userStore.setState({ ...initialState });
+      router.push('/login');
     },
     getAll: async () => {
       userStore.setState({ users: await fetch.get('/api/v1/users/all') });
@@ -66,7 +68,7 @@ function useUserService(): IUserService {
     getCurrent: async () => {
       if (!currentUser) {
         userStore.setState({
-          currentUser: await fetch.get('/api/v1/users/current'),
+          currentUser: await fetch.get(`${API_URL}/api/v1/users/current`),
         });
       }
     },
@@ -86,7 +88,7 @@ function useUserService(): IUserService {
       userStore.setState({
         users: users!.map((x) => {
           if (x.id === id) {
-            x.isDeleting = true;
+            x.isDeleted = true;
           }
           return x;
         }),
@@ -110,11 +112,9 @@ function useUserService(): IUserService {
 
 interface IUser {
   id: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  password: string;
-  isDeleting?: boolean;
+  email: string;
+  name: string;
+  isDeleted: boolean;
 }
 
 interface IUserStore {
