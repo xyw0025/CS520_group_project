@@ -8,14 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.core.Authentication;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Collections;
-
 
 
 @RestController
@@ -55,24 +57,61 @@ public class UserController {
         }
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody Map<String, String> credentials, HttpServletResponse response) {
         try {
             String email = credentials.get("email");
             String password = credentials.get("password");
-            String token = userService.authenticateUser(email, password);
+            Map<String, Object> authInfo = userService.authenticateUser(email, password);
+            String token = (String) authInfo.get("token");
+            User user = (User) authInfo.get("user");
 
             Cookie cookie = new Cookie("authorization", token);
             cookie.setHttpOnly(true);
+            cookie.setPath("/");
             response.addCookie(cookie);
-
-            return ResponseEntity.ok(Collections.singletonMap("token", token));
+            // TODO: return suitable user infomation by JsonIgnore in model
+            return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(HttpServletResponse response) {
+        Cookie cookie = new Cookie("authorization", null);
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("message", "Successfully logged out"));
+    }
+
+//    TODO: Spring Security
+//    @GetMapping("/current")
+//    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
+//        String token = (String) authentication.getCredentials();
+//        System.out.println(token);
+//        User user = userService.validateUser(token);
+//        return ResponseEntity.ok(user);
+//    }
+    @GetMapping("/current")
+    public ResponseEntity<User> getCurrentUser(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String token = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("authorization".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                }
+            }
+        }
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // 或其他适当的响应
+        }
+        User user = userService.validateUser(token);
+        return ResponseEntity.ok(user);
+    }
 
     // find single user by id
     @GetMapping("/{id}")
@@ -81,4 +120,6 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         return ResponseEntity.ok(user);
     }
+
+
 }

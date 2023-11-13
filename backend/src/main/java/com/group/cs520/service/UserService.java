@@ -2,24 +2,26 @@ package com.group.cs520.service;
 
 import com.group.cs520.model.User;
 import com.group.cs520.repository.UserRepository;
+import com.group.cs520.service.JwtUtil;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import java.util.Date;
-
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class UserService {
-    @Value("${jwt.secret}")
-    private String jwtSecret;
+
+    private final JwtUtil jwtUtil;
+    public UserService(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
+
     @Autowired
     private UserRepository userRepository;
 
@@ -47,28 +49,30 @@ public class UserService {
         user.setIsActive(true);
         user.setCreatedTime(Instant.now());
         user.setUpdatedTime(Instant.now());
-
-        // for dev
-        User newUser = userRepository.insert(user);
-        System.out.println("User created successfully: " + newUser);
-
-        return newUser;
+        return userRepository.insert(user);
     }
 
-    public String authenticateUser(String email, String password) {
-        Optional<User> user = userRepository.findUserByEmail(email);
+    public Map<String, Object> authenticateUser(String email, String password) {
+        Optional<User> userOpt = userRepository.findUserByEmail(email);
 
-        if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
-            Date issuedAt = new Date();
-            Date expiresAt = new Date(issuedAt.getTime() + 24 * 60 * 60 * 1000); // expire after one days
-
-            return JWT.create()
-                    .withSubject(email)
-                    .withIssuedAt(issuedAt)
-                    .withExpiresAt(expiresAt)
-                    .sign(Algorithm.HMAC256(jwtSecret));
+        if (userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getPassword())) {
+            String token = jwtUtil.createToken(email);
+            Map<String, Object> authInfo = new HashMap<>();
+            authInfo.put("user", userOpt.get());
+            authInfo.put("token", token);
+            return authInfo;
         } else {
             throw new IllegalArgumentException("Invalid credentials");
+        }
+    }
+
+    public User validateUser(String token) {
+        try {
+            String email = jwtUtil.extractUserId(token);
+            return userRepository.findUserByEmail(email)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        } catch (JWTVerificationException e) {
+            throw new IllegalArgumentException("Invalid JWT token");
         }
     }
 

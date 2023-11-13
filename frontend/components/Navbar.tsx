@@ -10,7 +10,8 @@ const Navbar = () => {
   const [shadow, setShadow] = useState(false);
   const [navBg, setNavBg] = useState('#DC143C');
   const [linkColor, setLinkColor] = useState('#1f2937');
-  const { currentUser, logout } = useUserService();
+  const userService = useUserService();
+  const { currentUser, logout } = userService;
 
   async function handleLogout() {
     // setLoggingOut(true);
@@ -31,6 +32,10 @@ const Navbar = () => {
       }
     };
     window.addEventListener('scroll', handleShadow);
+  }, []);
+
+  useEffect(() => {
+    userService.getCurrent();
   }, []);
 
   return (
