@@ -103,11 +103,12 @@ public class UserController {
             for (Cookie cookie : cookies) {
                 if ("authorization".equals(cookie.getName())) {
                     token = cookie.getValue();
+                    break;
                 }
             }
         }
         if (token == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // 或其他适当的响应
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         User user = userService.validateUser(token);
         return ResponseEntity.ok(user);
