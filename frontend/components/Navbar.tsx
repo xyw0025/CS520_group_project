@@ -52,7 +52,7 @@ const Navbar = () => {
           <div className="mx-10 font-semibold">
             <ul style={{ color: `${linkColor}` }} className="hidden md:flex">
               <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
-                <Link href="/">Home</Link>
+                <Link href="/dashboard">Dashboard</Link>
               </li>
               <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
                 <Link href="/profile">Profile</Link>
