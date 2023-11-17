@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { useUserService } from 'utils';
-
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -19,6 +20,16 @@ import { Label } from '@/components/ui/label';
 
 export default function Login() {
   const userService = useUserService();
+  const { currentUser } = userService;
+  const router = useRouter();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      userService.setUser(JSON.parse(storedUser));
+      router.replace('/');
+    }
+  }, []);
 
   // get functions to build form with useForm() hook
   const { register, handleSubmit, formState, clearErrors } = useForm();

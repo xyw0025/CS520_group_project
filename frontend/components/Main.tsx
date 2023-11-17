@@ -1,9 +1,21 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { useUserService } from '@/utils';
 
 const Main = () => {
+  const userService = useUserService();
+  const { currentUser } = userService;
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      userService.setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   return (
     <div className=" w-full h-screen text-center">
       <div className="max-w-[1240px] h-full mx-auto p-2 place-self-center w-1/2">
@@ -18,15 +30,25 @@ const Main = () => {
             This is a project based on CS520 <br />
             at UMass Amherst
           </h1>
-
-          <Link href="/login">
-            <Button
-              className="mx-auto place-self-center w-full lg:w-1/3"
-              variant={'umass'}
-            >
-              Try it out!
-            </Button>
-          </Link>
+          {currentUser ? (
+            <Link href="/discover">
+              <Button
+                className="mx-auto place-self-center w-full lg:w-1/3"
+                variant={'umass'}
+              >
+                Try Discover New friends!
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/login">
+              <Button
+                className="mx-auto place-self-center w-full lg:w-1/3"
+                variant={'umass'}
+              >
+                Try it out!
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </div>

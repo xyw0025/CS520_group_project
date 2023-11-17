@@ -24,6 +24,13 @@ function useUserService(): IUserService {
     users,
     user,
     currentUser,
+    setUser: async (user) => {
+      try {
+        userStore.setState({ ...initialState, currentUser: user });
+      } catch (error: any) {
+        alertService.error(error);
+      }
+    },
     register: async (user) => {
       try {
         await fetch.post(`${API_URL}/api/v1/users/register`, user);
@@ -40,6 +47,7 @@ function useUserService(): IUserService {
           email,
           password,
         });
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
         userStore.setState({ ...initialState, currentUser });
 
         // get return url from query parameters or default to '/'
@@ -52,6 +60,7 @@ function useUserService(): IUserService {
     logout: async () => {
       await fetch.post(`${API_URL}/api/v1/users/logout`);
       userStore.setState({ ...initialState });
+      localStorage.removeItem('currentUser');
       router.push('/login');
     },
     getAll: async () => {
@@ -133,4 +142,5 @@ interface IUserService extends IUserStore {
   create: (user: IUser) => Promise<void>;
   update: (id: string, params: Partial<IUser>) => Promise<void>;
   delete: (id: string) => Promise<void>;
+  setUser: (user: IUser) => Promise<void>;
 }

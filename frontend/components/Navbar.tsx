@@ -14,7 +14,6 @@ const Navbar = () => {
   const { currentUser, logout } = userService;
 
   async function handleLogout() {
-    // setLoggingOut(true);
     await logout();
   }
 
@@ -34,10 +33,6 @@ const Navbar = () => {
     window.addEventListener('scroll', handleShadow);
   }, []);
 
-  useEffect(() => {
-    userService.getCurrent();
-  }, []);
-
   return (
     <div
       className="sticky top-0 bg-[rgb(228,89,89)] shadow-lg shadow-gray-400
@@ -47,47 +42,46 @@ const Navbar = () => {
           : 'w-full h-20 z-[100]'
       }"
     >
-      {currentUser ? (
-        <div className="flex justify-end items-center w-full h-full px-2 2xl:px-16">
-          <div className="mx-10 font-semibold">
-            <ul style={{ color: `${linkColor}` }} className="hidden md:flex">
-              <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
-                <Link href="/dashboard">Dashboard</Link>
-              </li>
-              <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
-                <Link href="/profile">Profile</Link>
-              </li>
-              <button
-                onClick={handleLogout}
-                className="mx-10 mt-2 text-lg dark:text-white uppercase hover:border-b"
-              >
-                <span>Logout</span>
-              </button>
-              <ModeToggle />
-            </ul>
-          </div>
+      <div className="flex justify-end items-center w-full h-full px-2 2xl:px-16">
+        <div className="mx-10 font-semibold">
+          <ul style={{ color: `${linkColor}` }} className="hidden md:flex">
+            <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
+              <Link href="/">Home</Link>
+            </li>
+
+            {currentUser ? (
+              <>
+                <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
+                  <Link href="/dashboard">Dashboard</Link>
+                </li>
+
+                <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
+                  <Link href="/profile">Profile</Link>
+                </li>
+
+                <li className="mx-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
+                  <a onClick={handleLogout} style={{ cursor: 'pointer' }}>
+                    Logout
+                  </a>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
+                  <Link href="/about">About</Link>
+                </li>
+                <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
+                  <Link href="/demo">Demo</Link>
+                </li>
+                <li className="mx-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
+                  <Link href="/login">Login</Link>
+                </li>
+              </>
+            )}
+            <ModeToggle />
+          </ul>
         </div>
-      ) : (
-        <div className="flex justify-end items-center w-full h-full px-2 2xl:px-16">
-          <div className="mx-10 font-semibold">
-            <ul style={{ color: `${linkColor}` }} className="hidden md:flex">
-              <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
-                <Link href="/">Home</Link>
-              </li>
-              <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
-                <Link href="/about">About</Link>
-              </li>
-              <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
-                <Link href="/demo">Demo</Link>
-              </li>
-              <li className="mx-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
-                <Link href="/login">Login</Link>
-              </li>
-              <ModeToggle />
-            </ul>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };

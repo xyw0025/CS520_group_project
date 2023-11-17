@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import { useEffect } from 'react';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { useUserService } from 'utils';
+import { useRouter } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -23,6 +24,16 @@ export default function Register() {
   const { register, getValues, handleSubmit, formState, clearErrors } =
     useForm();
   const { errors } = formState;
+  const { currentUser } = userService;
+  const router = useRouter();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      userService.setUser(JSON.parse(storedUser));
+      router.replace('/');
+    }
+  }, []);
 
   const fields = {
     email: register('email', {

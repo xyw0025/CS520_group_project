@@ -1,15 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useUserService } from '@/utils';
 
 const Dashboard = () => {
   const userService = useUserService();
   const currentUser = userService.currentUser;
-
-  useEffect(() => {
-    userService.getCurrent();
-  }, []);
 
   return (
     <div className=" w-full h-screen text-center">
