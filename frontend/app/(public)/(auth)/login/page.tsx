@@ -2,11 +2,12 @@
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import LoadingBox from '@/components/LoadingBox';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { useUserService } from 'utils';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -22,12 +23,15 @@ export default function Login() {
   const userService = useUserService();
   const { currentUser } = userService;
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
       userService.setUser(JSON.parse(storedUser));
       router.replace('/');
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
@@ -58,6 +62,14 @@ export default function Login() {
 
   async function onSubmit({ email, password }: any) {
     await userService.login(email, password);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-32">
+        <LoadingBox />
+      </div>
+    );
   }
 
   return (

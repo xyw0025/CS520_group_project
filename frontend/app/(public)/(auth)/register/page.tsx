@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import LoadingBox from '@/components/LoadingBox';
 import { useForm } from 'react-hook-form';
 import { useUserService } from 'utils';
 import { useRouter } from 'next/navigation';
@@ -26,12 +27,15 @@ export default function Register() {
   const { errors } = formState;
   const { currentUser } = userService;
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
       userService.setUser(JSON.parse(storedUser));
       router.replace('/');
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
@@ -75,6 +79,14 @@ export default function Register() {
 
   async function onSubmit(user: any) {
     await userService.register(user);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-32">
+        <LoadingBox />
+      </div>
+    );
   }
 
   return (
