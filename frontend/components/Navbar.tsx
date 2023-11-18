@@ -58,6 +58,9 @@ const Navbar = () => {
                 <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
                   <Link href="/profile">Profile</Link>
                 </li>
+                <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
+                  <Link href="/profile">Discover</Link>
+                </li>
 
                 <li className="mx-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
                   <a onClick={handleLogout} style={{ cursor: 'pointer' }}>

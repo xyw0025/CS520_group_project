@@ -83,7 +83,7 @@ export default function Login() {
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="grid gap-4">
-            <div className="grid grid-cols-1 gap-6">
+            {/* <div className="grid grid-cols-1 gap-6">
               <Button variant="outline">
                 <Icons.google className="mr-2 h-4 w-4" />
                 Google
@@ -98,7 +98,7 @@ export default function Login() {
                   Or continue with
                 </span>
               </div>
-            </div>
+            </div> */}
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
