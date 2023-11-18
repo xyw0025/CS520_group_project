@@ -20,6 +20,12 @@ const buttonVariants = cva(
         link: 'text-primary underline-offset-4 hover:underline',
         umass:
           'font-bold rounded-full bg-[rgb(228,89,89)] shadow-lg shadow-gray-400 p-6 cursor-pointer hover:scale-110 ease-in duration-300',
+        umass2:
+          'font-bold rounded-full bg-[rgb(255,100,100)] shadow-lg shadow-gray-400 p-6 cursor-pointer hover:scale-110 ease-in duration-300',
+        selected:
+          'font-bold rounded-full border-4 border-red-400 bg-[rgb(228,89,89)] shadow-lg shadow-gray-400 m-2 p-6 cursor-pointer ease-in duration-300',
+        unselected:
+          'rounded-full bg-[rgb(225,157,153)] shadow-lg shadow-gray-400 m-4 p-6 cursor-pointer ease-in duration-300',
       },
       size: {
         default: 'h-10 px-4 py-2',
