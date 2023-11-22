@@ -14,6 +14,6 @@ public class TypeUtil {
     public static List<String> jsonStringArray(String jsonArray) {
         Gson converter = new Gson();                  
         Type type = new TypeToken<List<String>>(){}.getType();
-        return converter.fromJson(jsonArray, type );
+        return converter.fromJson(jsonArray, type);
     }
 }
