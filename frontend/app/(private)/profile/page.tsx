@@ -1,9 +1,7 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
 import HobbyButton from '@/components/HobbyButton';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useUserService, useAlertService } from '@/utils';
@@ -18,8 +16,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { PhotoCard } from '@/components/PhotoCard';
-import { Photos } from '@/data';
+import ProfilePhotos from '@/components/ProfilePhotos';
 
 const Profile = () => {
   const userService = useUserService();
@@ -69,15 +66,6 @@ const Profile = () => {
   };
 
   async function onSubmit({ username, gender, birthday, introduction }: any) {
-    console.log(username, gender, selectedHobbies);
-    console.log(birthday);
-    console.log(selectedHobbies);
-    console.log(introduction);
-    if (currentUser) {
-      console.log(currentUser);
-      console.log(currentUser.id);
-    }
-
     if (currentUser && currentUser.id) {
       userService.update(currentUser.id, {
         username,
@@ -231,18 +219,7 @@ const Profile = () => {
             </CardFooter>
           </form>
         </Card>
-        <div className="grid grid-cols-2 gap-2 w-full h-full mx-auto p-2 justify-items-center items-start">
-          {Photos.map((photo) => (
-            <PhotoCard
-              key={photo.name}
-              photo={photo}
-              className="w-[300px]"
-              aspectRatio="portrait"
-              width={750}
-              height={750}
-            />
-          ))}
-        </div>
+        <ProfilePhotos />
       </div>
     </div>
   );
