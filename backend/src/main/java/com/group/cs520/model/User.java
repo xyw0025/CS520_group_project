@@ -39,7 +39,7 @@ public class User {
     private Instant updatedTime;
 
     @DocumentReference
-    private List<Profile> profileIds;
+    private Profile profile;
 
     public User(String email,String password) {
         if (email.isBlank() || password.isBlank()) {

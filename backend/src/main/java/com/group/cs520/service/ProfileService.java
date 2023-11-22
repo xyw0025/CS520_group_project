@@ -7,14 +7,12 @@ import com.group.cs520.repository.ProfileRepository;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.HashMap;
 import java.util.Map;
-
 import java.lang.reflect.Field;
 
 @Service
@@ -26,6 +24,16 @@ public class ProfileService {
     @Autowired
     private ProfileRepository profileRepository;
 
+    @Autowired
+    private UserService userService;
+
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    public List<Profile> allProfiles() {
+        return profileRepository.findAll();
+    }
 
     public Optional<Profile> singleProfile(ObjectId id) {
         return profileRepository.findById(id);
@@ -36,11 +44,14 @@ public class ProfileService {
         // String[] keys = {"displayName", "gender", "age", "bio"};
         // Map<String, String> map = profileMap.entrySet().stream().filter(x -> x.getKey())
         Profile profile = new Profile(profileMap);
-        return profileRepository.insert(profile);
+        profileRepository.insert(profile);
+
+        userService.setProfile(profileMap.get("user_id"), profile);
+        return profile;
     }
 
     public Profile update(ObjectId id,Map<String, String> profileMap) {
-        Profile profile = profileRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Profile profile = profileRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
 
         Class<?> profileClass = Profile.class;
         Field[] fields = profileClass.getDeclaredFields();
