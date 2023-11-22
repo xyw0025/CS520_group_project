@@ -88,11 +88,14 @@ function useUserService(): IUserService {
       await fetch.post('/api/v1/users/register', user);
     },
     update: async (id, params) => {
-      await fetch.put(`/api/v1/users/${id}`, params);
-
-      // update current user if the user updated their own record
-      if (id === currentUser?.id) {
-        userStore.setState({ currentUser: { ...currentUser, ...params } });
+      try {
+        await fetch.put(`${API_URL}/api/v1/users/${id}`, params);
+        // update current user if the user updated their own record
+        if (id === currentUser?.id) {
+          userStore.setState({ currentUser: { ...currentUser, ...params } });
+        }
+      } catch (error: any) {
+        alertService.error(error);
       }
     },
     delete: async (id) => {
@@ -143,7 +146,7 @@ interface IUserService extends IUserStore {
   getById: (id: string) => Promise<void>;
   getCurrent: () => Promise<IUser>;
   create: (user: IUser) => Promise<void>;
-  update: (id: string, params: Partial<IUser>) => Promise<void>;
+  update: (id: string, params: any) => Promise<void>;
   delete: (id: string) => Promise<void>;
   setUser: (user: IUser) => Promise<void>;
 }

@@ -1,11 +1,12 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import HobbyButton from '@/components/HobbyButton';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { useUserService } from '@/utils';
+import { useUserService, useAlertService } from '@/utils';
 import { useForm } from 'react-hook-form';
 import {
   Card,
@@ -17,13 +18,15 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { list } from 'postcss';
+import { PhotoCard } from '@/components/PhotoCard';
+import { Photos } from '@/data';
 
 const Profile = () => {
   const userService = useUserService();
   const currentUser = userService.currentUser;
   const { register, handleSubmit, formState, clearErrors } = useForm();
   const { errors } = formState;
+  const alertService = useAlertService();
 
   const MAX_HOBBIES = 5;
   const [selectedHobbies, setSelectedHobbies] = useState([]);
@@ -70,8 +73,23 @@ const Profile = () => {
     console.log(birthday);
     console.log(selectedHobbies);
     console.log(introduction);
+    if (currentUser) {
+      console.log(currentUser);
+      console.log(currentUser.id);
+    }
 
-    // await userService.login(email, password);
+    if (currentUser && currentUser.id) {
+      userService.update(currentUser.id, {
+        username,
+        gender,
+        birthday,
+        introduction,
+        selectedHobbies,
+      });
+    } else {
+      console.log('Can not get the currentUser');
+      alertService.error('Can not get the currentUser');
+    }
   }
 
   return (
@@ -109,7 +127,7 @@ const Profile = () => {
                 <select {...fields.gender}>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                  <option value="Other">Non-Binary</option>
                 </select>
 
                 <div className="text-red-700 font-bold">
@@ -213,6 +231,18 @@ const Profile = () => {
             </CardFooter>
           </form>
         </Card>
+        <div className="grid grid-cols-2 gap-2 w-full h-full mx-auto p-2 justify-items-center items-start">
+          {Photos.map((photo) => (
+            <PhotoCard
+              key={photo.name}
+              photo={photo}
+              className="w-[300px]"
+              aspectRatio="portrait"
+              width={750}
+              height={750}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

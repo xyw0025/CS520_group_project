@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 import java.util.List;
@@ -50,5 +51,11 @@ public class User {
         this.createdTime = Instant.now(); // UTC
         this.updatedTime = Instant.now();
 
+    }
+
+    // Response string id when user is serialized to a JSON object to frontend
+    @JsonProperty("id")
+    public String getStringId() {
+        return id != null ? id.toHexString() : null;
     }
 }
