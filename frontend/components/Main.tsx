@@ -10,10 +10,7 @@ const Main = () => {
   const { currentUser } = userService;
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-      userService.setUser(JSON.parse(storedUser));
-    }
+    userService.getCurrent();
   }, []);
 
   return (

@@ -1,3 +1,5 @@
+'use client';
+
 import { create } from 'zustand';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAlertService, useFetch } from 'utils';
@@ -61,7 +63,7 @@ function useUserService(): IUserService {
       await fetch.post(`${API_URL}/api/v1/users/logout`);
       userStore.setState({ ...initialState });
       localStorage.removeItem('currentUser');
-      router.push('/login');
+      router.push('/');
     },
     getAll: async () => {
       userStore.setState({ users: await fetch.get('/api/v1/users/all') });
@@ -76,10 +78,11 @@ function useUserService(): IUserService {
     },
     getCurrent: async () => {
       if (!currentUser) {
-        userStore.setState({
-          currentUser: await fetch.get(`${API_URL}/api/v1/users/current`),
-        });
+        const fetchedUser = await fetch.get(`${API_URL}/api/v1/users/current`);
+        userStore.setState({ currentUser: fetchedUser });
+        return fetchedUser;
       }
+      return currentUser;
     },
     create: async (user) => {
       await fetch.post('/api/v1/users/register', user);
@@ -138,7 +141,7 @@ interface IUserService extends IUserStore {
   register: (user: IUser) => Promise<void>;
   getAll: () => Promise<void>;
   getById: (id: string) => Promise<void>;
-  getCurrent: () => Promise<void>;
+  getCurrent: () => Promise<IUser>;
   create: (user: IUser) => Promise<void>;
   update: (id: string, params: Partial<IUser>) => Promise<void>;
   delete: (id: string) => Promise<void>;

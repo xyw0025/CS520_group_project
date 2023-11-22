@@ -139,20 +139,25 @@ export default function Login() {
             </Button>
           </CardFooter>
         </form>
+
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
           </div>
+
           <div className="mb-5 relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">
               Don't have an account ? Register Now !
             </span>
           </div>
         </div>
+
         <CardFooter>
-          <Button className="mx-auto place-self-center w-1/2" variant={'umass'}>
-            <Link href="/register">Register Now !</Link>
-          </Button>
+          <Link className="mx-auto flex justify-center w-full" href="/register">
+            <Button className="w-1/2" variant={'umass'}>
+              Register Now !
+            </Button>
+          </Link>
         </CardFooter>
       </Card>
     </div>
