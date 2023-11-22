@@ -117,7 +117,7 @@ public class UserService {
     }
 
     public void setProfile(String user_id, Profile profile) {
-        ObjectId id = TypeUtil.ObjectIdConverter(user_id);
+        ObjectId id = TypeUtil.objectIdConverter(user_id);
         User user = this.singleUser(id).orElseThrow(() -> new IllegalStateException("user not found"));
         user.setProfile(profile);
         mongoTemplate.save(user);

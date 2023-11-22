@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import com.group.cs520.service.DateUtil;
+import com.group.cs520.service.TypeUtil;
 
 @Data
 @NoArgsConstructor
@@ -37,6 +38,9 @@ public class Profile {
     @NotBlank
     private Integer age;
 
+    @NotBlank
+    private List<String> image_urls;
+
     private String bio;
 
     private Boolean isDeleted;
@@ -54,10 +58,11 @@ public class Profile {
 
         // should be dryer
         this.displayName = profileMap.get("displayName");
-        this.bio = profileMap.get("bio");
-        this.birthday = DateUtil.dateFormatter(profileMap.get("birthday"), "yyyy-MM-dd");
         this.gender = Integer.parseInt(profileMap.get("gender"));
+        this.birthday = DateUtil.dateFormatter(profileMap.get("birthday"), "yyyy-MM-dd");
         this.age = Integer.parseInt(profileMap.get("age"));
+        this.image_urls = TypeUtil.jsonStringArray(profileMap.get("image_urls"));
+        this.bio = profileMap.get("bio");
         this.createdTime = Instant.now();
         this.updatedTime = Instant.now();
         this.isDeleted = false;
