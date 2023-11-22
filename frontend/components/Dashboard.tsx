@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import React from 'react';
 
-const SignIn = () => {
+const Dashboard = () => {
   return (
     <div id="home" className=" w-full h-screen text-center">
       <div className="max-w-[1240px] w-full h-full mx-auto p-2 flex justify-center items-center">
@@ -10,7 +9,7 @@ const SignIn = () => {
             <span className="text-[rgb(92,28,29)] dark:text-[rgb(228,89,89)]">
               UMassenger
             </span>
-            , This is the Sign-In page
+            , Dashboard page!
           </h1>
 
           <Link href="/">
@@ -24,4 +23,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default Dashboard;

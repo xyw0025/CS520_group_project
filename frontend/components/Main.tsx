@@ -1,27 +1,54 @@
+'use client';
+
+import { useEffect } from 'react';
 import Link from 'next/link';
-import React from 'react';
+import { Button } from '@/components/ui/button';
+import { useUserService } from '@/utils';
 
 const Main = () => {
+  const userService = useUserService();
+  const { currentUser } = userService;
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      userService.setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   return (
-    <div id="home" className=" w-full h-screen text-center">
-      <div className="max-w-[1240px] w-full h-full mx-auto p-2 flex justify-center items-center">
+    <div className=" w-full h-screen text-center">
+      <div className="max-w-[1240px] h-full mx-auto p-2 place-self-center w-1/2">
         <div>
-          <h1 className="py-4 text-gray-700 dark:text-white">
+          <h1 className="font-bold text-lg md:text-xl lg:text-3xl py-10 text-gray-700 dark:text-white">
             <span className="text-[rgb(92,28,29)] dark:text-[rgb(228,89,89)]">
               UMassenger
             </span>
-            , Connect our students together{' '}
+            , Connect students together{' '}
           </h1>
-          <h1 className="py-10 text-gray-700 dark:text-white">
+          <h1 className="text-lg md:text-xl lg:text-2xl py-10 text-gray-700 dark:text-white">
             This is a project based on CS520 <br />
             at UMass Amherst
           </h1>
-
-          <Link href="/">
-            <div className="rounded-full bg-[rgb(228,89,89)] shadow-lg shadow-gray-400 p-6 cursor-pointer hover:scale-110 ease-in duration-300">
-              Try it out!
-            </div>
-          </Link>
+          {currentUser ? (
+            <Link href="/discover">
+              <Button
+                className="mx-auto place-self-center w-full lg:w-1/3"
+                variant={'umass'}
+              >
+                Try Discover New friends!
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/login">
+              <Button
+                className="mx-auto place-self-center w-full lg:w-1/3"
+                variant={'umass'}
+              >
+                Try it out!
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </div>

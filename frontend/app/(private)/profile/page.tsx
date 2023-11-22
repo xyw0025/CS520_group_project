@@ -1,7 +1,17 @@
-import Link from 'next/link';
-import React from 'react';
+'use client';
 
-const SignUp = () => {
+import Link from 'next/link';
+import { useEffect } from 'react';
+import { useUserService } from '@/utils';
+
+const Profile = () => {
+  const userService = useUserService();
+  const currentUser = userService.currentUser;
+
+  useEffect(() => {
+    userService.getCurrent();
+  }, []);
+
   return (
     <div id="home" className=" w-full h-screen text-center">
       <div className="max-w-[1240px] w-full h-full mx-auto p-2 flex justify-center items-center">
@@ -10,7 +20,8 @@ const SignUp = () => {
             <span className="text-[rgb(92,28,29)] dark:text-[rgb(228,89,89)]">
               UMassenger
             </span>
-            , This is the Sign-Up page
+            , This is the private profile page. current user:
+            {currentUser?.email}
           </h1>
 
           <Link href="/">
@@ -24,4 +35,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default Profile;
