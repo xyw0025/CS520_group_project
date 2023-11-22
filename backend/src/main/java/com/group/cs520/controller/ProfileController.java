@@ -1,5 +1,6 @@
 package com.group.cs520.controller;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.group.cs520.model.Profile;
+import com.group.cs520.model.User;
 import com.group.cs520.service.ProfileService;
+import com.group.cs520.service.UserService;
 
 
 
@@ -26,6 +29,9 @@ public class ProfileController {
 
     @Autowired
     private ProfileService profileService;
+
+
+    private UserService userService;
 
 
     @GetMapping("/{id}")
@@ -40,25 +46,27 @@ public class ProfileController {
     public ResponseEntity<?> createProfile(@RequestBody Map<String, String> payload) {
         try {
             // should do some to payload
-            Profile profile = profileService.createProfile();
-
-        } catch(Exception e) { //TODO should be specific
-            // TODO
+            Profile profile = profileService.create(payload);
+            return ResponseEntity.ok(profile);
+        } catch(Exception e) { // TODO should be specific
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));;
         }
     }
 
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editProfile(@PathVariable ObjectId id, @RequestBody Map<String, String> payload) {
+    public ResponseEntity<?> updateProfile(@PathVariable ObjectId id, @RequestBody Map<String, String> payload) {
+        // should do some to payload
         try {
+            profileService.update(id, payload);
 
-            // should do some to payload
-            Profile profile = profileService.singleProfile(id);
-
-        } catch(Exception e) {
-            // TODO
+        } catch (Exception error) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));;
         }
+        
+
+  
     }
 
 

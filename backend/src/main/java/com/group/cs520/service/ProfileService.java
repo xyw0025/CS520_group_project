@@ -32,13 +32,42 @@ public class ProfileService {
     }
 
 
-    public Profile createProfile(Map<String, String> profileMap) {
+    public Profile create(Map<String, String> profileMap) {
         // String[] keys = {"displayName", "gender", "age", "bio"};
         // Map<String, String> map = profileMap.entrySet().stream().filter(x -> x.getKey())
         Profile profile = new Profile(profileMap);
         return profileRepository.insert(profile);
     }
 
-    // TODO: edit
+    public Profile update(ObjectId id,Map<String, String> profileMap) {
+        Profile profile = profileRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Class<?> profileClass = Profile.class;
+        Field[] fields = profileClass.getDeclaredFields();
+
+        for (Field field : fields) {
+            String fieldName = field.getName();
+            if (profileMap.containsKey(fieldName)) {
+                setField(profile, field, profileMap.get(fieldName));
+            }
+        }
+        profileRepository.save(profile);
+        return profile;
+    }
+
+     private void setField(Object object, Field field, String value) {
+        try {
+            field.setAccessible(true);
+            Class<?> fieldType = field.getType();
+
+            if (fieldType.equals(Integer.class) || fieldType.equals(int.class)) {
+                field.set(object, Integer.parseInt(value));
+            } else {
+                field.set(object, value);
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Error setting field: " + field.getName(), e);
+        }
+    }
 
 }
