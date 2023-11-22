@@ -22,6 +22,7 @@ import com.group.cs520.service.ProfileService;
 import com.group.cs520.service.UserService;
 
 
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/profile")
@@ -34,6 +35,13 @@ public class ProfileController {
     private UserService userService;
 
 
+    @GetMapping()
+    public ResponseEntity<List<Profile>> getAllProfile() {
+        List<Profile> profiles = profileService.allProfiles();
+        return ResponseEntity.ok(profiles);
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<Profile> getSingleProfile(@PathVariable ObjectId id) {
         Profile profile = profileService.singleProfile(id)
@@ -41,33 +49,30 @@ public class ProfileController {
         return ResponseEntity.ok(profile);
     }
 
-
     @PostMapping()
     public ResponseEntity<?> createProfile(@RequestBody Map<String, String> payload) {
         try {
             // should do some to payload
+            System.out.print(payload);
             Profile profile = profileService.create(payload);
             return ResponseEntity.ok(profile);
         } catch(Exception e) { // TODO should be specific
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 
 
+    // TODO: update
+    // @PutMapping("/{id}")
+    // public ResponseEntity<?> updateProfile(@PathVariable ObjectId id, @RequestBody Map<String, String> payload) {
+    //     // should do some to payload
+    //     try {
+    //         profileService.update(id, payload);
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateProfile(@PathVariable ObjectId id, @RequestBody Map<String, String> payload) {
-        // should do some to payload
-        try {
-            profileService.update(id, payload);
-
-        } catch (Exception error) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));;
-        }
-        
-
-  
-    }
+    //     } catch (Exception error) {
+    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));;
+    //     }
+    // }
 
 
     
