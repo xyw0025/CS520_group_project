@@ -89,7 +89,7 @@ function useUserService(): IUserService {
     },
     update: async (id, params) => {
       try {
-        await fetch.put(`${API_URL}/api/v1/users/${id}`, params);
+        await fetch.put(`${API_URL}/api/v1/profile/${id}`, params);
         // update current user if the user updated their own record
         if (id === currentUser?.id) {
           userStore.setState({ currentUser: { ...currentUser, ...params } });

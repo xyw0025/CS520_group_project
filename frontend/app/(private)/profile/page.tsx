@@ -68,11 +68,11 @@ const Profile = () => {
   async function onSubmit({ username, gender, birthday, introduction }: any) {
     if (currentUser && currentUser.id) {
       userService.update(currentUser.id, {
-        username,
+        displayName: username,
         gender,
         birthday,
-        introduction,
-        selectedHobbies,
+        bio: introduction,
+        preferences: selectedHobbies,
       });
     } else {
       console.log('Can not get the currentUser');
