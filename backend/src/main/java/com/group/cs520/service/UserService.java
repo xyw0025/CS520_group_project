@@ -1,11 +1,13 @@
 package com.group.cs520.service;
 
+import com.group.cs520.model.Profile;
 import com.group.cs520.model.User;
 import com.group.cs520.repository.UserRepository;
 import com.group.cs520.service.JwtUtil;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
@@ -13,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
+import com.group.cs520.service.TypeUtil;
+
 
 @Service
 public class UserService {
@@ -28,12 +32,16 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+
     public List<User> allUsers() {
         return userRepository.findAll();
     }
 
-    public Optional<User> singleUser(ObjectId id) {
-        return userRepository.findById(id);
+    public User singleUser(ObjectId id) {
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
     }
 
     /**
@@ -106,5 +114,12 @@ public class UserService {
 
     public Optional<User> singleUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
+    }
+
+    public void setProfile(String user_id, Profile profile) {
+        ObjectId id = TypeUtil.objectIdConverter(user_id);
+        User user = this.singleUser(id);
+        user.setProfile(profile);
+        mongoTemplate.save(user);
     }
 }
