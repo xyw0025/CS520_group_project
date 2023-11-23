@@ -1,6 +1,7 @@
 package com.group.cs520.controller;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.group.cs520.model.Preference;
+import com.group.cs520.model.User;
 import com.group.cs520.service.PreferenceService;
 
 
@@ -26,18 +28,19 @@ public class PrefrenceController {
     @Autowired
     PreferenceService preferenceService;
 
+    @GetMapping
+    public ResponseEntity<List<Preference>> getAllPreferences() {
+        List<Preference> prferences = preferenceService.allPreferences();
+        return ResponseEntity.ok(prferences);
+    }
 
 
     @PostMapping()
     public ResponseEntity<?> createPreference(@RequestBody Map<String, String> payload) {
         try {
-            // should do some to payload
-            System.out.print(payload.get("name"));
-            System.out.print(payload.get("categoryId"));
-            
             Preference preference = preferenceService.create(payload);
             return ResponseEntity.ok(preference);
-        } catch(Exception e) { // TODO should be specific
+        } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));
         }
 
