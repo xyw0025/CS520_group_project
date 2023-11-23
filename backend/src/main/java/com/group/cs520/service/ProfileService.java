@@ -83,6 +83,9 @@ public class ProfileService {
 
             if (fieldType.equals(Integer.class) || fieldType.equals(int.class)) {
                 field.set(object, Integer.parseInt(value));
+            }
+            else if (fieldType.equals(List.class)) {
+                field.set(object, TypeUtil.jsonStringArray(value));
             } else {
                 field.set(object, value);
             }
