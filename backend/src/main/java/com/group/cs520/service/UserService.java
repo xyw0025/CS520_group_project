@@ -2,6 +2,8 @@ package com.group.cs520.service;
 
 import com.group.cs520.model.Profile;
 import com.group.cs520.model.User;
+import com.group.cs520.model.Match;
+
 import com.group.cs520.repository.UserRepository;
 import com.group.cs520.service.JwtUtil;
 import com.auth0.jwt.exceptions.JWTVerificationException;
@@ -121,5 +123,14 @@ public class UserService {
         User user = this.singleUser(id);
         user.setProfile(profile);
         mongoTemplate.save(user);
+    }
+
+    public void addMatch(String user_id, Match match) {
+        ObjectId id = TypeUtil.objectIdConverter(user_id);
+        User user = this.singleUser(id);
+        List<Match> matches = user.getMatches();
+        matches.add(match);
+        user.setMatches(matches);
+        userRepository.save(user);
     }
 }
