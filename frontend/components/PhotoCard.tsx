@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Photo } from '../data';
+import { Photo } from '../utils/photo';
 
 interface PhotoProps extends React.HTMLAttributes<HTMLDivElement> {
   photo?: Photo;
@@ -37,18 +37,14 @@ export default function PhotoCard({
       onRemove(photo.name);
     }
   };
-  const handleAddClick = () => {
-    if (onAdd) {
-      onAdd();
-    }
-  };
+
   if (isPlaceholder) {
     return (
       <div className={cn('space-y-3', className)} {...props}>
-        <Card>
+        <Card className="h-[375px] w-[300px]">
           <PlusCircledIcon
-            className="text-green-700 scale-150 cursor-pointer hover:scale-[2.0]"
-            onClick={handleAddClick}
+            className="text-blue-700 scale-150 cursor-pointer hover:scale-[2.0]"
+            onClick={onAdd}
           />
         </Card>
       </div>
@@ -67,7 +63,7 @@ export default function PhotoCard({
           <CardContent>
             <div className="overflow-hidden rounded-md">
               <Image
-                src={photo.cover}
+                src={photo.url}
                 alt={photo.name}
                 width={width}
                 height={height}

@@ -1,17 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useUserService } from '@/utils';
 import PhotoCard from './PhotoCard';
-import BlankPhotoCard from './BlankPhotoCard';
 
-import { Photos } from '@/data';
+import { Photos } from '@/utils/photo';
 
 const ProfilePhotos = () => {
   const userService = useUserService();
   const { currentUser } = userService;
   const [photos, setPhotos] = useState(Photos);
-  const [blankPhotoCounter, setblankPhotoCounter] = useState(photos.length);
+  const [blankPhotoCounter, setBlankPhotoCounter] = useState(photos.length);
+  const GCP_STORAGE_URL = process.env.NEXT_PUBLIC_GCP_STORAGE_BUCKET_URL;
 
   const handleRemovePhoto = (photoName: string) => {
     setPhotos((prevPhotos) =>
@@ -19,14 +19,46 @@ const ProfilePhotos = () => {
     );
   };
 
-  const handleAddPhoto = () => {
-    // Implement your logic to add a photo here
-    console.log('Add photo logic goes here');
-    // For example, show a file input dialog or navigate to a photo upload screen
+  function generateUniquePhotoName() {
+    const timestamp = new Date().getTime();
+    const randomPart = Math.floor(Math.random() * 10000);
+    return `photo_${timestamp}_${randomPart}`;
+  }
+
+  const handleAddPhoto = async (photoFile: File) => {
+    if (currentUser) {
+      try {
+        const photoUrl = await userService.upload(currentUser.id, photoFile);
+        const newPhotoName = generateUniquePhotoName();
+        const newPhoto = {
+          name: newPhotoName,
+          url: `${GCP_STORAGE_URL}/${photoUrl.slice(5)}`,
+        };
+
+        setPhotos((prevPhotos) => [...prevPhotos, newPhoto]);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      handleAddPhoto(file);
+    }
+  };
+
+  const triggerFileInput = () => {
+    if (fileInputRef && fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   useEffect(() => {
-    setblankPhotoCounter(Math.max(0, 4 - photos.length));
+    setBlankPhotoCounter(Math.max(0, 4 - photos.length));
   }, [handleRemovePhoto]);
 
   return (
@@ -44,11 +76,17 @@ const ProfilePhotos = () => {
       ))}
 
       {/* Render BlankPhotoCards as placeholders */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+        onChange={handleFileSelect}
+      />
       {[...Array(blankPhotoCounter)].map((_, index) => (
         <PhotoCard
           key={`placeholder-${index}`}
           isPlaceholder
-          onAdd={handleAddPhoto}
+          onAdd={triggerFileInput}
           className="w-[300px]"
           aspectRatio="portrait"
           width={750}
