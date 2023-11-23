@@ -40,8 +40,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> singleUser(ObjectId id) {
-        return userRepository.findById(id);
+    public User singleUser(ObjectId id) {
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
     }
 
     /**
