@@ -48,7 +48,7 @@ public class Profile {
     private Instant updatedTime;
 
     @DocumentReference
-    private List<Preference> preferenceIds;
+    private List<Preference> preferences;
 
 
     public Profile(Map<String, String> profileMap) {

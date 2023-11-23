@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.group.cs520.model.Profile;
 import com.group.cs520.model.User;
 import com.group.cs520.service.ProfileService;
+import com.group.cs520.service.TypeUtil;
 import com.group.cs520.service.UserService;
 
 
@@ -31,7 +33,7 @@ public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
-
+    @Autowired
     private UserService userService;
 
 
@@ -42,10 +44,16 @@ public class ProfileController {
     }
 
 
+    @GetMapping("user")
+    public ResponseEntity<Profile> getProfileByUser(@RequestParam String user_id) {
+        ObjectId userObjId = TypeUtil.objectIdConverter(user_id);
+        return ResponseEntity.ok(profileService.getProfileByUser(userObjId));
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<Profile> getSingleProfile(@PathVariable ObjectId id) {
-        Profile profile = profileService.singleProfile(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
+        Profile profile = profileService.singleProfile(id);
         return ResponseEntity.ok(profile);
     }
 
