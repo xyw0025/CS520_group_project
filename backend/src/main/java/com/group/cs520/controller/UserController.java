@@ -172,11 +172,9 @@ public class UserController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<User> getSingleUser(@PathVariable ObjectId id) {
-        User user = userService.singleUser(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User user = userService.singleUser(id);
         return ResponseEntity.ok(user);
     }
-
 
     @Autowired
     private GCPStorageService gcpStorageService;
