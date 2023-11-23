@@ -42,10 +42,6 @@ public class Profile {
 
 
     public Profile(Map<String, String> profileMap) {
-        if (profileMap.get("displayName").isBlank()) {
-            throw new IllegalArgumentException("display name cannot be null.");
-        }
-
         // should be dryer
         this.displayName = profileMap.get("displayName");
         this.gender = Integer.parseInt(profileMap.get("gender"));
