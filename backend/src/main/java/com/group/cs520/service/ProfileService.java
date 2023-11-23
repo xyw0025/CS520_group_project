@@ -91,7 +91,7 @@ public class ProfileService {
         }
     }
 
-    public Profile setPreference(String profile_id, Map<String, String> profileMap) {
+    public Profile updatePreferences(String profile_id, Map<String, String> profileMap) {
         ObjectId profile_obj_id = TypeUtil.objectIdConverter(profile_id);
         Profile profile = this.singleProfile(profile_obj_id);
 
@@ -99,13 +99,9 @@ public class ProfileService {
         List<Preference> preferences = new ArrayList<>();
 
         for (Integer ind = 0; ind < preference_ids.size(); ind ++) {
-            System.out.print(preference_ids.get(ind));
             preferences.add(preferenceService.singlePreference(preference_ids.get(ind)));
         }
 
-        List<Preference> ogPreferences = profile.getPreferences();
-
-        preferences.addAll(ogPreferences);
         profile.setPreferences(preferences);
         profileRepository.save(profile);
         return profile;
