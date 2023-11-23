@@ -10,6 +10,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 
+/**
+ * Utility class for handling JWT
+ */
 @Service
 public class JwtUtil implements InitializingBean {
 
@@ -22,12 +25,25 @@ public class JwtUtil implements InitializingBean {
         this.algorithm = Algorithm.HMAC256(jwtSecret);
     }
 
+    /**
+     * Extracts the user ID from the JWT token.
+     *
+     * @param token the JWT token
+     * @return the user ID extracted from the token
+     * @throws JWTVerificationException if the token verification fails
+     */
     public String extractUserId(String token) throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT jwt = verifier.verify(token);
         return jwt.getSubject();
     }
 
+    /**
+     * Creates a new JWT token for the given email.
+     *
+     * @param email
+     * @return the generated JWT token
+     */
     public String createToken(String email) {
         Date issuedAt = new Date();
         Date expiresAt = new Date(issuedAt.getTime() + 24 * 60 * 60 * 1000); // expire after one day

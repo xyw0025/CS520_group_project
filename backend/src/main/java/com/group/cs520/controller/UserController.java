@@ -31,19 +31,35 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     * Retrieves all users.
+     *
+     * @return ResponseEntity containing a list of User objects
+     */
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.allUsers();
         return ResponseEntity.ok(users);
     }
 
+    /**
+     * Retrieves all active users.
+     *
+     * @return ResponseEntity containing a list of active User objects
+     */
     @GetMapping("/active")
     public ResponseEntity<List<User>> getActiveUsers() {
         List<User> activeUsers = userService.activeUsers();
         return ResponseEntity.ok(activeUsers);
     }
 
-    // TODO: handle different filter
+    /**
+     * Retrieves a single user by email.
+     *
+     * @param email the email of the user to retrieve
+     * @return ResponseEntity containing the User object
+     * @throws ResponseStatusException if the user is not found
+     */
     @GetMapping("/search")
     public ResponseEntity<User> getSingleUserByParam(@RequestParam(name = "email") String email) {
         User user = userService.singleUserByEmail(email)
@@ -51,6 +67,12 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    /**
+     * Creates a new user.
+     *
+     * @param payload the user data
+     * @return ResponseEntity containing the created User object
+     */
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody Map<String, String> payload) {
         try {
@@ -62,6 +84,14 @@ public class UserController {
         }
     }
 
+    /**
+     * Logs in a user using the email and password extracted from cookies
+     * If login is sucessful, store JWT token in cookies
+
+     * @param credentials the user's login credentials
+     * @param response    the HTTP response object
+     * @return ResponseEntity containing the logged-in User object
+     */
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody Map<String, String> credentials, HttpServletResponse response) {
         try {
@@ -75,13 +105,20 @@ public class UserController {
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             response.addCookie(cookie);
-            // TODO: return suitable user infomation by JsonIgnore in model
+            // TODO: return suitable user information by JsonIgnore in model
             return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 
+    /**
+     * Logs out a user: clearing the JWT token from cookies.
+     *
+     *
+     * @param response the HTTP response object
+     * @return ResponseEntity with a success message
+     */
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser(HttpServletResponse response) {
         Cookie cookie = new Cookie("authorization", null);
@@ -92,14 +129,21 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("message", "Successfully logged out"));
     }
 
-//    TODO: Spring Security
-//    @GetMapping("/current")
-//    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
-//        String token = (String) authentication.getCredentials();
-//        System.out.println(token);
-//        User user = userService.validateUser(token);
-//        return ResponseEntity.ok(user);
-//    }
+    // TODO: Spring Security
+    //    @GetMapping("/current")
+    //    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
+    //        String token = (String) authentication.getCredentials();
+    //        System.out.println(token);
+    //        User user = userService.validateUser(token);
+    //        return ResponseEntity.ok(user);
+    //    }
+
+    /**
+     * Retrieves the current user.
+     *
+     * @param request the HTTP request object
+     * @return ResponseEntity containing the current User object
+     */
     @GetMapping("/current")
     public ResponseEntity<User> getCurrentUser(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
@@ -119,7 +163,13 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    // find single user by id
+    /**
+     * Retrieves a single user by ID.
+     *
+     * @param id the ID of the user to retrieve
+     * @return ResponseEntity containing the User object
+     * @throws ResponseStatusException if the user is not found
+     */
     @GetMapping("/{id}")
     public ResponseEntity<User> getSingleUser(@PathVariable ObjectId id) {
         User user = userService.singleUser(id)
