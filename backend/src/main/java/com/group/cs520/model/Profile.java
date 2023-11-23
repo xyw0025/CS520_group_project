@@ -25,20 +25,10 @@ import com.group.cs520.service.TypeUtil;
 public class Profile {
     @Id
     private ObjectId id;
-
-    @NotBlank
     private String displayName;
-
-    @NotBlank
     private Integer gender;
-
-    @NotBlank
     private LocalDate birthday;
-
-    @NotBlank
     private Integer age;
-
-    @NotBlank
     private List<String> image_urls;
 
     private String bio;
