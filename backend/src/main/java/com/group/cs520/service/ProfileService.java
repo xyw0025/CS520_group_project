@@ -96,4 +96,10 @@ public class ProfileService {
         profileRepository.save(profile);
     }
 
+    public Profile getProfileByUser(String user_id) {
+        ObjectId userObjId = TypeUtil.objectIdConverter(user_id);
+        User user = userService.singleUser(userObjId);
+        return user.getProfile();
+    }
+
 }
