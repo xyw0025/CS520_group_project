@@ -72,17 +72,17 @@ public class ProfileController {
         return ResponseEntity.ok(profile);
     }
 
-    // TODO: update
-    // @PutMapping("/{id}")
-    // public ResponseEntity<?> updateProfile(@PathVariable ObjectId id, @RequestBody Map<String, String> payload) {
-    //     // should do some to payload
-    //     try {
-    //         profileService.update(id, payload);
 
-    //     } catch (Exception error) {
-    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));;
-    //     }
-    // }
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProfile(@PathVariable ObjectId id, @RequestBody Map<String, String> payload) {
+        try {
+            Profile profile = profileService.update(id, payload);
+            return ResponseEntity.ok(profile);
+
+        } catch (Exception error) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", error.getMessage()));
+        }
+    }
 
 
     
