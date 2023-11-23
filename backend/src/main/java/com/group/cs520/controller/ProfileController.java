@@ -66,9 +66,9 @@ public class ProfileController {
         }
     }
 
-    @PostMapping("/{profile_id}/add_preferences")
-    public ResponseEntity<?> addProfilePreferences(@PathVariable String profile_id, @RequestBody Map<String, String> payload) {
-        Profile profile = profileService.setPreference(profile_id, payload);
+    @PutMapping("/{profile_id}/update_preferences")
+    public ResponseEntity<?> updateProfilePreferences(@PathVariable String profile_id, @RequestBody Map<String, String> payload) {
+        Profile profile = profileService.updatePreferences(profile_id, payload);
         return ResponseEntity.ok(profile);
     }
 
