@@ -3,6 +3,7 @@ package com.group.cs520.service;
 import com.group.cs520.model.Profile;
 import com.group.cs520.model.User;
 import com.group.cs520.repository.UserRepository;
+import com.group.cs520.repository.ProfileRepository;
 import com.group.cs520.service.JwtUtil;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.bson.types.ObjectId;
@@ -28,6 +29,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ProfileRepository profileRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -65,7 +69,10 @@ public class UserService {
         user.setIsActive(true);
         user.setCreatedTime(Instant.now());
         user.setUpdatedTime(Instant.now());
-        return userRepository.insert(user);
+        Profile profile = new Profile();
+        profileRepository.save(profile);
+        user.setProfile(profile);
+        return userRepository.save(user);
     }
 
     /**

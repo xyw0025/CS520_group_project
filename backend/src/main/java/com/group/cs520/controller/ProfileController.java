@@ -7,21 +7,19 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import java.io.IOException;
 
 import com.group.cs520.model.Profile;
 import com.group.cs520.model.User;
 import com.group.cs520.service.ProfileService;
 import com.group.cs520.service.TypeUtil;
 import com.group.cs520.service.UserService;
+import com.group.cs520.service.GCPStorageService;
+
+
 
 
 import java.util.List;
@@ -56,16 +54,6 @@ public class ProfileController {
         return ResponseEntity.ok(profile);
     }
 
-    @PostMapping()
-    public ResponseEntity<?> createProfile(@RequestBody Map<String, String> payload) {
-        try {
-            Profile profile = profileService.create(payload);
-            return ResponseEntity.ok(profile);
-        } catch(Exception e) { // TODO should be specific
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));
-        }
-    }
-
     @PutMapping("/{profile_id}/update_preferences")
     public ResponseEntity<?> updateProfilePreferences(@PathVariable String profile_id, @RequestBody Map<String, String> payload) {
         Profile profile = profileService.updatePreferences(profile_id, payload);
@@ -84,7 +72,13 @@ public class ProfileController {
         }
     }
 
+    @Autowired
+    private GCPStorageService gcpStorageService;
 
-    
-    
+    @PostMapping("/{id}/upload")
+    public ResponseEntity<String> uploadImage(@PathVariable String id, @RequestParam("file") MultipartFile file) throws IOException {
+        String photoURL = gcpStorageService.uploadImage(file);
+        profileService.setProfilePhoto(id, photoURL);
+        return ResponseEntity.ok(photoURL);
+    }
 }

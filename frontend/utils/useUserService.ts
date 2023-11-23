@@ -98,11 +98,14 @@ function useUserService(): IUserService {
         alertService.error(error);
       }
     },
-    upload: async (id, photoFile) => {
+    upload: async (id, name, photoFile) => {
       try {
         return await fetch.post(
-          `${API_URL}/api/v1/users/${id}/upload`,
-          { file: photoFile },
+          `${API_URL}/api/v1/profile/${id}/upload`,
+          {
+            name,
+            file: photoFile,
+          },
           true
         );
       } catch (error: any) {
@@ -136,12 +139,23 @@ function useUserService(): IUserService {
 }
 
 // interfaces
-
 interface IUser {
   id: string;
   email: string;
   name: string;
   isDeleted: boolean;
+  profile?: Profile;
+}
+
+interface Profile {
+  id: string;
+  displayName?: string;
+  gender?: string;
+  birthday?: Date;
+  age?: number;
+  bio?: string;
+  photos?: string[];
+  isDeleted?: boolean;
 }
 
 interface IUserStore {
@@ -159,7 +173,7 @@ interface IUserService extends IUserStore {
   getCurrent: () => Promise<IUser>;
   create: (user: IUser) => Promise<void>;
   update: (id: string, params: any) => Promise<void>;
-  upload: (id: string, photoFile: File) => Promise<string>;
+  upload: (id: string, name: string, photoFile: File) => Promise<string>;
   delete: (id: string) => Promise<void>;
   setUser: (user: IUser) => Promise<void>;
 }

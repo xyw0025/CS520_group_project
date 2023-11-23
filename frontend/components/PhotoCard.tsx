@@ -12,17 +12,17 @@ import {
 import { Photo } from '../utils/photo';
 
 interface PhotoProps extends React.HTMLAttributes<HTMLDivElement> {
-  photo?: Photo;
+  photoUrl?: string;
   aspectRatio?: 'portrait' | 'square';
   width?: number;
   height?: number;
-  onRemove?: (photoName: string) => void;
+  onRemove?: (photoUrl: string) => void;
   isPlaceholder?: boolean;
   onAdd?: () => void;
 }
 
 export default function PhotoCard({
-  photo,
+  photoUrl,
   aspectRatio = 'portrait',
   width,
   height,
@@ -33,8 +33,8 @@ export default function PhotoCard({
   ...props
 }: PhotoProps) {
   const handleRemoveClick = () => {
-    if (onRemove && photo) {
-      onRemove(photo.name);
+    if (onRemove && photoUrl) {
+      onRemove(photoUrl);
     }
   };
 
@@ -59,12 +59,12 @@ export default function PhotoCard({
           onClick={handleRemoveClick}
         />
 
-        {photo && (
+        {photoUrl && (
           <CardContent>
             <div className="overflow-hidden rounded-md">
               <Image
-                src={photo.url}
-                alt={photo.name}
+                src={photoUrl}
+                alt="Error"
                 width={width}
                 height={height}
                 className={cn(

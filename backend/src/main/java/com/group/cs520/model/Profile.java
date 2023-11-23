@@ -14,6 +14,8 @@ import java.time.Instant;
 import java.util.List;
 import java.time.LocalDate;
 import java.util.Map;
+import java.time.LocalDate;
+import java.time.Period;
 
 import com.group.cs520.service.DateUtil;
 import com.group.cs520.service.TypeUtil;
@@ -26,26 +28,23 @@ public class Profile {
     @Id
     private ObjectId id;
 
-    @NotBlank
-    private String displayName;
+    private String displayName = "New User";
 
-    @NotBlank
     private Integer gender;
 
-    @NotBlank
+
     private LocalDate birthday;
 
-    @NotBlank
+
     private Integer age;
 
-    @NotBlank
-    private List<String> image_urls;
+    private List<String> imageUrls;
 
     private String bio;
 
-    private Boolean isDeleted;
-    private Instant createdTime;
-    private Instant updatedTime;
+    private Boolean isDeleted = false;
+    private Instant createdTime = Instant.now();
+    private Instant updatedTime = Instant.now();
 
     @DocumentReference
     private List<Preference> preferences;
@@ -60,11 +59,19 @@ public class Profile {
         this.displayName = profileMap.get("displayName");
         this.gender = Integer.parseInt(profileMap.get("gender"));
         this.birthday = DateUtil.dateFormatter(profileMap.get("birthday"), "yyyy-MM-dd");
-        this.age = Integer.parseInt(profileMap.get("age"));
-        this.image_urls = TypeUtil.jsonStringArray(profileMap.get("image_urls"));
+        this.age = calculateAge(this.birthday, LocalDate.now());
+        this.imageUrls = TypeUtil.jsonStringArray(profileMap.get("imageUrls"));
         this.bio = profileMap.get("bio");
         this.createdTime = Instant.now();
         this.updatedTime = Instant.now();
         this.isDeleted = false;
+    }
+
+    private static int calculateAge(LocalDate birthDate, LocalDate currentDate) {
+        if ((birthDate != null) && (currentDate != null)) {
+            return Period.between(birthDate, currentDate).getYears();
+        } else {
+            return 0;
+        }
     }
 }

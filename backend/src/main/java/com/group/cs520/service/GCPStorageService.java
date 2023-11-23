@@ -15,6 +15,9 @@ public class GCPStorageService {
     @Value("${spring.cloud.gcp.storage.bucket.name}")
     private String bucketName;
 
+    @Value("${gcp.url}")
+    private String GCP_URL;
+
     @Autowired
     private ResourceLoader resourceLoader;
 
@@ -28,6 +31,8 @@ public class GCPStorageService {
             os.write(file.getBytes());
         }
 
-        return gcsLocation; // or return a URL to access the file
+        String photoURL = GCP_URL + bucketName + "/" + filename;
+
+        return photoURL;
     }
 }

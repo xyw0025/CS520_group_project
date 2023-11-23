@@ -49,17 +49,6 @@ public class ProfileService {
         return profileRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
     }
 
-
-    public Profile create(Map<String, String> profileMap) {
-        // String[] keys = {"displayName", "gender", "age", "bio"};
-        // Map<String, String> map = profileMap.entrySet().stream().filter(x -> x.getKey())
-        Profile profile = new Profile(profileMap);
-        profileRepository.insert(profile);
-
-        userService.setProfile(profileMap.get("user_id"), profile);
-        return profile;
-    }
-
     public Profile update(ObjectId id, Map<String, String> profileMap) {
         Profile profile = this.singleProfile(id);
 
@@ -114,6 +103,20 @@ public class ProfileService {
         ObjectId userObjId = TypeUtil.objectIdConverter(user_id);
         User user = userService.singleUser(userObjId);
         return user.getProfile();
+    }
+
+    public void setProfilePhoto(String userId, String photoURL){
+        Profile profile = getProfileByUser(userId);
+
+        if (profile != null) {
+            if (profile.getImageUrls() == null) {
+                profile.setImageUrls(new ArrayList<>());
+            }
+            profile.getImageUrls().add(photoURL);
+            profileRepository.save(profile);
+        } else {
+            throw new IllegalStateException("Profile not found for user id: " + userId);
+        }
     }
 
 }

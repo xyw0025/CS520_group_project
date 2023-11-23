@@ -4,19 +4,15 @@ import { useState, useEffect, useRef } from 'react';
 import { useUserService } from '@/utils';
 import PhotoCard from './PhotoCard';
 
-import { Photos } from '@/utils/photo';
-
 const ProfilePhotos = () => {
   const userService = useUserService();
   const { currentUser } = userService;
-  const [photos, setPhotos] = useState(Photos);
+  const [photos, setPhotos] = useState(currentUser?.profile?.photos || []);
   const [blankPhotoCounter, setBlankPhotoCounter] = useState(photos.length);
   const GCP_STORAGE_URL = process.env.NEXT_PUBLIC_GCP_STORAGE_BUCKET_URL;
 
-  const handleRemovePhoto = (photoName: string) => {
-    setPhotos((prevPhotos) =>
-      prevPhotos.filter((photo) => photo.name !== photoName)
-    );
+  const handleRemovePhoto = (photoUrl: string) => {
+    setPhotos((prevPhotos) => prevPhotos.filter((photo) => photo !== photoUrl));
   };
 
   function generateUniquePhotoName() {
@@ -28,14 +24,13 @@ const ProfilePhotos = () => {
   const handleAddPhoto = async (photoFile: File) => {
     if (currentUser) {
       try {
-        const photoUrl = await userService.upload(currentUser.id, photoFile);
         const newPhotoName = generateUniquePhotoName();
-        const newPhoto = {
-          name: newPhotoName,
-          url: `${GCP_STORAGE_URL}/${photoUrl.slice(5)}`,
-        };
-
-        setPhotos((prevPhotos) => [...prevPhotos, newPhoto]);
+        const photoUrl = await userService.upload(
+          currentUser.id,
+          newPhotoName,
+          photoFile
+        );
+        setPhotos((prevPhotos) => [...prevPhotos, photoUrl]);
       } catch (error) {
         console.error(error);
       }
@@ -63,10 +58,9 @@ const ProfilePhotos = () => {
 
   return (
     <div className="grid grid-cols-2 gap-2 w-full h-full mx-auto p-2 justify-items-center items-start">
-      {photos.map((photo) => (
+      {photos.map((photoUrl) => (
         <PhotoCard
-          key={photo.name}
-          photo={photo}
+          photoUrl={photoUrl}
           onRemove={handleRemovePhoto}
           className="w-[300px]"
           aspectRatio="portrait"

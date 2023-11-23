@@ -2,7 +2,6 @@ package com.group.cs520.controller;
 
 import com.group.cs520.model.User;
 import com.group.cs520.service.UserService;
-import com.group.cs520.service.GCPStorageService;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.core.Authentication;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import java.io.IOException;
-
 
 import java.util.List;
 import java.util.Map;
@@ -174,15 +170,6 @@ public class UserController {
     public ResponseEntity<User> getSingleUser(@PathVariable ObjectId id) {
         User user = userService.singleUser(id);
         return ResponseEntity.ok(user);
-    }
-
-    @Autowired
-    private GCPStorageService gcpStorageService;
-
-    @PostMapping("/{id}/upload")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
-        String fileLocation = gcpStorageService.uploadImage(file);
-        return ResponseEntity.ok(fileLocation);
     }
 }
 
