@@ -45,8 +45,9 @@ public class ProfileService {
         return profileRepository.findAll();
     }
 
-    public Profile singleProfile(ObjectId id) {
-        return profileRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
+    public Profile singleProfile(String id) {
+        ObjectId profileId = TypeUtil.objectIdConverter(id);
+        return profileRepository.findById(profileId).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
     }
 
 
@@ -60,7 +61,7 @@ public class ProfileService {
         return profile;
     }
 
-    public Profile update(ObjectId id, Map<String, String> profileMap) {
+    public Profile update(String id, Map<String, String> profileMap) {
         Profile profile = this.singleProfile(id);
 
         Class<?> profileClass = Profile.class;
@@ -69,34 +70,16 @@ public class ProfileService {
         for (Field field : fields) {
             String fieldName = field.getName();
             if (profileMap.containsKey(fieldName)) {
-                setField(profile, field, profileMap.get(fieldName));
+                TypeUtil.setField(profile, field, profileMap.get(fieldName));
             }
         }
         profileRepository.save(profile);
         return profile;
     }
 
-     private void setField(Object object, Field field, String value) {
-        try {
-            field.setAccessible(true);
-            Class<?> fieldType = field.getType();
-
-            if (fieldType.equals(Integer.class) || fieldType.equals(int.class)) {
-                field.set(object, Integer.parseInt(value));
-            }
-            else if (fieldType.equals(List.class)) {
-                field.set(object, TypeUtil.jsonStringArray(value));
-            } else {
-                field.set(object, value);
-            }
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Error setting field: " + field.getName(), e);
-        }
-    }
 
     public Profile updatePreferences(String profile_id, Map<String, String> profileMap) {
-        ObjectId profile_obj_id = TypeUtil.objectIdConverter(profile_id);
-        Profile profile = this.singleProfile(profile_obj_id);
+        Profile profile = this.singleProfile(profile_id);
 
         List<String> preference_ids = TypeUtil.jsonStringArray(profileMap.get("preference_ids"));
         List<Preference> preferences = new ArrayList<>();
@@ -111,9 +94,7 @@ public class ProfileService {
     }
 
     public Profile getProfileByUser(String user_id) {
-        ObjectId userObjId = TypeUtil.objectIdConverter(user_id);
-        User user = userService.singleUser(userObjId);
+        User user = userService.singleUser(user_id);
         return user.getProfile();
     }
-
 }

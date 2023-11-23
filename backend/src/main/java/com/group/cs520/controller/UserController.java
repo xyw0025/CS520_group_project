@@ -166,7 +166,7 @@ public class UserController {
      * @throws ResponseStatusException if the user is not found
      */
     @GetMapping("/{id}")
-    public ResponseEntity<User> getSingleUser(@PathVariable ObjectId id) {
+    public ResponseEntity<User> getSingleUser(@PathVariable String id) {
         User user = userService.singleUser(id);
         return ResponseEntity.ok(user);
     }

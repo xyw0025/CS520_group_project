@@ -74,7 +74,7 @@ public class ProfileController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProfile(@PathVariable ObjectId id, @RequestBody Map<String, String> payload) {
+    public ResponseEntity<?> updateProfile(@PathVariable String id, @RequestBody Map<String, String> payload) {
         try {
             Profile profile = profileService.update(id, payload);
             return ResponseEntity.ok(profile);

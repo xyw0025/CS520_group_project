@@ -42,8 +42,9 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User singleUser(ObjectId id) {
-        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
+    public User singleUser(String id) {
+        ObjectId user_id = TypeUtil.objectIdConverter(id);
+        return userRepository.findById(user_id).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
     }
 
     /**
@@ -119,15 +120,13 @@ public class UserService {
     }
 
     public void setProfile(String user_id, Profile profile) {
-        ObjectId id = TypeUtil.objectIdConverter(user_id);
-        User user = this.singleUser(id);
+        User user = this.singleUser(user_id);
         user.setProfile(profile);
         mongoTemplate.save(user);
     }
 
     public void addMatch(String user_id, Match match) {
-        ObjectId id = TypeUtil.objectIdConverter(user_id);
-        User user = this.singleUser(id);
+        User user = this.singleUser(user_id);
         List<Match> matches = user.getMatches();
         matches.add(match);
         user.setMatches(matches);
