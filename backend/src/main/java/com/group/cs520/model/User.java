@@ -29,6 +29,7 @@ public class User {
 
     @NotBlank
     private String email;
+
     @NotBlank
     @JsonIgnore
     private String password;
@@ -41,7 +42,7 @@ public class User {
     @DocumentReference
     private Profile profile;
 
-    public User(String email,String password) {
+    public User(String email, String password) {
         if (email.isBlank() || password.isBlank()) {
             throw new IllegalArgumentException("Name and password cannot be null.");
         }

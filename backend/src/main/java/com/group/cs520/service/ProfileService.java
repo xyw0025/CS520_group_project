@@ -8,6 +8,8 @@ import com.group.cs520.repository.ProfileRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -35,8 +37,8 @@ public class ProfileService {
         return profileRepository.findAll();
     }
 
-    public Optional<Profile> singleProfile(ObjectId id) {
-        return profileRepository.findById(id);
+    public Profile singleProfile(ObjectId id) {
+        return profileRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
     }
 
 
@@ -51,7 +53,7 @@ public class ProfileService {
     }
 
     public Profile update(ObjectId id,Map<String, String> profileMap) {
-        Profile profile = profileRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
+        Profile profile = this.singleProfile(id);
 
         Class<?> profileClass = Profile.class;
         Field[] fields = profileClass.getDeclaredFields();
@@ -79,6 +81,19 @@ public class ProfileService {
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Error setting field: " + field.getName(), e);
         }
+    }
+
+    public void setPreference(String profile_id, Preference preference) {
+        // mongoTemplate.update(Profile.class)
+        //     .matching(Criteria.where("id").is(profile_id))
+        //     .apply(new Update().push("preferences").value(preference))
+        //     .first();
+        Profile profile = this.singleProfile(TypeUtil.objectIdConverter(profile_id));
+        List<Preference> preferences = profile.getPreferences();
+        preferences.add(preference);
+        profile.setPreferences(preferences);
+    
+        profileRepository.save(profile);
     }
 
 }
