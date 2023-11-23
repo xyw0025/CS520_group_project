@@ -1,8 +1,7 @@
 package com.group.cs520.model;
 
-
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,13 +9,11 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.mongodb.core.index.Indexed;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.TimeZone;
-
 
 @Document(collection = "users")
 @Data
@@ -28,6 +25,8 @@ public class User {
     private String name;
 
     @NotBlank
+    @Indexed(unique=true)
+    @Email
     private String email;
 
     @NotBlank
@@ -53,6 +52,5 @@ public class User {
         this.password = password;
         this.createdTime = Instant.now(); // UTC
         this.updatedTime = Instant.now();
-
     }
 }

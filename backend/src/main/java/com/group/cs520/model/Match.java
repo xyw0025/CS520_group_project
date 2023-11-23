@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -34,6 +35,8 @@ public class Match {
 
     private List<ObjectId> userIds;
     private Integer status;
+
+    @Size(min=0, max=2)
     private List<String> history;
     
     private Boolean isDeleted;
