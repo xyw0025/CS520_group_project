@@ -46,8 +46,7 @@ public class ProfileController {
 
     @GetMapping("user")
     public ResponseEntity<Profile> getProfileByUser(@RequestParam String user_id) {
-        ObjectId userObjId = TypeUtil.objectIdConverter(user_id);
-        return ResponseEntity.ok(profileService.getProfileByUser(userObjId));
+        return ResponseEntity.ok(profileService.getProfileByUser(user_id));
     }
 
 
@@ -60,8 +59,6 @@ public class ProfileController {
     @PostMapping()
     public ResponseEntity<?> createProfile(@RequestBody Map<String, String> payload) {
         try {
-            // should do some to payload
-            System.out.print(payload);
             Profile profile = profileService.create(payload);
             return ResponseEntity.ok(profile);
         } catch(Exception e) { // TODO should be specific
@@ -69,6 +66,11 @@ public class ProfileController {
         }
     }
 
+    @PostMapping("/{profile_id}/add_preferences")
+    public ResponseEntity<?> addProfilePreferences(@PathVariable String profile_id, @RequestBody Map<String, String> payload) {
+        Profile profile = profileService.setPreference(profile_id, payload);
+        return ResponseEntity.ok(profile);
+    }
 
     // TODO: update
     // @PutMapping("/{id}")

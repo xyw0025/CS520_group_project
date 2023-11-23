@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.List;
 
 import com.group.cs520.model.Preference;
+import com.group.cs520.model.Profile;
 import com.group.cs520.model.User;
 import java.util.Map;
 
@@ -26,23 +27,29 @@ public class PreferenceService {
     private UserService userService;
 
     @Autowired
-    private ProfileService profileService;
-
-    @Autowired
     private MongoTemplate mongoTemplate;
 
+
+    public List<Preference> allPreferences() {
+        return preferenceRepository.findAll();
+    }
+
+    public Preference singlePreference(String id) {
+        ObjectId preferenceId = TypeUtil.objectIdConverter(id);
+        return preferenceRepository.findById(preferenceId).orElseThrow(() -> new IllegalArgumentException("Preference not found"));
+    }
 
     public Preference create(Map<String, String> preferenceMap) {
         Preference preference = new Preference(preferenceMap);
         preferenceRepository.insert(preference);
-        profileService.setPreference(preferenceMap.get("profile_id"), preference);
         return preference;
     }
 
     // find user's perferences using user's id
     // public Optional<List<Preference>> userPreferences(String user_id) {
-        // Query query = new Query(Criteria.where("id").is(user_id));
-        // User user = mongoTemplate.find(query, User.class);
+        // Profile profile = profileService.getProfileByUser(user_id);
+        // profileService.
+        // return profile.getPreferences();
         // Profile profile = profileService.getProfileByUser(user_id);
         
     // }
