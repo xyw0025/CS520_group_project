@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Photo } from '../utils/photo';
 
 interface PhotoProps extends React.HTMLAttributes<HTMLDivElement> {
   photoUrl?: string;
