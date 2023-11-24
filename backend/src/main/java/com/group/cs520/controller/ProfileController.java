@@ -15,20 +15,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.group.cs520.model.Profile;
-import com.group.cs520.model.User;
 import com.group.cs520.service.ProfileService;
 import com.group.cs520.service.TypeUtil;
 import com.group.cs520.service.UserService;
 
+import com.group.cs520.documentation.ProfileApi;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/profile")
-public class ProfileController {
+public class ProfileController implements ProfileApi {
 
     @Autowired
     private ProfileService profileService;
@@ -36,43 +35,35 @@ public class ProfileController {
     @Autowired
     private UserService userService;
 
-
+    @Override
     @GetMapping()
     public ResponseEntity<List<Profile>> getAllProfile() {
         List<Profile> profiles = profileService.allProfiles();
         return ResponseEntity.ok(profiles);
     }
 
-
+    @Override
     @GetMapping("user")
     public ResponseEntity<Profile> getProfileByUser(@RequestParam String user_id) {
         return ResponseEntity.ok(profileService.getProfileByUser(user_id));
     }
 
-
+    @Override
     @GetMapping("/{id}")
     public ResponseEntity<Profile> getSingleProfile(@PathVariable ObjectId id) {
         Profile profile = profileService.singleProfile(id);
         return ResponseEntity.ok(profile);
     }
 
-    @PostMapping()
-    public ResponseEntity<?> createProfile(@RequestBody Map<String, String> payload) {
-        try {
-            Profile profile = profileService.create(payload);
-            return ResponseEntity.ok(profile);
-        } catch(Exception e) { // TODO should be specific
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));
-        }
-    }
 
+    @Override
     @PutMapping("/{profile_id}/update_preferences")
     public ResponseEntity<?> updateProfilePreferences(@PathVariable String profile_id, @RequestBody Map<String, String> payload) {
         Profile profile = profileService.updatePreferences(profile_id, payload);
         return ResponseEntity.ok(profile);
     }
 
-
+    @Override
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProfile(@PathVariable ObjectId id, @RequestBody Map<String, String> payload) {
         try {
@@ -83,8 +74,4 @@ public class ProfileController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", error.getMessage()));
         }
     }
-
-
-    
-    
 }
