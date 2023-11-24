@@ -69,10 +69,11 @@ public class ProfileService {
 
         for (Field field : fields) {
             String fieldName = field.getName();
-            if (profileMap.containsKey(fieldName)) {
+            if (profileMap.containsKey(fieldName) & fieldName != "gender") {
                 TypeUtil.setField(profile, field, profileMap.get(fieldName));
             }
         }
+        profile.setGender(TypeUtil.getGender(profileMap.get("gender")));
         profile.setAge(DateUtil.getAge(profile.getBirthday()));
         profileRepository.save(profile);
         return profile;

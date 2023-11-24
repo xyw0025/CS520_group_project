@@ -34,12 +34,11 @@ public interface ProfileApi {
         @Schema(description = "Display Name", example = "Jane Doe")
         public String displayName;
     
-        @Schema(description = "Gender -> **** prolly should change to string type . Let backend handle the enum mapping logic", example = "0")
-        public int gender;
+        @Schema(description = "Gender", example = "Female")
+        public String gender;
     
         @Schema(description = "Birthday", example = "1922-01-01")
         public String birthday;
-    
     
         @Schema(description = "Bio", example = "Loves hiking and outdoor activities.")
         public String bio;
