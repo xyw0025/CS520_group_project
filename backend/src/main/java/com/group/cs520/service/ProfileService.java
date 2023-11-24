@@ -73,6 +73,7 @@ public class ProfileService {
                 TypeUtil.setField(profile, field, profileMap.get(fieldName));
             }
         }
+        profile.setAge(DateUtil.getAge(profile.getBirthday()));
         profileRepository.save(profile);
         return profile;
     }
