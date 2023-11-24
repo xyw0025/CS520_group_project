@@ -2,27 +2,26 @@ package com.group.cs520.controller;
 
 import com.group.cs520.model.User;
 import com.group.cs520.service.UserService;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.security.core.Authentication;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
+import com.group.cs520.documentation.UserApi;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Collections;
 
-
 @RestController
 @RequestMapping("/api/v1/users")
-public class UserController {
+public class UserController implements UserApi {
     @Autowired
     private UserService userService;
 
@@ -31,6 +30,7 @@ public class UserController {
      *
      * @return ResponseEntity containing a list of User objects
      */
+    @Override
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.allUsers();
@@ -42,6 +42,7 @@ public class UserController {
      *
      * @return ResponseEntity containing a list of active User objects
      */
+    @Override
     @GetMapping("/active")
     public ResponseEntity<List<User>> getActiveUsers() {
         List<User> activeUsers = userService.activeUsers();
@@ -55,6 +56,7 @@ public class UserController {
      * @return ResponseEntity containing the User object
      * @throws ResponseStatusException if the user is not found
      */
+    @Override
     @GetMapping("/search")
     public ResponseEntity<User> getSingleUserByParam(@RequestParam(name = "email") String email) {
         User user = userService.singleUserByEmail(email)
@@ -68,6 +70,7 @@ public class UserController {
      * @param payload the user data
      * @return ResponseEntity containing the created User object
      */
+    @Override
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody Map<String, String> payload) {
         try {
@@ -87,6 +90,7 @@ public class UserController {
      * @param response    the HTTP response object
      * @return ResponseEntity containing the logged-in User object
      */
+    @Override
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody Map<String, String> credentials, HttpServletResponse response) {
         try {
@@ -114,6 +118,7 @@ public class UserController {
      * @param response the HTTP response object
      * @return ResponseEntity with a success message
      */
+    @Override
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser(HttpServletResponse response) {
         Cookie cookie = new Cookie("authorization", null);
@@ -139,6 +144,7 @@ public class UserController {
      * @param request the HTTP request object
      * @return ResponseEntity containing the current User object
      */
+    @Override
     @GetMapping("/current")
     public ResponseEntity<User> getCurrentUser(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
@@ -165,6 +171,7 @@ public class UserController {
      * @return ResponseEntity containing the User object
      * @throws ResponseStatusException if the user is not found
      */
+    @Override
     @GetMapping("/{id}")
     public ResponseEntity<User> getSingleUser(@PathVariable ObjectId id) {
         User user = userService.singleUser(id);
