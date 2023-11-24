@@ -8,6 +8,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.group.cs520.constants.ProfileConstants;
+
 
 public class TypeUtil {
     public static ObjectId objectIdConverter(String id) {
@@ -49,5 +51,10 @@ public class TypeUtil {
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Error setting field: " + field.getName(), e);
         }
+    }
+
+
+    public static Integer getGender(String gender) {
+        return ProfileConstants.Gender.valueOf(gender.toUpperCase()).ordinal();
     }
 }
