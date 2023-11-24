@@ -173,7 +173,7 @@ public class UserController implements UserApi {
      */
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<User> getSingleUser(@PathVariable ObjectId id) {
+    public ResponseEntity<User> getSingleUser(@PathVariable String id) {
         User user = userService.singleUser(id);
         return ResponseEntity.ok(user);
     }
