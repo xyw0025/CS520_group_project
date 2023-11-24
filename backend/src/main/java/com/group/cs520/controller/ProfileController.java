@@ -44,7 +44,7 @@ public class ProfileController implements ProfileApi {
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<Profile> getSingleProfile(@PathVariable ObjectId id) {
+    public ResponseEntity<Profile> getSingleProfile(@PathVariable String id) {
         Profile profile = profileService.singleProfile(id);
         return ResponseEntity.ok(profile);
     }

@@ -20,16 +20,15 @@ public interface ProfileApi {
     ResponseEntity<List<Profile>> getAllProfile();
 
     @Operation(summary = "Retrieves a profile by user ID")
-    ResponseEntity<Profile> getProfileByUser(String userId);
+    ResponseEntity<Profile> getProfileByUser(@Parameter(description = "user id") String userId);
 
     @Operation(summary = "Retrieves a single profile by ID")
-    ResponseEntity<Profile> getSingleProfile(ObjectId id);
+    ResponseEntity<Profile> getSingleProfile(@Parameter(description = "profile id") String id);
 
     @Operation(summary = "Updates a profile")
-    ResponseEntity<?> updateProfile(@Parameter(description = "profile_id ** or should use user id instead? -> but that'd be not so RESTful.. **") ObjectId id, @RequestBody(description = "Preference payload", required = true, 
+    ResponseEntity<?> updateProfile(@Parameter(description = "profile_id ** or should use user id instead? -> but that'd be not so RESTful.. **") String id, @RequestBody(description = "Preference payload", required = true, 
             content = @Content(schema = @Schema(implementation = UpdateProfilePayload.class))
         ) Map<String, String> payload);
-
 
     class UpdateProfilePayload {
         @Schema(description = "Display Name", example = "Jane Doe")
