@@ -57,7 +57,7 @@ public class ProfileService {
         Profile profile = new Profile(profileMap);
         profileRepository.insert(profile);
 
-        userService.setProfile(profileMap.get("user_id"), profile);
+        userService.setProfile(profileMap.get("userId"), profile);
         return profile;
     }
 
@@ -78,14 +78,14 @@ public class ProfileService {
     }
 
 
-    public Profile updatePreferences(String profile_id, Map<String, String> profileMap) {
-        Profile profile = this.singleProfile(profile_id);
+    public Profile updatePreferences(String profileId, Map<String, String> profileMap) {
+        Profile profile = this.singleProfile(profileId);
 
-        List<String> preference_ids = TypeUtil.jsonStringArray(profileMap.get("preference_ids"));
+        List<String> preferenceIds = TypeUtil.jsonStringArray(profileMap.get("preferenceIds"));
         List<Preference> preferences = new ArrayList<>();
 
-        for (Integer ind = 0; ind < preference_ids.size(); ind ++) {
-            preferences.add(preferenceService.singlePreference(preference_ids.get(ind)));
+        for (Integer ind = 0; ind < preferenceIds.size(); ind ++) {
+            preferences.add(preferenceService.singlePreference(preferenceIds.get(ind)));
         }
 
         profile.setPreferences(preferences);
@@ -93,8 +93,8 @@ public class ProfileService {
         return profile;
     }
 
-    public Profile getProfileByUser(String user_id) {
-        User user = userService.singleUser(user_id);
+    public Profile getProfileByUser(String userId) {
+        User user = userService.singleUser(userId);
         return user.getProfile();
     }
 }

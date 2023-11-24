@@ -41,8 +41,8 @@ public class UserService {
     }
 
     public User singleUser(String id) {
-        ObjectId user_id = TypeUtil.objectIdConverter(id);
-        return userRepository.findById(user_id).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
+        ObjectId userId = TypeUtil.objectIdConverter(id);
+        return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
     }
 
     /**
@@ -117,8 +117,8 @@ public class UserService {
         return userRepository.findUserByEmail(email);
     }
 
-    public void setProfile(String user_id, Profile profile) {
-        User user = this.singleUser(user_id);
+    public void setProfile(String userId, Profile profile) {
+        User user = this.singleUser(userId);
         user.setProfile(profile);
         mongoTemplate.save(user);
     }

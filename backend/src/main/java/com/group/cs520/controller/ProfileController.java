@@ -38,8 +38,8 @@ public class ProfileController implements ProfileApi {
 
     @Override
     @GetMapping("user")
-    public ResponseEntity<Profile> getProfileByUser(@RequestParam String user_id) {
-        return ResponseEntity.ok(profileService.getProfileByUser(user_id));
+    public ResponseEntity<Profile> getProfileByUser(@RequestParam String userId) {
+        return ResponseEntity.ok(profileService.getProfileByUser(userId));
     }
 
     @Override
