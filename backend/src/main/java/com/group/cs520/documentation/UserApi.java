@@ -37,5 +37,5 @@ public interface UserApi {
     ResponseEntity<User> getCurrentUser(HttpServletRequest request);
 
     @Operation(summary = "Retrieves a single user by ID")
-    ResponseEntity<User> getSingleUser(ObjectId id);
+    ResponseEntity<User> getSingleUser(String id);
 }
