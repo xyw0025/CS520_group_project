@@ -26,7 +26,7 @@ public interface ProfileApi {
     ResponseEntity<Profile> getSingleProfile(@Parameter(description = "profile id") String id);
 
     @Operation(summary = "Updates a profile")
-    ResponseEntity<?> updateProfile(@Parameter(description = "profile_id ** or should use user id instead? -> but that'd be not so RESTful.. **") String id, @RequestBody(description = "Preference payload", required = true, 
+    ResponseEntity<?> updateProfile(@Parameter(description = "profile id ** or should use user id instead? -> but that'd be not so RESTful.. **") String id, @RequestBody(description = "Preference payload", required = true, 
             content = @Content(schema = @Schema(implementation = UpdateProfilePayload.class))
         ) Map<String, String> payload);
 

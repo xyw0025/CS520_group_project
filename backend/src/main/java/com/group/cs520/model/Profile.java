@@ -32,7 +32,7 @@ public class Profile {
     private Integer age;
 
     @Size(min=0, max=4)
-    private List<String> image_urls;
+    private List<String> imageUrls;
 
     @Size(max=300)
     private String bio;
@@ -51,7 +51,7 @@ public class Profile {
         this.gender = Integer.parseInt(profileMap.get("gender"));
         this.birthday = DateUtil.dateFormatter(profileMap.get("birthday"), "yyyy-MM-dd");
         this.age = Integer.parseInt(profileMap.get("age"));
-        this.image_urls = TypeUtil.jsonStringArray(profileMap.get("image_urls"));
+        this.imageUrls = TypeUtil.jsonStringArray(profileMap.get("imageUrls"));
         this.bio = profileMap.get("bio");
         this.createdTime = Instant.now();
         this.updatedTime = Instant.now();
