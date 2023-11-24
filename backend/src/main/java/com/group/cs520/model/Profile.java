@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
 import java.util.List;
@@ -29,8 +30,11 @@ public class Profile {
     private Integer gender;
     private LocalDate birthday;
     private Integer age;
+
+    @Size(min=0, max=4)
     private List<String> image_urls;
 
+    @Size(max=300)
     private String bio;
 
     private Boolean isDeleted;
