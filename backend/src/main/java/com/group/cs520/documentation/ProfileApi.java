@@ -40,8 +40,6 @@ public interface ProfileApi {
         @Schema(description = "Birthday", example = "1922-01-01")
         public String birthday;
     
-        @Schema(description = "Age", example = "0")
-        public int age;
     
         @Schema(description = "Bio", example = "Loves hiking and outdoor activities.")
         public String bio;
