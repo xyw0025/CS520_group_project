@@ -11,11 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.group.cs520.documentation.PreferenceApi;
 import com.group.cs520.model.Preference;
 import com.group.cs520.model.User;
 import com.group.cs520.service.PreferenceService;
@@ -23,18 +23,19 @@ import com.group.cs520.service.PreferenceService;
 
 @RestController
 @RequestMapping("/api/v1/preference")
-public class PrefrenceController {
+public class PrefrenceController implements PreferenceApi {
 
     @Autowired
     PreferenceService preferenceService;
 
+    @Override
     @GetMapping
     public ResponseEntity<List<Preference>> getAllPreferences() {
         List<Preference> prferences = preferenceService.allPreferences();
         return ResponseEntity.ok(prferences);
     }
 
-
+    @Override
     @PostMapping()
     public ResponseEntity<?> createPreference(@RequestBody Map<String, String> payload) {
         try {
