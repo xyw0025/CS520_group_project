@@ -47,6 +47,6 @@ public interface ProfileApi {
         public List<String> imageUrls;    
 
         @Schema(description = "Preference",  example ="[\"655ec8e65e588b53b18d5885\", \"655ec8dc5e588b53b18d5883\"]")
-        public List<ObjectId> preferences;
+        public List<String> preferences;
     }
 }
