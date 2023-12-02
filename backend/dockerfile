@@ -6,10 +6,12 @@ RUN apt-get update && apt-get install -y maven
 
 # Set the working directory in the container
 WORKDIR /app
-COPY . /app
 
+# Deal with dependencies first -> caching after first build 
+COPY pom.xml /app
 RUN mvn dependency:go-offline
 
+COPY . /app
 # Package the application
 RUN mvn package -Dmaven.test.skip
 
