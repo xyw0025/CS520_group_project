@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.group.cs520.documentation.PreferenceApi;
 import com.group.cs520.model.Preference;
-import com.group.cs520.model.User;
 import com.group.cs520.service.PreferenceService;
 
 
@@ -44,6 +42,5 @@ public class PrefrenceController implements PreferenceApi {
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));
         }
-
     }
 }

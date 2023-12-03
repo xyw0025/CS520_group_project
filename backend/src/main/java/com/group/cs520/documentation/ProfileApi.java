@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 import java.util.List;
@@ -23,10 +25,10 @@ public interface ProfileApi {
     ResponseEntity<Profile> getProfileByUser(@Parameter(description = "user id") String userId);
 
     @Operation(summary = "Retrieves a single profile by ID")
-    ResponseEntity<Profile> getSingleProfile(@Parameter(description = "profile id") String id);
+    ResponseEntity<Profile> getSingleProfile(@Parameter(description = "profile id", in = ParameterIn.PATH) @PathVariable(value = "id") String id);
 
     @Operation(summary = "Updates a profile")
-    ResponseEntity<?> updateProfile(@Parameter(description = "profile id ** or should use user id instead? -> but that'd be not so RESTful.. **") String id, @RequestBody(description = "Preference payload", required = true, 
+    ResponseEntity<?> updateProfile(@Parameter(description = "profile id") @PathVariable(value = "id") ObjectId id, @RequestBody(description = "Preference payload", required = true, 
             content = @Content(schema = @Schema(implementation = UpdateProfilePayload.class))
         ) Map<String, String> payload);
 
