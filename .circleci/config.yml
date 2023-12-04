@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  gcp-gcr: circleci/gcp-gcr@1.0.3
+  gcp-gcr: circleci/gcp-gcr@0.15.3
 
 jobs:
   build-and-push-image:
