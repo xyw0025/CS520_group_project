@@ -176,4 +176,16 @@ public class UserController implements UserApi {
         User user = userService.singleUser(id);
         return ResponseEntity.ok(user);
     }
+
+    @GetMapping("/random")
+    public List<User> suggestRandomMatches(){
+        List<User> recommendedUsers = userService.getRandomUsers(5);
+        return recommendedUsers;
+    }
+
+    @GetMapping("/first-five")
+    public List<User> suggestFirstFiveMatches() {
+        List<User> recommendedUsers = userService.getFirstFiveUsers();
+        return recommendedUsers;
+    }
 }

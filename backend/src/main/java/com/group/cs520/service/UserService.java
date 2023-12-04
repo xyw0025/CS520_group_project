@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
 import com.group.cs520.service.TypeUtil;
@@ -111,6 +112,14 @@ public class UserService {
 
     public List<User> activeUsers() {
         return userRepository.findByIsActiveTrue();
+    }
+
+    public List<User> getRandomUsers(int limit) {
+        return userRepository.findRandomUsers(limit);
+    }
+
+    public List<User> getFirstFiveUsers() {
+        return userRepository.findAll().stream().limit(5).collect(Collectors.toList());
     }
 
     public Optional<User> singleUserByEmail(String email) {
