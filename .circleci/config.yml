@@ -19,6 +19,12 @@ jobs:
       - run:
           name: Build and Push Docker Images
           command: |
+            sudo gcloud --quiet components update
+            echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud --quiet auth configure-docker us-west1-docker.pkg.dev
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
             docker-compose -f docker-compose.remote.yml build
             docker-compose -f docker-compose.remote.yml push
 
