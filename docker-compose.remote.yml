@@ -5,10 +5,8 @@ services:
     build: 
       context: ./backend
     image: us-west1-docker.pkg.dev/umassenger-406907/umassenger:backend-latest  # Image tag with registry  
-    env_file:
-      - ./backend/src/main/resources/.env
     # TODO: should move the next line to dockerfile (cant pass the env var to dockerfile yet)
-    command: sh -c "java -Dspring.profiles.active=$$ENVIRONMENT -jar /app.jar"
+    command: sh -c "java -Dspring.profiles.active=development -jar /app.jar"
     ports:
       - "3000:3000" # Map host port 3000 to container port 3000
 
