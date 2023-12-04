@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.index.Indexed;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 import java.time.Instant;
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
+    @JsonSerialize(using = ToStringSerializer.class)
     @Id
     private ObjectId id;
     private String name;

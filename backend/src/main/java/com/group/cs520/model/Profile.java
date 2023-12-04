@@ -16,6 +16,8 @@ import java.util.List;
 import java.time.LocalDate;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.group.cs520.service.DateUtil;
 import com.group.cs520.service.TypeUtil;
 
@@ -23,7 +25,8 @@ import com.group.cs520.service.TypeUtil;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "profiles")
-public class Profile {
+public class Profile { 
+    @JsonSerialize(using = ToStringSerializer.class)
     @Id
     private ObjectId id;
     private String displayName;
