@@ -81,11 +81,11 @@ public class ProfileService {
     }
 
 
-    private void updatePreferences(Profile profile, List<String> preferenceIds) {
+    private void updatePreferences(Profile profile, List<String> preferenceNames) {
         List<Preference> preferences = new ArrayList<>();
 
-        for (Integer ind = 0; ind < preferenceIds.size(); ind ++) {
-            preferences.add(preferenceService.singlePreference(preferenceIds.get(ind)));
+        for (Integer ind = 0; ind < preferenceNames.size(); ind ++) {
+            preferences.add(preferenceService.PreferenceByName(preferenceNames.get(ind)));
         }
 
         profile.setPreferences(preferences);
