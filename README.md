@@ -18,7 +18,7 @@ java -Dspring.profiles.active=development -jar target/cs520-0.0.1-SNAPSHOT.jar
 
 [frontend document](frontend/README.md)
 
-### Deployment with docker
+### devlopment with docker
 
 ```
 # make sure you're under the folder where `docker-compose.yml` exists
