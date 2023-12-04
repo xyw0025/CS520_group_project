@@ -182,7 +182,7 @@ public interface ProfileApi {
         @Schema(description = "Image URLs", example = "[\"http://example.com/profile1.jpg\", \"http://example.com/profile2.jpg\"]")
         public List<String> imageUrls;    
 
-        @Schema(description = "Preference",  example ="[\"655ec8e65e588b53b18d5885\", \"655ec8dc5e588b53b18d5883\"]")
+        @Schema(description = "Preference",  example ="[\"food\", \"baking\"]")
         public List<String> preferences;
     }
 }
