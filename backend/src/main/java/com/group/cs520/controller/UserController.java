@@ -2,7 +2,6 @@ package com.group.cs520.controller;
 
 import com.group.cs520.model.User;
 import com.group.cs520.service.UserService;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
