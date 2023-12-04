@@ -47,15 +47,13 @@ public class Profile {
     @DocumentReference
     private List<Preference> preferences;
 
-
-    public Profile(Map<String, String> profileMap) {
-        // should be dryer
-        this.displayName = profileMap.get("displayName");
-        this.gender = Integer.parseInt(profileMap.get("gender"));
-        this.birthday = DateUtil.dateFormatter(profileMap.get("birthday"), "yyyy-MM-dd");
-        this.age = Integer.parseInt(profileMap.get("age"));
-        this.imageUrls = TypeUtil.jsonStringArray(profileMap.get("imageUrls"));
-        this.bio = profileMap.get("bio");
+    public Profile(Map<String, Object> profileMap) {
+        this.displayName = (String) profileMap.get("displayName");
+        this.gender = Integer.parseInt((String) profileMap.get("gender"));
+        this.birthday = DateUtil.dateFormatter((String) profileMap.get("birthday"), "yyyy-MM-dd");
+        this.age = Integer.parseInt((String) profileMap.get("age"));
+        this.imageUrls = TypeUtil.objectToListString(profileMap.get("imageUrls"));
+        this.bio = (String) profileMap.get("bio");
         this.createdTime = Instant.now();
         this.updatedTime = Instant.now();
         this.isDeleted = false;

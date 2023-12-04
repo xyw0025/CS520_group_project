@@ -14,12 +14,11 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 
 @Service
@@ -51,39 +50,40 @@ public class ProfileService {
     }
 
 
-    public Profile create(Map<String, String> profileMap) {
+    public Profile create(Map<String, Object> profileMap) {
         // String[] keys = {"displayName", "gender", "age", "bio"};
         // Map<String, String> map = profileMap.entrySet().stream().filter(x -> x.getKey())
         Profile profile = new Profile(profileMap);
         profileRepository.insert(profile);
 
-        userService.setProfile(profileMap.get("userId"), profile);
+        userService.setProfile(profileMap.get("userId").toString(), profile);
         return profile;
     }
 
-    public Profile update(String id, Map<String, String> profileMap) {
+    public Profile update(String id, Map<String, Object> profileMap) {
         Profile profile = this.singleProfile(id);
+        String[] skipFields = {"gender", "preferences"};
 
+        
         Class<?> profileClass = Profile.class;
         Field[] fields = profileClass.getDeclaredFields();
 
         for (Field field : fields) {
             String fieldName = field.getName();
-            if (profileMap.containsKey(fieldName) & fieldName != "gender") {
+            if (profileMap.containsKey(fieldName) & !Arrays.asList(skipFields).contains(fieldName)) {
                 TypeUtil.setField(profile, field, profileMap.get(fieldName));
             }
         }
-        profile.setGender(TypeUtil.getGender(profileMap.get("gender")));
+        profile.setGender(TypeUtil.getGender(profileMap.get("gender").toString()));
         profile.setAge(DateUtil.getAge(profile.getBirthday()));
+        updatePreferences(profile, TypeUtil.objectToListString(profileMap.get("preferences")));
+
         profileRepository.save(profile);
         return profile;
     }
 
 
-    public Profile updatePreferences(String profileId, Map<String, String> profileMap) {
-        Profile profile = this.singleProfile(profileId);
-
-        List<String> preferenceIds = TypeUtil.jsonStringArray(profileMap.get("preferenceIds"));
+    private void updatePreferences(Profile profile, List<String> preferenceIds) {
         List<Preference> preferences = new ArrayList<>();
 
         for (Integer ind = 0; ind < preferenceIds.size(); ind ++) {
@@ -91,8 +91,6 @@ public class ProfileService {
         }
 
         profile.setPreferences(preferences);
-        profileRepository.save(profile);
-        return profile;
     }
 
     public Profile getProfileByUser(String userId) {

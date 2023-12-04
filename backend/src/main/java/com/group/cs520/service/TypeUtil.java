@@ -6,6 +6,10 @@ import org.bson.types.ObjectId;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.group.cs520.constants.ProfileConstants;
@@ -34,17 +38,17 @@ public class TypeUtil {
     }
 
 
-    public static void setField(Object object, Field field, String value) {
+    public static void setField(Object object, Field field, Object value) {
         try {
             field.setAccessible(true);
             Class<?> fieldType = field.getType();
 
             if (fieldType.equals(Integer.class) || fieldType.equals(int.class)) {
-                field.set(object, Integer.parseInt(value));
-            } else if (fieldType.equals(List.class)) {
-                field.set(object, TypeUtil.jsonStringArray(value));
+                field.set(object, Integer.parseInt(value.toString()));
+            } else if (fieldType.equals(LocalDate.class)) {
+                field.set(object, DateUtil.dateFormatter(value.toString())); // string to localdate
             } else if (fieldType.equals(ObjectId.class)) {
-                field.set(object, objectIdArray(value));
+                field.set(object, objectIdArray(value.toString()));
             } else {
                 field.set(object, value);
             }
@@ -56,5 +60,10 @@ public class TypeUtil {
 
     public static Integer getGender(String gender) {
         return ProfileConstants.Gender.valueOf(gender.toUpperCase()).ordinal();
+    }
+
+
+    public static List<String> objectToListString(Object object) {
+        return new ObjectMapper().convertValue(object, new TypeReference<List<String>>() {});
     }
 }

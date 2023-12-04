@@ -165,7 +165,7 @@ public interface ProfileApi {
         })
     ResponseEntity<?> updateProfile(@Parameter(description = "profile id") @PathVariable(value = "id") String id, @RequestBody(description = "Preference payload", required = true, 
             content = @Content(schema = @Schema(implementation = UpdateProfilePayload.class))
-        ) Map<String, String> payload);
+        ) Map<String, Object> payload);
 
     class UpdateProfilePayload {
         @Schema(description = "Display Name", example = "Jane Doe")
