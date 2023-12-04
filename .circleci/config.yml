@@ -1,0 +1,49 @@
+version: 2.1
+
+orbs:
+  gcp-gcr: circleci/gcp-gcr@0.15.3
+
+jobs:
+  build-and-push-image:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - setup_remote_docker
+      - gcp-gcr/gcr-auth
+      - run:
+          name: Install Docker Compose
+          command: |
+            sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+      - run:
+          name: Build and Push Docker Images
+          command: |
+            docker-compose -f docker-compose.remote.yml build
+            docker-compose -f docker-compose.remote.yml push
+
+  deploy:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - run:
+          name: Deploy to GCP instance
+          command: |  # Add your GCP deployment commands here
+            gcloud compute instances update-container $INSTANCE_NAME \
+              --container-image $GCR_URL/$GOOGLE_PROJECT_ID/$IMAGE_NAME:$CIRCLE_SHA1 \
+              --zone $INSTANCE_ZONE
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build-and-push-image:
+          filters:
+            branches:
+              only: staging
+      - deploy:
+          requires:
+            - build-and-push-image
+          filters:
+            branches:
+              only: staging

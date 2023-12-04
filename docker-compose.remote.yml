@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+    image: us-west1-docker.pkg.dev/umassenger-406907/umassenger:backend-latest  # Image tag with registry  
+    env_file:
+      - ./backend/src/main/resources/.env
+    # TODO: should move the next line to dockerfile (cant pass the env var to dockerfile yet)
+    command: sh -c "java -Dspring.profiles.active=$$ENVIRONMENT -jar /app.jar"
+    ports:
+      - "3000:3000" # Map host port 3000 to container port 3000
+
+  frontend:
+    build: 
+      context: ./frontend
+    image: us-west1-docker.pkg.dev/umassenger-406907/umassenger:frontend-latest  # Image tag with registry  
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./frontend:/app/frontend  # Mount the directory so changes get reflected immediately
