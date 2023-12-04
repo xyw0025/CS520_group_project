@@ -3,7 +3,6 @@ package com.group.cs520.service;
 import com.group.cs520.model.Profile;
 import com.group.cs520.model.User;
 import com.group.cs520.repository.UserRepository;
-import com.group.cs520.repository.ProfileRepository;
 import com.group.cs520.service.JwtUtil;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.bson.types.ObjectId;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
 import com.group.cs520.service.TypeUtil;
@@ -31,9 +31,6 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private ProfileRepository profileRepository;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -44,13 +41,14 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User singleUser(ObjectId id) {
-        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
+    public User singleUser(String id) {
+        ObjectId userId = TypeUtil.objectIdConverter(id);
+        return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
     }
 
     /**
      * Creates a new user with the given email and password.
-     *
+     * 
      * @param email    the email of the user
      * @param password the password of the user
      * @return the created user
@@ -69,17 +67,14 @@ public class UserService {
         user.setIsActive(true);
         user.setCreatedTime(Instant.now());
         user.setUpdatedTime(Instant.now());
-        Profile profile = new Profile();
-        profileRepository.save(profile);
-        user.setProfile(profile);
-        return userRepository.save(user);
+        return userRepository.insert(user);
     }
 
     /**
      * Authenticates a user by checking the provided email and password.
      * If the credentials are valid, a token is generated
-     *
-     * @param email
+     * 
+     * @param email  
      * @param password
      * @return A map containing {user information: authentication token}
      * @throws IllegalArgumentException If the credentials are invalid.
@@ -100,8 +95,8 @@ public class UserService {
 
     /**
      * Validates a user based on the provided token.
-     *
-     * @param token
+     * 
+     * @param token 
      * @return the validated User object
      * @throws IllegalArgumentException if the user is not found or the JWT token is invalid
      */
@@ -119,13 +114,20 @@ public class UserService {
         return userRepository.findByIsActiveTrue();
     }
 
+    public List<User> getRandomUsers(int limit) {
+        return userRepository.findRandomUsers(limit);
+    }
+
+    public List<User> getFirstFiveUsers() {
+        return userRepository.findAll().stream().limit(5).collect(Collectors.toList());
+    }
+
     public Optional<User> singleUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
     }
 
-    public void setProfile(String user_id, Profile profile) {
-        ObjectId id = TypeUtil.objectIdConverter(user_id);
-        User user = this.singleUser(id);
+    public void setProfile(String userId, Profile profile) {
+        User user = this.singleUser(userId);
         user.setProfile(profile);
         mongoTemplate.save(user);
     }

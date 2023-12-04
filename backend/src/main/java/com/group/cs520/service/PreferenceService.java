@@ -39,6 +39,11 @@ public class PreferenceService {
         return preferenceRepository.findById(preferenceId).orElseThrow(() -> new IllegalArgumentException("Preference not found"));
     }
 
+
+    public Preference PreferenceByName(String name) {
+        return preferenceRepository.findPreferenceByName(name).orElseThrow(() -> new IllegalArgumentException("Preference not found"));
+    }
+
     public Preference create(Map<String, String> preferenceMap) {
         Preference preference = new Preference(preferenceMap);
         preferenceRepository.insert(preference);
