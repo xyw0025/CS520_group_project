@@ -11,11 +11,10 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.Random;
-import java.util.ArrayList;
+
 @Service
 public class UserService {
 
@@ -38,8 +37,17 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    /**
+     * Creates a new user with the given email and password.
+     * 
+     * @param email    the email of the user
+     * @param password the password of the user
+     * @return the created user
+     * @throws IllegalArgumentException if the email is already in use
+     */
     public User createUser(String email, String password) {
         System.out.println("start check user information");
+        //check email first
         Optional<User> existingUser = userRepository.findUserByEmail(email);
         if (existingUser.isPresent()) {
             throw new IllegalArgumentException("Email already in use.");
@@ -53,6 +61,15 @@ public class UserService {
         return userRepository.insert(user);
     }
 
+    /**
+     * Authenticates a user by checking the provided email and password.
+     * If the credentials are valid, a token is generated
+     * 
+     * @param email  
+     * @param password
+     * @return A map containing {user information: authentication token}
+     * @throws IllegalArgumentException If the credentials are invalid.
+     */
     public Map<String, Object> authenticateUser(String email, String password) {
         Optional<User> userOpt = userRepository.findUserByEmail(email);
 
@@ -67,6 +84,13 @@ public class UserService {
         }
     }
 
+    /**
+     * Validates a user based on the provided token.
+     * 
+     * @param token 
+     * @return the validated User object
+     * @throws IllegalArgumentException if the user is not found or the JWT token is invalid
+     */
     public User validateUser(String token) {
         try {
             String email = jwtUtil.extractUserId(token);
@@ -80,9 +104,11 @@ public class UserService {
     public List<User> activeUsers() {
         return userRepository.findByIsActiveTrue();
     }
+
     public List<User> getRandomUsers(int limit) {
         return userRepository.findRandomUsers(limit);
     }
+
     public List<User> getFirstFiveUsers() {
         return userRepository.findAll().stream().limit(5).collect(Collectors.toList());
     }
@@ -91,5 +117,3 @@ public class UserService {
         return userRepository.findUserByEmail(email);
     }
 }
-
-
