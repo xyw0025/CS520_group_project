@@ -60,11 +60,9 @@ public class ProfileService {
         return profile;
     }
 
-    public Profile update(String id, Map<String, Object> profileMap) {
-        Profile profile = this.singleProfile(id);
+    public Profile update(String user_id, Map<String, Object> profileMap) {
+        Profile profile = this.getProfileByUser(user_id);
         String[] skipFields = {"gender", "preferences"};
-
-        
         Class<?> profileClass = Profile.class;
         Field[] fields = profileClass.getDeclaredFields();
 

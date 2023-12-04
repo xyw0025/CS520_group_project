@@ -50,10 +50,10 @@ public class ProfileController implements ProfileApi {
     }
 
     @Override
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateProfile(@PathVariable String id, @RequestBody Map<String, Object> payload) {
+    @PutMapping("/{user_id}")
+    public ResponseEntity<?> updateProfile(@PathVariable String user_id, @RequestBody Map<String, Object> payload) {
         try {
-            Profile profile = profileService.update(id, payload);
+            Profile profile = profileService.update(user_id, payload);
             return ResponseEntity.ok(profile);
 
         } catch (Exception error) {

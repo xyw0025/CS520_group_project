@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -163,7 +162,7 @@ public interface ProfileApi {
                     )
                 })
         })
-    ResponseEntity<?> updateProfile(@Parameter(description = "profile id") @PathVariable(value = "id") String id, @RequestBody(description = "Preference payload", required = true, 
+    ResponseEntity<?> updateProfile(@Parameter(description = "user id") @PathVariable(value = "user id") String id, @RequestBody(description = "profile payload", required = true, 
             content = @Content(schema = @Schema(implementation = UpdateProfilePayload.class))
         ) Map<String, Object> payload);
 
