@@ -47,7 +47,7 @@ public class User {
         }
         this.email = email;
         this.password = password;
-        this.createdTime = Instant.now(); 
+        this.createdTime = Instant.now(); // UTC
         this.updatedTime = Instant.now();
 
     }

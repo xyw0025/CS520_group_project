@@ -37,7 +37,7 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-/**
+    /**
      * Retrieves all active users.
      *
      * @return ResponseEntity containing a list of active User objects
@@ -48,7 +48,7 @@ public class UserController {
         return ResponseEntity.ok(activeUsers);
     }
 
-/**
+    /**
      * Retrieves a single user by email.
      *
      * @param email the email of the user to retrieve
@@ -62,7 +62,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-/**
+    /**
      * Creates a new user.
      *
      * @param payload the user data
@@ -74,12 +74,12 @@ public class UserController {
             User user = userService.createUser(payload.get("email"), payload.get("password"));
             return ResponseEntity.status(HttpStatus.CREATED).body(user);
         } catch (IllegalArgumentException e) {
-// Handle the case where email is already in use
+        // Handle the case where email is already in use
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 
-/**
+    /**
      * Logs in a user using the email and password extracted from cookies
      * If login is sucessful, store JWT token in cookies
 
@@ -100,14 +100,14 @@ public class UserController {
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             response.addCookie(cookie);
-// TODO: return suitable user information by JsonIgnore in model
+        // TODO: return suitable user information by JsonIgnore in model
             return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 
-/**
+    /**
      * Logs out a user: clearing the JWT token from cookies.
      * 
      * 
