@@ -59,7 +59,7 @@ public class UserService {
      * @throws IllegalArgumentException if the email is already in use
      */
     public User createUser(String email, String password) {
-        System.out.println("start check user information");
+        System.out.println("start checking user's information");
         //check email first
         Optional<User> existingUser = userRepository.findUserByEmail(email);
         if (existingUser.isPresent()) {

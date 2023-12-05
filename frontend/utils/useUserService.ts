@@ -8,8 +8,8 @@ export { useUserService };
 
 // user state store
 const initialState = {
-  users: undefined,
-  user: undefined,
+  matchedUsers: undefined,
+  undiscoveredUsers: undefined,
   currentUser: undefined,
 };
 const userStore = create<IUserStore>(() => initialState);
@@ -19,12 +19,12 @@ function useUserService(): IUserService {
   const fetch = useFetch();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { users, user, currentUser } = userStore();
+  const { matchedUsers, undiscoveredUsers, currentUser } = userStore();
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   return {
-    users,
-    user,
+    matchedUsers,
+    undiscoveredUsers,
     currentUser,
     setUser: async (user) => {
       try {
@@ -65,17 +65,6 @@ function useUserService(): IUserService {
       localStorage.removeItem('currentUser');
       router.push('/');
     },
-    getAll: async () => {
-      userStore.setState({ users: await fetch.get('/api/v1/users/all') });
-    },
-    getById: async (id) => {
-      userStore.setState({ user: undefined });
-      try {
-        userStore.setState({ user: await fetch.get(`/api/v1/users/${id}`) });
-      } catch (error: any) {
-        alertService.error(error);
-      }
-    },
     getCurrent: async () => {
       if (!currentUser) {
         const fetchedUser = await fetch.get(`${API_URL}/api/v1/users/current`);
@@ -89,11 +78,7 @@ function useUserService(): IUserService {
     },
     update: async (id, params) => {
       try {
-        await fetch.put(`${API_URL}/api/v1/profile/${id}`, params);
-        // update current user if the user updated their own record
-        if (id === currentUser?.id) {
-          userStore.setState({ currentUser: { ...currentUser, ...params } });
-        }
+        return await fetch.put(`${API_URL}/api/v1/profile/${id}`, params);
       } catch (error: any) {
         alertService.error(error);
       }
@@ -101,7 +86,7 @@ function useUserService(): IUserService {
     upload: async (id, name, photoFile) => {
       try {
         return await fetch.post(
-          `${API_URL}/api/v1/profile/${id}/upload`,
+          `${API_URL}/api/v1/users/${id}/upload`,
           {
             name,
             file: photoFile,
@@ -113,32 +98,32 @@ function useUserService(): IUserService {
         alertService.error(error);
       }
     },
-    delete: async (id) => {
-      // set isDeleting prop to true on user
-      userStore.setState({
-        users: users!.map((x) => {
-          if (x.id === id) {
-            x.isDeleted = true;
-          }
-          return x;
-        }),
-      });
+    // delete: async (id) => {
+    //   // set isDeleting prop to true on user
+    //   userStore.setState({
+    //     users: users!.map((x) => {
+    //       if (x.id === id) {
+    //         x.isDeleted = true;
+    //       }
+    //       return x;
+    //     }),
+    //   });
 
-      // delete user
-      const response = await fetch.delete(`/api/v1/users/${id}`);
+    //   // delete user
+    //   const response = await fetch.delete(`/api/v1/users/${id}`);
 
-      // remove deleted user from state
-      userStore.setState({ users: users!.filter((x) => x.id !== id) });
+    //   // remove deleted user from state
+    //   userStore.setState({ users: users!.filter((x) => x.id !== id) });
 
-      // logout if the user deleted their own record
-      if (response.deletedSelf) {
-        router.push('/account/login');
-      }
-    },
+    //   // logout if the user deleted their own record
+    //   if (response.deletedSelf) {
+    //     router.push('/account/login');
+    //   }
+    // },
   };
 }
 
-// interfaces
+// Interfaces
 interface IUser {
   id: string;
   email: string;
@@ -148,19 +133,24 @@ interface IUser {
 }
 
 interface Profile {
-  id: string;
   displayName?: string;
   gender?: string;
-  birthday?: Date;
+  birthday?: string;
+  major?: string;
   age?: number;
   bio?: string;
-  photos?: string[];
+  imageUrls?: string[];
+  preferences?: Preference[];
   isDeleted?: boolean;
 }
 
+interface Preference {
+  name: string;
+}
+
 interface IUserStore {
-  users?: IUser[];
-  user?: IUser;
+  matchedUsers?: IUser[];
+  undiscoveredUsers?: IUser[];
   currentUser?: IUser;
 }
 
@@ -168,12 +158,10 @@ interface IUserService extends IUserStore {
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (user: IUser) => Promise<void>;
-  getAll: () => Promise<void>;
-  getById: (id: string) => Promise<void>;
   getCurrent: () => Promise<IUser>;
   create: (user: IUser) => Promise<void>;
-  update: (id: string, params: any) => Promise<void>;
+  update: (id: string, params: any) => Promise<IUser>;
   upload: (id: string, name: string, photoFile: File) => Promise<string>;
-  delete: (id: string) => Promise<void>;
+  // delete: (id: string) => Promise<void>;
   setUser: (user: IUser) => Promise<void>;
 }

@@ -21,6 +21,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
         // should router.push, redirect should in useEffect else it will be recognized to server rendering
         router.push(`/login?returnUrl=${returnUrl}`);
       }
+      await userService.setUser(currentUser);
     };
 
     checkUserAndRedirect();

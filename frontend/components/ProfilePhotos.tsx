@@ -7,13 +7,8 @@ import PhotoCard from './PhotoCard';
 const ProfilePhotos = () => {
   const userService = useUserService();
   const { currentUser } = userService;
-  const [photos, setPhotos] = useState(currentUser?.profile?.photos || []);
+  const [photos, setPhotos] = useState(currentUser?.profile?.imageUrls || []);
   const [blankPhotoCounter, setBlankPhotoCounter] = useState(photos.length);
-  const GCP_STORAGE_URL = process.env.NEXT_PUBLIC_GCP_STORAGE_BUCKET_URL;
-
-  const handleRemovePhoto = (photoUrl: string) => {
-    setPhotos((prevPhotos) => prevPhotos.filter((photo) => photo !== photoUrl));
-  };
 
   function generateUniquePhotoName() {
     const timestamp = new Date().getTime();
@@ -30,11 +25,40 @@ const ProfilePhotos = () => {
           newPhotoName,
           photoFile
         );
-        setPhotos((prevPhotos) => [...prevPhotos, photoUrl]);
+
+        setPhotos((prevPhotos) => {
+          const updatedPhotos = [...prevPhotos, photoUrl];
+
+          if (currentUser && currentUser.profile) {
+            // Update the currentUser with the new photos array
+            const updatedUser = {
+              ...currentUser,
+              profile: {
+                ...currentUser.profile,
+                imageUrls: updatedPhotos,
+              },
+            };
+            userService.setUser(updatedUser);
+          }
+
+          return updatedPhotos;
+        });
       } catch (error) {
         console.error(error);
       }
     }
+  };
+
+  const handleRemovePhoto = (photoUrl: string) => {
+    setPhotos((prevPhotos) => {
+      const updatedPhotos = prevPhotos.filter((photo) => photo !== photoUrl);
+      if (currentUser && currentUser.profile) {
+        currentUser.profile.imageUrls = updatedPhotos;
+        userService.setUser(currentUser);
+      }
+      return updatedPhotos;
+    });
+    console.log(currentUser);
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -54,7 +78,13 @@ const ProfilePhotos = () => {
 
   useEffect(() => {
     setBlankPhotoCounter(Math.max(0, 4 - photos.length));
-  }, [handleRemovePhoto]);
+  }, [handleRemovePhoto, handleAddPhoto]);
+
+  useEffect(() => {
+    if (currentUser) {
+      setPhotos(currentUser.profile?.imageUrls || []);
+    }
+  }, [currentUser]);
 
   return (
     <div className="grid grid-cols-2 gap-2 w-full h-full mx-auto p-2 justify-items-center items-start">

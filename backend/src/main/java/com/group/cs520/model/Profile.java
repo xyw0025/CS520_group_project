@@ -37,6 +37,9 @@ public class Profile {
     @Size(min=0, max=4)
     private List<String> imageUrls;
 
+    @Size(max=30)
+    private String major;
+
     @Size(max=300)
     private String bio;
 
@@ -53,6 +56,7 @@ public class Profile {
         this.birthday = DateUtil.dateFormatter((String) profileMap.get("birthday"), "yyyy-MM-dd");
         this.age = Integer.parseInt((String) profileMap.get("age"));
         this.imageUrls = TypeUtil.objectToListString(profileMap.get("imageUrls"));
+        this.major = (String) profileMap.get("major");
         this.bio = (String) profileMap.get("bio");
         this.createdTime = Instant.now();
         this.updatedTime = Instant.now();

@@ -1,7 +1,7 @@
 'use client';
 
 import HobbyButton from '@/components/HobbyButton';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useUserService, useAlertService } from '@/utils';
@@ -21,12 +21,15 @@ import ProfilePhotos from '@/components/ProfilePhotos';
 const Profile = () => {
   const userService = useUserService();
   const currentUser = userService.currentUser;
-  const { register, handleSubmit, formState, clearErrors } = useForm();
+  const { register, handleSubmit, formState, clearErrors, reset } = useForm();
   const { errors } = formState;
   const alertService = useAlertService();
 
   const MAX_HOBBIES = 5;
-  const [selectedHobbies, setSelectedHobbies] = useState([]);
+  const [selectedHobbies, setSelectedHobbies] = useState(
+    currentUser?.profile?.preferences?.map((preference) => preference.name) ||
+      []
+  );
   const [hobbiesAlert, setHobbiesAlert] = useState(false);
   const toggleHobby = (hobby: string) => {
     setSelectedHobbies((prevHobbies: any) => {
@@ -40,6 +43,18 @@ const Profile = () => {
         : [...prevHobbies, hobby];
     });
   };
+
+  useEffect(() => {
+    if (currentUser) {
+      reset({
+        username: currentUser.profile?.displayName || '',
+        gender: currentUser.profile?.gender || 'Male',
+        birthday: currentUser.profile?.birthday || '',
+        major: currentUser.profile?.major || '',
+        introduction: currentUser.profile?.bio || '',
+      });
+    }
+  }, [currentUser, reset]);
 
   const fields = {
     username: register('username', {
@@ -67,13 +82,15 @@ const Profile = () => {
 
   async function onSubmit({ username, gender, birthday, introduction }: any) {
     if (currentUser && currentUser.id) {
-      userService.update(currentUser.id, {
+      const updatedUser = await userService.update(currentUser.id, {
         displayName: username,
         gender,
         birthday,
         bio: introduction,
+        imageUrls: currentUser.profile?.imageUrls,
         preferences: selectedHobbies,
       });
+      userService.setUser(updatedUser);
     } else {
       console.log('Can not get the currentUser');
       alertService.error('Can not get the currentUser');
@@ -82,18 +99,18 @@ const Profile = () => {
 
   return (
     <div id="profile" className=" w-full h-screen">
-      <div className="grid grid-cols-2 gap-2 w-full h-full mx-auto p-2  justify-center ">
-        <Card>
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl">
-              Hello, {currentUser?.email}
-            </CardTitle>
-            <CardDescription>Here is your profile!</CardDescription>
-          </CardHeader>
-          <form id="profile_form" onSubmit={handleSubmit(onSubmit)}>
-            <CardContent className="grid gap-4">
+      <Card className="m-10">
+        <CardHeader>
+          <CardTitle className="text-2xl">
+            Hello, {currentUser?.email}
+          </CardTitle>
+          <CardDescription>Here is your profile!</CardDescription>
+        </CardHeader>
+        <form id="profile_form" onSubmit={handleSubmit(onSubmit)}>
+          <CardContent className="grid grid-cols-2 gap-2 w-full h-full mx-auto p-2 justify-center">
+            <div>
               <div className="grid grid-cols-3 gap-2">
-                <Label className="text-center text-xl pt-2" htmlFor="username">
+                <Label className="text-center text-xl p-2" htmlFor="username">
                   Username
                 </Label>
                 <Input
@@ -107,7 +124,7 @@ const Profile = () => {
                   {errors.username?.message?.toString()}
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2 pb-2">
+              <div className="grid grid-cols-3 gap-2 p-2">
                 <Label className="text-center text-xl" htmlFor="gender">
                   Gender
                 </Label>
@@ -123,7 +140,7 @@ const Profile = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-2 p-2">
                 <Label className="text-center text-xl" htmlFor="birthday">
                   Birthday
                 </Label>
@@ -139,7 +156,7 @@ const Profile = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-2 p-2">
                 <Label className="text-center text-xl" htmlFor="major">
                   Major
                 </Label>
@@ -196,6 +213,7 @@ const Profile = () => {
                       id="introduction"
                       placeholder="Introduce yourself briefly - start your journey here!"
                       onChange={() => clearErrors()}
+                      rows={15}
                     />
                     <div className="text-red-700 font-bold">
                       {errors.introduction?.message?.toString()}
@@ -203,24 +221,26 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
-            </CardContent>
-            <CardFooter>
-              <Button
-                type="submit"
-                disabled={formState.isSubmitting}
-                className="mx-auto place-self-center w-1/2"
-                variant={'umass2'}
-              >
-                {formState.isSubmitting && (
-                  <span className="spinner-border spinner-border-sm me-1"></span>
-                )}
-                Confirm!
-              </Button>
-            </CardFooter>
-          </form>
-        </Card>
-        <ProfilePhotos />
-      </div>
+            </div>
+
+            <ProfilePhotos />
+          </CardContent>
+
+          <CardFooter>
+            <Button
+              type="submit"
+              disabled={formState.isSubmitting}
+              className="mx-auto place-self-center w-1/2"
+              variant={'umass2'}
+            >
+              {formState.isSubmitting && (
+                <span className="spinner-border spinner-border-sm me-1"></span>
+              )}
+              Confirm!
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   );
 };

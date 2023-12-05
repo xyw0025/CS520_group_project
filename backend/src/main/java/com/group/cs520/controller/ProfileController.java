@@ -3,6 +3,8 @@ package com.group.cs520.controller;
 import java.util.Collections;
 import java.util.Map;
 
+import com.group.cs520.service.UserService;
+import com.group.cs520.model.User;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,9 @@ public class ProfileController implements ProfileApi {
     @Autowired
     private ProfileService profileService;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     @GetMapping()
     public ResponseEntity<List<Profile>> getAllProfile() {
@@ -50,11 +55,11 @@ public class ProfileController implements ProfileApi {
     }
 
     @Override
-    @PutMapping("/{user_id}")
-    public ResponseEntity<?> updateProfile(@PathVariable String user_id, @RequestBody Map<String, Object> payload) {
+    @PutMapping("/{userId}")
+    public ResponseEntity<?> updateProfile(@PathVariable String userId, @RequestBody Map<String, Object> payload) {
         try {
-            Profile profile = profileService.update(user_id, payload);
-            return ResponseEntity.ok(profile);
+            User user = profileService.update(userId, payload);
+            return ResponseEntity.ok(user);
 
         } catch (Exception error) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", error.getMessage()));
