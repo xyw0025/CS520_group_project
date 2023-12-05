@@ -12,14 +12,21 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: Test path
+          name: Install Google Cloud SDK
           command: |
-            sudo cat /home/circleci/.docker/config.json
-      - gcp-gcr/gcr-auth:
-          gcloud-service-key: GOOGLE_CLOUD_KEYS
-          google-project-id: GOOGLE_PROJECT_ID
-          google-compute-zone: GOOGLE_COMPUTE_ZONE
-          registry-url: REGISTRY_URL
+            echo 'export PATH=$PATH:/usr/local/gcloud/google-cloud-sdk/bin' >> $BASH_ENV
+            curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-341.0.0-linux-x86_64.tar.gz
+            tar -xzvf google-cloud-sdk-341.0.0-linux-x86_64.tar.gz
+            ./google-cloud-sdk/install.sh --quiet
+            source /usr/local/gcloud/google-cloud-sdk/path.bash.inc
+      - run:
+          name: Authenticate with Google Cloud
+          command: |
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+      - run:
+          name: Configure Docker for GCR
+          command: |
+            gcloud auth configure-docker us-west1-docker.pkg.dev
       - run:
           name: Install Docker Compose
           command: |
