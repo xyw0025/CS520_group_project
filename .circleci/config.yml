@@ -6,11 +6,22 @@ orbs:
 jobs:
   build-and-push-image:
     docker:
-      - image: circleci/node:latest
+      - image: google/cloud-sdk
     steps:
       - checkout
       - setup_remote_docker
-      - gcp-gcr/gcr-auth
+      - run:
+        name: Install Node.js
+        command: |
+          curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
+          sudo apt-get install -y nodejs
+      - run:
+          name: Authenticate with GCP
+          command: |
+            sudo gcloud --quiet components update
+            echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud --quiet auth configure-docker us-west1-docker.pkg.dev
       - run:
           name: Install Docker Compose
           command: |
@@ -19,12 +30,6 @@ jobs:
       - run:
           name: Build and Push Docker Images
           command: |
-            sudo gcloud --quiet components update
-            echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
-            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-            gcloud --quiet auth configure-docker us-west1-docker.pkg.dev
-            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
-            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
             docker-compose -f docker-compose.remote.yml build
             docker-compose -f docker-compose.remote.yml push
 
