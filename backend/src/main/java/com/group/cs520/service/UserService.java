@@ -1,18 +1,24 @@
 package com.group.cs520.service;
 
+import com.group.cs520.model.Profile;
 import com.group.cs520.model.User;
 import com.group.cs520.repository.UserRepository;
+import com.group.cs520.repository.ProfileRepository;
 import com.group.cs520.service.JwtUtil;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
+import com.group.cs520.service.TypeUtil;
+
 
 @Service
 public class UserService {
@@ -26,14 +32,22 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private ProfileRepository profileRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
 
     public List<User> allUsers() {
         return userRepository.findAll();
     }
 
-    public Optional<User> singleUser(ObjectId id) {
-        return userRepository.findById(id);
+    public User singleUser(String id) {
+        ObjectId userId = TypeUtil.objectIdConverter(id);
+        return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Profile not found"));
     }
 
     /**
@@ -45,7 +59,7 @@ public class UserService {
      * @throws IllegalArgumentException if the email is already in use
      */
     public User createUser(String email, String password) {
-        System.out.println("start check user information");
+        System.out.println("start checking user's information");
         //check email first
         Optional<User> existingUser = userRepository.findUserByEmail(email);
         if (existingUser.isPresent()) {
@@ -57,7 +71,10 @@ public class UserService {
         user.setIsActive(true);
         user.setCreatedTime(Instant.now());
         user.setUpdatedTime(Instant.now());
-        return userRepository.insert(user);
+        Profile profile = new Profile();
+        profileRepository.save(profile);
+        user.setProfile(profile);
+        return userRepository.save(user);
     }
 
     /**
@@ -104,7 +121,21 @@ public class UserService {
         return userRepository.findByIsActiveTrue();
     }
 
+    public List<User> getRandomUsers(int limit) {
+        return userRepository.findRandomUsers(limit);
+    }
+
+    public List<User> getFirstFiveUsers() {
+        return userRepository.findAll().stream().limit(5).collect(Collectors.toList());
+    }
+
     public Optional<User> singleUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
+    }
+
+    public void setProfile(String userId, Profile profile) {
+        User user = this.singleUser(userId);
+        user.setProfile(profile);
+        mongoTemplate.save(user);
     }
 }
