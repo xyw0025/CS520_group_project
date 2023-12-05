@@ -4,7 +4,7 @@ services:
   backend:
     build: 
       context: ./backend
-    image: us-west1-docker.pkg.dev/umassenger-406907/umassenger:backend-latest  # Image tag with registry  
+    image: us-west1-docker.pkg.dev/umassenger-406907/umassenger/umassenger:backend-latest  # Image tag with registry  
     # TODO: should move the next line to dockerfile (cant pass the env var to dockerfile yet)
     command: sh -c "java -Dspring.profiles.active=development -jar /app.jar"
     ports:
@@ -13,7 +13,7 @@ services:
   frontend:
     build: 
       context: ./frontend
-    image: us-west1-docker.pkg.dev/umassenger-406907/umassenger:frontend-latest  # Image tag with registry  
+    image: us-west1-docker.pkg.dev/umassenger-406907/umassenger/umassenger:frontend-latest  # Image tag with registry  
     ports:
       - "3001:3001"
     volumes:
