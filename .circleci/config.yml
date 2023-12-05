@@ -10,7 +10,22 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - gcp-gcr/gcr-auth
+      - run:
+          name: Install Google Cloud SDK
+          command: |
+            echo 'export PATH=$PATH:/usr/local/gcloud/google-cloud-sdk/bin' >> $BASH_ENV
+            curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-341.0.0-linux-x86_64.tar.gz
+            tar -xzvf google-cloud-sdk-341.0.0-linux-x86_64.tar.gz
+            ./google-cloud-sdk/install.sh --quiet
+            source /usr/local/gcloud/google-cloud-sdk/path.bash.inc
+      - run:
+          name: Authenticate with Google Cloud
+          command: |
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+      - run:
+          name: Configure Docker for GCR
+          command: |
+            gcloud auth configure-docker us-west1-docker.pkg.dev
       - run:
           name: Install Docker Compose
           command: |
