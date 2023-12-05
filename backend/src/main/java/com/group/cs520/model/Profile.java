@@ -16,6 +16,8 @@ import java.util.List;
 import java.time.LocalDate;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.group.cs520.service.DateUtil;
 import com.group.cs520.service.TypeUtil;
 
@@ -24,23 +26,16 @@ import com.group.cs520.service.TypeUtil;
 @AllArgsConstructor
 @Document(collection = "profiles")
 public class Profile {
+    @JsonSerialize(using = ToStringSerializer.class)
     @Id
     private ObjectId id;
-
-    @NotBlank
     private String displayName;
-
-    @NotBlank
     private Integer gender;
-
-    @NotBlank
     private LocalDate birthday;
-
-    @NotBlank
     private Integer age;
 
-    @Size(min=1, max=4)
-    private List<String> image_urls;
+    @Size(min=0, max=4)
+    private List<String> imageUrls;
 
     @Size(max=300)
     private String bio;
@@ -52,19 +47,13 @@ public class Profile {
     @DocumentReference
     private List<Preference> preferences;
 
-
-    public Profile(Map<String, String> profileMap) {
-        if (profileMap.get("displayName").isBlank()) {
-            throw new IllegalArgumentException("display name cannot be null.");
-        }
-
-        // should be dryer
-        this.displayName = profileMap.get("displayName");
-        this.gender = Integer.parseInt(profileMap.get("gender"));
-        this.birthday = DateUtil.dateFormatter(profileMap.get("birthday"), "yyyy-MM-dd");
-        this.age = Integer.parseInt(profileMap.get("age"));
-        this.image_urls = TypeUtil.jsonStringArray(profileMap.get("image_urls"));
-        this.bio = profileMap.get("bio");
+    public Profile(Map<String, Object> profileMap) {
+        this.displayName = (String) profileMap.get("displayName");
+        this.gender = Integer.parseInt((String) profileMap.get("gender"));
+        this.birthday = DateUtil.dateFormatter((String) profileMap.get("birthday"), "yyyy-MM-dd");
+        this.age = Integer.parseInt((String) profileMap.get("age"));
+        this.imageUrls = TypeUtil.objectToListString(profileMap.get("imageUrls"));
+        this.bio = (String) profileMap.get("bio");
         this.createdTime = Instant.now();
         this.updatedTime = Instant.now();
         this.isDeleted = false;
