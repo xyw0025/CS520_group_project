@@ -157,7 +157,7 @@ public class UserController implements UserApi {
             }
         }
         if (token == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.ok(null);
         }
         User user = userService.validateUser(token);
         return ResponseEntity.ok(user);
