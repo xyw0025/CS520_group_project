@@ -17,4 +17,10 @@ public interface UserRepository extends MongoRepository<User, ObjectId> {
     @Aggregation(pipeline = { "{ $sample: { size: ?0 } }" })
     List<User> findRandomUsers(int limit);
 
+    @Aggregation(pipeline = {
+        "{ $match: { 'id': { $ne: ?1 } } }",
+        "{ $sample: { size: ?0 } }"
+    })
+    List<User> findRandomUsers(int limit, String user_id);
+
 }

@@ -188,4 +188,10 @@ public class UserController implements UserApi {
         List<User> recommendedUsers = userService.getFirstFiveUsers();
         return recommendedUsers;
     }
+
+    @GetMapping("/{id}/fetch-random-10")
+    public List<User> suggestRandomTenUsers(@PathVariable String id) {
+        List<User> recommendedUsers = userService.getRandomUsers(10, id);
+        return recommendedUsers;
+    }
 }

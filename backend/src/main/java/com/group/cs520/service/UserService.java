@@ -114,6 +114,10 @@ public class UserService {
         return userRepository.findByIsActiveTrue();
     }
 
+    public List<User> getRandomUsers(int limit, String user_id) {
+        return userRepository.findRandomUsers(limit, user_id);
+    }
+
     public List<User> getRandomUsers(int limit) {
         return userRepository.findRandomUsers(limit);
     }
