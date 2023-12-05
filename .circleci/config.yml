@@ -39,12 +39,6 @@ jobs:
       - run:
           name: Deploy to GCP instance
           command: |  # Add your GCP deployment commands here
-            gcloud --quiet components update
-            echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
-            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-            gcloud --quiet auth configure-docker us-west1-docker.pkg.dev
-            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
-            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
             gcloud compute instances update-container $INSTANCE_NAME \
               --container-image $GCR_URL/$GOOGLE_PROJECT_ID/$IMAGE_NAME:$CIRCLE_SHA1 \
               --zone $GOOGLE_COMPUTE_ZONE
@@ -53,7 +47,7 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - build-and-push-image:
+      - build-and-push-image-deploy:
           filters:
             branches:
               only: staging
