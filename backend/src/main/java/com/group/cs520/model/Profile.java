@@ -29,7 +29,7 @@ public class Profile {
     @JsonSerialize(using = ToStringSerializer.class)
     @Id
     private ObjectId id;
-    private String displayName;
+    private String displayName = "New User";;
     private Integer gender;
     private LocalDate birthday;
     private Integer age;
@@ -40,9 +40,9 @@ public class Profile {
     @Size(max=300)
     private String bio;
 
-    private Boolean isDeleted;
-    private Instant createdTime;
-    private Instant updatedTime;
+    private Boolean isDeleted = false;;
+    private Instant createdTime = Instant.now();
+    private Instant updatedTime = Instant.now();
 
     @DocumentReference
     private List<Preference> preferences;
