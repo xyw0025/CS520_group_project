@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
 import com.group.cs520.service.TypeUtil;
@@ -131,5 +132,14 @@ public class UserService {
         matches.add(match);
         user.setMatches(matches);
         userRepository.save(user);
+    }
+
+    public List<Match> userMatches(String user_id) {
+        User user = this.singleUser(user_id);
+        List<Match> filteredMatches = user.getMatches().stream()
+                                      .filter(match -> match.getStatus() == 1)
+                                      .collect(Collectors.toList());
+
+        return filteredMatches;
     }
 }

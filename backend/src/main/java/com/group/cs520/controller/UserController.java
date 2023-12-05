@@ -1,5 +1,6 @@
 package com.group.cs520.controller;
 
+import com.group.cs520.model.Match;
 import com.group.cs520.model.User;
 import com.group.cs520.service.UserService;
 import org.bson.types.ObjectId;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Collections;
 
 
@@ -170,4 +170,11 @@ public class UserController {
         User user = userService.singleUser(id);
         return ResponseEntity.ok(user);
     }
+
+    @GetMapping("/{user_id}/match")
+    public ResponseEntity<List<Match>> getUserMatches(@PathVariable String id) {
+        List<Match> matches = userService.userMatches(id);
+        return ResponseEntity.ok(matches);
+    }
+
 }

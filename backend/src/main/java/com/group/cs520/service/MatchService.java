@@ -2,6 +2,7 @@ package com.group.cs520.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,11 @@ public class MatchService {
 
     public List<Match> allMatches() {
         return matchRepository.findAll();
+    }
+
+
+    public Optional<List<Match>> allSuccessMatches() {
+        return matchRepository.findByStatus(1);
     }
 
     public Match create(Map<String, String> matchMap) {
