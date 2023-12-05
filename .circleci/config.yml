@@ -10,7 +10,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - gcp-gcr/gcr-auth
+      - gcp-gcr/gcr-auth:
           gcloud-service-key: $GCLOUD_SERVICE_KEY
           google-project-id: $GOOGLE_PROJECT_ID
           google-compute-zone: $GOOGLE_COMPUTE_ZONE
