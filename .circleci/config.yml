@@ -11,9 +11,10 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - gcp-cli/install
-      - gcp-cli/initialize
-      - run: gcloud auth configure-docker $REGISTRY_URL --project $GOOGLE_PROJECT_ID --quiet
+      - run:
+          name: Test path
+          command: |
+            sudo cat /home/circleci/.docker/config.json
       - gcp-gcr/gcr-auth:
           gcloud-service-key: GOOGLE_CLOUD_KEYS
           google-project-id: GOOGLE_PROJECT_ID
