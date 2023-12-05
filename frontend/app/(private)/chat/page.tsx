@@ -2,7 +2,7 @@
 
 import { useUserService } from '@/utils';
 
-const Dashboard = () => {
+const Chat = () => {
   const userService = useUserService();
   const currentUser = userService.currentUser;
 
@@ -26,4 +26,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Chat;

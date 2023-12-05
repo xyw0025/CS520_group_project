@@ -3,6 +3,9 @@ const nextConfig = {
   images: {
     domains: ['storage.googleapis.com'],
   },
+  experimental: {
+    typedRoutes: true,
+  },
 };
 
 module.exports = nextConfig;

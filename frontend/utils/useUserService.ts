@@ -45,7 +45,7 @@ function useUserService(): IUserService {
     login: async (email, password) => {
       alertService.clear();
       try {
-        const currentUser = await fetch.post(`${API_URL}/api/v1/users/login`, {
+        const currentUser = await fetch.post(`${API_URL}/api/v1/users/login}`, {
           email,
           password,
         });
@@ -53,8 +53,8 @@ function useUserService(): IUserService {
         userStore.setState({ ...initialState, currentUser });
 
         // get return url from query parameters or default to '/'
-        const returnUrl = searchParams.get('returnUrl') || '/dashboard';
-        router.push(returnUrl);
+        // const returnUrl = searchParams.get('returnUrl') || '/chat';
+        router.push('/profile');
       } catch (error: any) {
         alertService.error(error);
       }
@@ -72,6 +72,14 @@ function useUserService(): IUserService {
         return fetchedUser;
       }
       return currentUser;
+    },
+    getMatchings: async (id) => {
+      try {
+        return await fetch.get(`${API_URL}/api/v1/users/matchings?id=${id}`);
+      } catch (error: any) {
+        alertService.error(error);
+        return null;
+      }
     },
     create: async (user) => {
       await fetch.post('/api/v1/users/register', user);
@@ -159,6 +167,7 @@ interface IUserService extends IUserStore {
   logout: () => Promise<void>;
   register: (user: IUser) => Promise<void>;
   getCurrent: () => Promise<IUser>;
+  getMatchings: (id: string) => Promise<IUser[]>;
   create: (user: IUser) => Promise<void>;
   update: (id: string, params: any) => Promise<IUser>;
   upload: (id: string, name: string, photoFile: File) => Promise<string>;

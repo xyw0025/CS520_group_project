@@ -1,6 +1,7 @@
 package com.group.cs520.controller;
 
 import com.group.cs520.model.User;
+import com.group.cs520.model.Match;
 import com.group.cs520.service.UserService;
 import com.group.cs520.service.ProfileService;
 import com.group.cs520.service.GCPStorageService;
@@ -195,5 +196,13 @@ public class UserController implements UserApi {
         String photoURL = gcpStorageService.uploadImage(file);
         profileService.setProfilePhoto(id, photoURL);
         return ResponseEntity.ok(photoURL);
+    }
+
+    @GetMapping("/match")
+    public ResponseEntity<List<User>> getMatchedUsers(@RequestParam("id") String userId) {
+
+        List<User> matchedUsers = userService.getMatchedUsers(userId);
+
+        return ResponseEntity.ok(matchedUsers);
     }
 }

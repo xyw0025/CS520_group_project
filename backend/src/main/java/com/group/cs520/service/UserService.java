@@ -2,8 +2,10 @@ package com.group.cs520.service;
 
 import com.group.cs520.model.Profile;
 import com.group.cs520.model.User;
+import com.group.cs520.model.Match;
 import com.group.cs520.repository.UserRepository;
 import com.group.cs520.repository.ProfileRepository;
+import com.group.cs520.repository.MatchRepository;
 import com.group.cs520.service.JwtUtil;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.bson.types.ObjectId;
@@ -33,6 +35,9 @@ public class UserService {
 
     @Autowired
     private ProfileRepository profileRepository;
+
+    @Autowired
+    private MatchRepository matchRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -138,4 +143,22 @@ public class UserService {
         user.setProfile(profile);
         mongoTemplate.save(user);
     }
+
+    public List<User> getMatchedUsers(String id) {
+
+        ObjectId userId = TypeUtil.objectIdConverter(id);
+        // Find matchings where status is 1 and userIds array contains the provided userId
+        List<Match> matches = matchRepository.findByStatusAndUserIdsContaining(1, userId);
+
+        // Extract the userIds and remove the provided userId
+        List<ObjectId> matchedUserIds = matches.stream()
+                .flatMap(match -> match.getUserIds().stream())
+                .distinct()
+                .filter(ids -> !ids.equals(userId))
+                .collect(Collectors.toList());
+
+        // Find all users that match the userIds
+        return userRepository.findAllById(matchedUserIds);
+    }
+
 }
