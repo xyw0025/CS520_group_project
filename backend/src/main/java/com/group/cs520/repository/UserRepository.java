@@ -3,8 +3,10 @@ package com.group.cs520.repository;
 import com.group.cs520.model.User;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.mongodb.repository.Aggregation;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,4 +25,6 @@ public interface UserRepository extends MongoRepository<User, ObjectId> {
     })
     List<User> findRandomUsers(int limit, String user_id);
 
+    @Query(value = "{ '_id': { $nin: ?0 } }")
+    List<User> findByIdNotIn(List<ObjectId> ids, Pageable pageable);
 }

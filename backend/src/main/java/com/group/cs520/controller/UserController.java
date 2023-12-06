@@ -183,17 +183,12 @@ public class UserController implements UserApi {
         return recommendedUsers;
     }
 
-    @GetMapping("/first-five")
-    public List<User> suggestFirstFiveMatches() {
-        List<User> recommendedUsers = userService.getFirstFiveUsers();
-        return recommendedUsers;
-    }
-
-    @GetMapping("/{id}/fetch-random-10")
-    public List<User> suggestRandomTenUsers(@PathVariable String id) {
+    @GetMapping("/{id}/fetch-random-10-unmatched")
+    public List<User> suggestRandomTenUnmatchedUsers(@PathVariable String id) {
         List<User> recommendedUsers = userService.getRandomUsers(10, id);
         return recommendedUsers;
     }
+
     @GetMapping("/{user_id}/match")
     public ResponseEntity<List<Match>> getUserMatches(@PathVariable String id) {
         List<Match> matches = userService.userMatches(id);
