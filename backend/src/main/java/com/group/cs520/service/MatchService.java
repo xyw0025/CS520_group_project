@@ -18,6 +18,9 @@ import com.group.cs520.model.MatchHistory;
 import com.group.cs520.repository.MatchRepository;
 import com.group.cs520.repository.MatchHistoryRepository;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 
 
 @Service
@@ -36,7 +39,7 @@ public class MatchService {
     }
 
     public Optional<List<Match>> allSuccessMatches() {
-        return matchRepository.findByStatus(1);
+        return matchRepository.findByStatus(MatchConstants.STATUS.MATCHED.ordinal());
     }
 
     public Match create(Map<String, Object> matchMap) {
@@ -68,19 +71,23 @@ public class MatchService {
 
     public Match updateMatchHistory(Map<String, Object> matchMap) {
         // 1. find match 
-
-        // pass in two string 
-        // sort them 
         // convert to object list
         String senderId = matchMap.get("senderId").toString();
         String receiverId = matchMap.get("receiverId").toString();
         String behavior = matchMap.get("behavior").toString();
 
-        String[] ids = {senderId, receiverId};
-        Arrays.sort(ids);
+        List<String> ids = Arrays.asList(senderId, receiverId);
 
-        Match match = matchRepository.findByUserIds(TypeUtil.listStringToListObjectID(ids))
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not found"));
+        List<ObjectId> userIds = ids.stream()
+            .map(ObjectId::new) // Fix the method reference here
+            .collect(Collectors.toList());
+
+        Match match = matchByUserIds(userIds)
+            .orElseGet(() -> {
+                Match newMatch = new Match(userIds);
+                matchRepository.insert(newMatch);
+                return newMatch;
+            });
 
         // 2. update match history
         MatchHistory matchHistory = new MatchHistory(senderId, receiverId, behavior);
@@ -92,9 +99,10 @@ public class MatchService {
 
     private void updateMatchHistory(Match match, MatchHistory matchHistory) {
         matchHistoryRepository.insert(matchHistory);
-        List<MatchHistory> histories = new ArrayList<>(match.getMatchHistories());
+        List<MatchHistory> histories = match.getMatchHistories() == null ? new ArrayList<>() : new ArrayList<>(match.getMatchHistories());
         histories.add(matchHistory);
         match.setMatchHistories(histories);
+        matchRepository.save(match);
     }
 
 
