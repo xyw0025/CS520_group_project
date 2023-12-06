@@ -13,5 +13,6 @@ import java.util.Optional;
 @Repository
 public interface MatchRepository  extends MongoRepository<Match, ObjectId> {
     Optional<List<Match>> findByStatus(Integer status);
-
+    Optional<Match> findByUserIds(List<ObjectId> userIds);
+    List<Match> findByUserIdsContains(ObjectId userId);
 }
