@@ -1,12 +1,10 @@
 package com.group.cs520.service;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.sound.sampled.AudioFileFormat.Type;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.group.cs520.constants.MatchConstants;
 import com.group.cs520.model.Match;
 import com.group.cs520.model.MatchHistory;
 import com.group.cs520.repository.MatchRepository;
@@ -69,10 +68,35 @@ public class MatchService {
 
         // 2. update match history
         MatchHistory matchHistory = new MatchHistory(senderId, receiverId, behavior);
+        updateMatchHistory(match, matchHistory);
+        updateMatchStatus(match);
+        matchRepository.save(match);
+        return match;
+    }
+
+    private void updateMatchHistory(Match match, MatchHistory matchHistory) {
         matchHistoryRepository.insert(matchHistory);
         List<MatchHistory> histories = new ArrayList<>(match.getMatchHistories());
         histories.add(matchHistory);
         match.setMatchHistories(histories);
-        return match;
+    }
+
+
+    private void updateMatchStatus(Match match) {
+        long acceptCount = match.getMatchHistories().stream()
+            .filter(matchHistory -> matchHistory.getBehavior() == MatchConstants.BEHAVIOR.ACCEPT.ordinal())
+            .count();
+
+        long rejectCount = match.getMatchHistories().stream()
+            .filter(matchHistory -> matchHistory.getBehavior() == MatchConstants.BEHAVIOR.REJECT.ordinal())
+            .count();
+
+        if (acceptCount == 2) {
+            match.setStatus(MatchConstants.STATUS.MATCHED.ordinal());
+        } else if (rejectCount == 2) {
+            match.setStatus(MatchConstants.STATUS.FAILED.ordinal());
+        } else {
+            match.setStatus(MatchConstants.STATUS.AWAIT.ordinal());
+        }
     }
 }
