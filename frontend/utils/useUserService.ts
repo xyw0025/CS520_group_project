@@ -45,7 +45,7 @@ function useUserService(): IUserService {
     login: async (email, password) => {
       alertService.clear();
       try {
-        const currentUser = await fetch.post(`${API_URL}/api/v1/users/login}`, {
+        const currentUser = await fetch.post(`${API_URL}/api/v1/users/login`, {
           email,
           password,
         });
