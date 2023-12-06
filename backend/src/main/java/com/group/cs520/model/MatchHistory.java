@@ -25,6 +25,7 @@ import java.lang.reflect.Field;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.group.cs520.constants.MatchConstants;
 import com.group.cs520.service.TypeUtil;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,10 +41,16 @@ public class MatchHistory {
     @Schema(type="string")
     private ObjectId id;
 
+    @JsonSerialize(using = ToStringSerializer.class)
+    @Schema(type="string")
     @NotBlank
     private ObjectId senderId;
+
+    @JsonSerialize(using = ToStringSerializer.class)
+    @Schema(type="string")
     @NotBlank
     private ObjectId receiverId;
+
     @NotBlank
     private Integer behavior;
 
@@ -54,7 +61,7 @@ public class MatchHistory {
     public MatchHistory(String senderId, String receiverId, String behavior) {
         this.senderId = TypeUtil.objectIdConverter(senderId);
         this.receiverId = TypeUtil.objectIdConverter(receiverId);
-        this.behavior = Integer.parseInt(behavior);
+        this.behavior = MatchConstants.BEHAVIOR.valueOf(behavior.toUpperCase()).ordinal();
         this.createdTime = Instant.now();
         this.updatedTime = Instant.now();
         this.isDeleted = false;
