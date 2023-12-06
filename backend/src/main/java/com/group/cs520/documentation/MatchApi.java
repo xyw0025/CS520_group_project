@@ -16,11 +16,6 @@ public interface MatchApi {
     @Operation(summary = "Get all matches")
     public ResponseEntity<List<Match>> getAllMatches();
 
-    @Operation(summary = "Create a match")
-    public ResponseEntity<?> createMatch(@RequestBody(description = "Match payload", required = true, 
-        content = @Content(schema = @Schema(implementation = MatchPayload.class))
-        ) Map<String, Object> payload);
-
     @Operation(summary = "get a match by user ids")
     public ResponseEntity<?> getMatchByUserIds(@RequestBody(description = "get Match by userIds payload", required = true, 
         content = @Content(schema = @Schema(implementation = GetMatchByUserIdsPayload.class))
@@ -30,14 +25,6 @@ public interface MatchApi {
     public ResponseEntity<?> updateMatchHistory(@RequestBody(description = "add Match history payload", required = true, 
         content = @Content(schema = @Schema(implementation = AddMatchHistoryPayload.class))
         )Map<String, Object> payload);
-
-    
-    class MatchPayload {
-        @Schema(description = "user ids", example = "[\"user_id1\", \"user_id2\"]")
-        public List<String> userIds;
-        @Schema(description = "status", example = "0")
-        public Integer status;
-    }
 
     class AddMatchHistoryPayload {
         @Schema(description = "people who initiate the action", example = "655d3d90fee7474f900da830")

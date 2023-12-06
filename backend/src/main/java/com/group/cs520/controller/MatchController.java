@@ -48,17 +48,6 @@ public class MatchController implements MatchApi {
     }
 
     @Override
-    @PostMapping()
-    public ResponseEntity<?> createMatch(@RequestBody Map<String, Object> payload) {
-        try {
-            Match match = matchService.create(payload);
-            return ResponseEntity.ok(match);
-        } catch(Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));
-        }
-    }
-
-    @Override
     @PutMapping("add-match-history")
     public ResponseEntity<?> updateMatchHistory(@RequestBody Map<String, Object> payload) {
         // senderId, receiverId, behavior
