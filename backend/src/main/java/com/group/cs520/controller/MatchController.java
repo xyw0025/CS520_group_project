@@ -35,6 +35,17 @@ public class MatchController implements MatchApi {
         return ResponseEntity.ok(matches);
     }
 
+
+    @GetMapping("userIds")
+    public ResponseEntity<?> getMatchByUserIds(@RequestBody Map<String, Object> payload) {
+        try {
+            Match match = matchService.matchByUserIds(payload);
+            return ResponseEntity.ok(match);
+        } catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));
+        }
+    }
+
     @PostMapping()
     public ResponseEntity<?> createMatch(@RequestBody Map<String, Object> payload) {
         try {

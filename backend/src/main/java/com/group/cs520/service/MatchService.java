@@ -50,6 +50,22 @@ public class MatchService {
         return match;
     }
 
+
+    public Match matchByUserIds(Map<String, Object> matchMap) {
+        List<ObjectId> userIds = TypeUtil.objectIdArray(matchMap.get("userIds").toString());
+        return matchByUserIds(userIds).orElseThrow();
+    }
+
+    private Optional<Match> matchByUserIds(List<ObjectId> userIds) {
+        Optional<Match> match = matchRepository.findByUserIds(userIds);
+        if (!match.isPresent()) {
+            Collections.reverse(userIds);
+            match = matchRepository.findByUserIds(userIds);
+        }
+        return match;
+    }
+
+
     public Match updateMatchHistory(Map<String, Object> matchMap) {
         // 1. find match 
 
