@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -43,7 +44,10 @@ public class Match {
     private Instant createdTime;
     private Instant updatedTime;
 
-    public Match(Map<String, String> matchMap) {
+    @DocumentReference
+    private List<MatchHistory> matchHistories;
+
+    public Match(Map<String, Object> matchMap) {
         Class<?> matchClass = Match.class;
         Field[] fields = matchClass.getDeclaredFields();
         List<String> fieldsToSkip = Arrays.asList("userIds", "id", "isDeleted", "createdTime", "updatedTime");
@@ -58,6 +62,6 @@ public class Match {
         this.createdTime = Instant.now();
         this.updatedTime = Instant.now();
         this.isDeleted = false;
-        this.userIds = TypeUtil.objectIdArray(matchMap.get("userIds"));
+        this.userIds = TypeUtil.objectIdArray(matchMap.get("userIds").toString());
     }
 }

@@ -66,4 +66,12 @@ public class TypeUtil {
     public static List<String> objectToListString(Object object) {
         return new ObjectMapper().convertValue(object, new TypeReference<List<String>>() {});
     }
+
+    public static List<ObjectId> listStringToListObjectID(String[] strings) {
+        List<ObjectId> objectIds = new ArrayList<>();
+        for (String str: strings) {
+            objectIds.add(objectIdConverter(str));
+        }
+        return objectIds;
+    }
 }

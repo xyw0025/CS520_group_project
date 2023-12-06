@@ -1,14 +1,24 @@
 package com.group.cs520.service;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.sound.sampled.AudioFileFormat.Type;
+
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.group.cs520.model.Match;
+import com.group.cs520.model.MatchHistory;
 import com.group.cs520.repository.MatchRepository;
+import com.group.cs520.repository.MatchHistoryRepository;
+import java.util.ArrayList;
 
 
 @Service
@@ -17,26 +27,52 @@ public class MatchService {
     private MatchRepository matchRepository;
 
     @Autowired
+    private MatchHistoryRepository matchHistoryRepository;
+
+    @Autowired
     private UserService userService;
 
     public List<Match> allMatches() {
         return matchRepository.findAll();
     }
 
-
     public Optional<List<Match>> allSuccessMatches() {
         return matchRepository.findByStatus(1);
     }
 
-    public Match create(Map<String, String> matchMap) {
+    public Match create(Map<String, Object> matchMap) {
         Match match = new Match(matchMap);
         matchRepository.insert(match);
 
-        List<String> userIds = TypeUtil.jsonStringArray(matchMap.get("userIds"));
+        List<String> userIds = TypeUtil.jsonStringArray(matchMap.get("userIds").toString());
         for (String userId: userIds) {
             userService.addMatch(userId, match);    
         }
-        
+        return match;
+    }
+
+    public Match updateMatchHistory(Map<String, Object> matchMap) {
+        // 1. find match 
+
+        // pass in two string 
+        // sort them 
+        // convert to object list
+        String senderId = matchMap.get("senderId").toString();
+        String receiverId = matchMap.get("receiverId").toString();
+        String behavior = matchMap.get("behavior").toString();
+
+        String[] ids = {senderId, receiverId};
+        Arrays.sort(ids);
+
+        Match match = matchRepository.findByUserIds(TypeUtil.listStringToListObjectID(ids))
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not found"));
+
+        // 2. update match history
+        MatchHistory matchHistory = new MatchHistory(senderId, receiverId, behavior);
+        matchHistoryRepository.insert(matchHistory);
+        List<MatchHistory> histories = new ArrayList<>(match.getMatchHistories());
+        histories.add(matchHistory);
+        match.setMatchHistories(histories);
         return match;
     }
 }
