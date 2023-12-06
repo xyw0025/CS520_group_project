@@ -1,5 +1,6 @@
 package com.group.cs520.controller;
 
+import com.group.cs520.model.Match;
 import com.group.cs520.model.User;
 import com.group.cs520.service.UserService;
 import org.bson.types.ObjectId;
@@ -15,7 +16,6 @@ import com.group.cs520.documentation.UserApi;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Collections;
 
 @RestController
@@ -193,5 +193,10 @@ public class UserController implements UserApi {
     public List<User> suggestRandomTenUsers(@PathVariable String id) {
         List<User> recommendedUsers = userService.getRandomUsers(10, id);
         return recommendedUsers;
+    }
+    @GetMapping("/{user_id}/match")
+    public ResponseEntity<List<Match>> getUserMatches(@PathVariable String id) {
+        List<Match> matches = userService.userMatches(id);
+        return ResponseEntity.ok(matches);
     }
 }

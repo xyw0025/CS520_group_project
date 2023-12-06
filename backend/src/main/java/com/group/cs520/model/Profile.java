@@ -25,7 +25,7 @@ import com.group.cs520.service.TypeUtil;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "profiles")
-public class Profile { 
+public class Profile {
     @JsonSerialize(using = ToStringSerializer.class)
     @Id
     private ObjectId id;
