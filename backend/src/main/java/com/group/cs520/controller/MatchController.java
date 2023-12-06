@@ -29,13 +29,14 @@ public class MatchController implements MatchApi {
     @Autowired
     MatchService matchService;
 
+    @Override
     @GetMapping
     public ResponseEntity<List<Match>> getAllMatches() {
         List<Match> matches = matchService.allMatches();
         return ResponseEntity.ok(matches);
     }
 
-
+    @Override
     @GetMapping("userIds")
     public ResponseEntity<?> getMatchByUserIds(@RequestBody Map<String, Object> payload) {
         try {
@@ -46,6 +47,7 @@ public class MatchController implements MatchApi {
         }
     }
 
+    @Override
     @PostMapping()
     public ResponseEntity<?> createMatch(@RequestBody Map<String, Object> payload) {
         try {
@@ -56,6 +58,7 @@ public class MatchController implements MatchApi {
         }
     }
 
+    @Override
     @PutMapping("add-match-history")
     public ResponseEntity<?> updateMatchHistory(@RequestBody Map<String, Object> payload) {
         // senderId, receiverId, behavior

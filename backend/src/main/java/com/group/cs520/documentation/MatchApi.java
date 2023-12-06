@@ -21,6 +21,11 @@ public interface MatchApi {
         content = @Content(schema = @Schema(implementation = MatchPayload.class))
         ) Map<String, Object> payload);
 
+    @Operation(summary = "get a match by user ids")
+    public ResponseEntity<?> getMatchByUserIds(@RequestBody(description = "get Match by userIds payload", required = true, 
+        content = @Content(schema = @Schema(implementation = GetMatchByUserIdsPayload.class))
+        )Map<String, Object> payload);
+
     @Operation(summary = "add match history")
     public ResponseEntity<?> updateMatchHistory(@RequestBody(description = "add Match history payload", required = true, 
         content = @Content(schema = @Schema(implementation = AddMatchHistoryPayload.class))
@@ -41,5 +46,10 @@ public interface MatchApi {
         public String receiverId;
         @Schema(description = "0 means reject, 1 means accept", example = "0")
         public Integer behavior;
+    }
+
+    class GetMatchByUserIdsPayload {
+        @Schema(description = "user ids", example = "[\"user_id1\", \"user_id2\"]")
+        public List<String> userIds;
     }
 }
