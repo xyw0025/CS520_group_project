@@ -1,7 +1,7 @@
 'use client';
 
 import HobbyButton from '@/components/HobbyButton';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useUserService } from '@/utils';
@@ -44,16 +44,24 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (currentUser) {
-      reset({
-        username: currentUser.profile?.displayName || '',
-        gender: currentUser.profile?.gender || 'Male',
-        birthday: currentUser.profile?.birthday || '',
-        major: currentUser.profile?.major || '',
-        introduction: currentUser.profile?.bio || '',
-      });
+    async function fetchUserAndResetForm() {
+      try {
+        const user = await userService.getCurrent();
+
+        reset({
+          username: user.profile?.displayName || '',
+          gender: user.profile?.gender || 'Male',
+          birthday: user.profile?.birthday || '',
+          major: user.profile?.major || '',
+          introduction: user.profile?.bio || '',
+        });
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
     }
-  }, [currentUser, reset]);
+
+    fetchUserAndResetForm();
+  }, []);
 
   const fields = {
     username: register('username', {
