@@ -17,9 +17,7 @@ public interface MatchApi {
     public ResponseEntity<List<Match>> getAllMatches();
 
     @Operation(summary = "get a match by user ids")
-    public ResponseEntity<?> getMatchByUserIds(@RequestBody(description = "get Match by userIds payload", required = true, 
-        content = @Content(schema = @Schema(implementation = GetMatchByUserIdsPayload.class))
-        )Map<String, Object> payload);
+    public ResponseEntity<?> getMatchByUserIds(String userId1, String userId2);
 
     @Operation(summary = "add match history")
     public ResponseEntity<?> updateMatchHistory(@RequestBody(description = "add Match history payload", required = true, 

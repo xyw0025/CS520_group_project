@@ -53,9 +53,8 @@ public class MatchService {
         return match;
     }
 
-
-    public Match matchByUserIds(Map<String, Object> matchMap) {
-        List<ObjectId> userIds = TypeUtil.objectIdArray(matchMap.get("userIds").toString());
+    public Match matchByUserIds(String id1, String id2) {
+        List<ObjectId> userIds = Arrays.asList(TypeUtil.objectIdConverter(id1), TypeUtil.objectIdConverter(id2));
         return matchByUserIds(userIds).orElseThrow();
     }
 
