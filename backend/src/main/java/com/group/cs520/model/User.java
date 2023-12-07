@@ -47,6 +47,9 @@ public class User {
     @DocumentReference
     private Profile profile;
 
+    @DocumentReference
+    private List<Match> matches;
+
     public User(String email, String password) {
         if (email.isBlank() || password.isBlank()) {
             throw new IllegalArgumentException("Name and password cannot be null.");

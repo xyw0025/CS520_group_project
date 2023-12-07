@@ -2,15 +2,19 @@ package com.group.cs520.service;
 
 import com.group.cs520.model.Profile;
 import com.group.cs520.model.User;
+import com.group.cs520.model.Match;
+import com.group.cs520.repository.MatchRepository;
 import com.group.cs520.repository.UserRepository;
 import com.group.cs520.repository.ProfileRepository;
 import com.group.cs520.service.JwtUtil;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +34,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MatchRepository matchRepository;
 
     @Autowired
     private ProfileRepository profileRepository;
@@ -121,6 +128,22 @@ public class UserService {
         return userRepository.findByIsActiveTrue();
     }
 
+    public List<User> getRandomUsers(int limit, String userId) {
+        // get other users that has no match record with the user
+
+        List<Match> matches = matchRepository.findByUserIdsContains(TypeUtil.objectIdConverter(userId));
+
+        // Extract userIds from matches and flatten the list
+        List<ObjectId> matchedUserIds = matches.stream()
+                                               .flatMap(match -> match.getUserIds().stream())
+                                               .distinct()
+                                               .collect(Collectors.toList());
+
+        // Step 2: Find users who are not in matchedUserIds
+        List<User> users = userRepository.findByIdNotIn(matchedUserIds, PageRequest.of(0, limit));
+        return users;
+    }
+
     public List<User> getRandomUsers(int limit) {
         return userRepository.findRandomUsers(limit);
     }
@@ -137,5 +160,22 @@ public class UserService {
         User user = this.singleUser(userId);
         user.setProfile(profile);
         mongoTemplate.save(user);
+    }
+
+    public void addMatch(String user_id, Match match) {
+        User user = this.singleUser(user_id);
+        List<Match> matches = user.getMatches();
+        matches.add(match);
+        user.setMatches(matches);
+        userRepository.save(user);
+    }
+
+    public List<Match> userMatches(String user_id) {
+        User user = this.singleUser(user_id);
+        List<Match> filteredMatches = user.getMatches().stream()
+                                      .filter(match -> match.getStatus() == 1)
+                                      .collect(Collectors.toList());
+
+        return filteredMatches;
     }
 }

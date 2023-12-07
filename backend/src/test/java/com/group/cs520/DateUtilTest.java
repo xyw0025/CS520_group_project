@@ -11,7 +11,7 @@ public class DateUtilTest {
     String pattern;
     LocalDate birthday;
 
-    @BeforeEach                                         
+    @BeforeEach
     void setUp() {
         date = "2019-01-01";
         pattern = "yyyy-MM-dd";
@@ -29,7 +29,6 @@ public class DateUtilTest {
         LocalDate result = DateUtil.dateFormatter(date);
         assertEquals(result, LocalDate.of(2019, 1, 1));
     }
-    
     @Test
     public void testGetAgeWithValidBirthday() {
         int expectedAge = 34;
