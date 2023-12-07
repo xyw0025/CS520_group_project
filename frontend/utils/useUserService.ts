@@ -79,6 +79,7 @@ function useUserService(): IUserService {
     update: async (id, params) => {
       try {
         return await fetch.put(`${API_URL}/api/v1/profile/${id}`, params);
+        alertService.success('Update successfully!');
       } catch (error: any) {
         alertService.error(error);
       }

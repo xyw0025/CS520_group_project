@@ -53,8 +53,14 @@ const ProfilePhotos = () => {
     setPhotos((prevPhotos) => {
       const updatedPhotos = prevPhotos.filter((photo) => photo !== photoUrl);
       if (currentUser && currentUser.profile) {
-        currentUser.profile.imageUrls = updatedPhotos;
-        userService.setUser(currentUser);
+        const updatedUser = {
+          ...currentUser,
+          profile: {
+            ...currentUser.profile,
+            imageUrls: updatedPhotos,
+          },
+        };
+        userService.setUser(updatedUser);
       }
       return updatedPhotos;
     });
