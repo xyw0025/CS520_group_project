@@ -7,6 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.Instant;
 
 @Data
@@ -16,6 +20,8 @@ import java.time.Instant;
 public class Message {
 
     @Id
+    @Schema(type="string")
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId messageId;
     private ObjectId senderId;
     private ObjectId receiverId;
@@ -23,8 +29,7 @@ public class Message {
     private Instant timestamp;
 
 
-    public Message(ObjectId messageId, ObjectId senderId, ObjectId receiverId, String messageText) {
-        this.messageId = messageId;
+    public Message(ObjectId senderId, ObjectId receiverId, String messageText) {
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.messageText = messageText;

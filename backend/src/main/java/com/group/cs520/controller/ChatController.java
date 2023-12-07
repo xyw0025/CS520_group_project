@@ -18,6 +18,7 @@ public class ChatController {
     @SendTo("/room/messages")
     public Message sendMessage(@Payload Message chatMessage) {
         Message savedMessage = messageRepository.save(chatMessage);
+
         return savedMessage;
     }
 }
