@@ -1,3 +1,5 @@
+'use client';
+
 import { create } from 'zustand';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAlertService, useFetch } from 'utils';
@@ -6,8 +8,8 @@ export { useUserService };
 
 // user state store
 const initialState = {
-  users: undefined,
-  user: undefined,
+  matchedUsers: undefined,
+  undiscoveredUsers: undefined,
   currentUser: undefined,
 };
 const userStore = create<IUserStore>(() => initialState);
@@ -17,12 +19,12 @@ function useUserService(): IUserService {
   const fetch = useFetch();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { users, user, currentUser } = userStore();
+  const { matchedUsers, undiscoveredUsers, currentUser } = userStore();
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   return {
-    users,
-    user,
+    matchedUsers,
+    undiscoveredUsers,
     currentUser,
     setUser: async (user) => {
       try {
@@ -61,74 +63,94 @@ function useUserService(): IUserService {
       await fetch.post(`${API_URL}/api/v1/users/logout`);
       userStore.setState({ ...initialState });
       localStorage.removeItem('currentUser');
-      router.push('/login');
-    },
-    getAll: async () => {
-      userStore.setState({ users: await fetch.get('/api/v1/users/all') });
-    },
-    getById: async (id) => {
-      userStore.setState({ user: undefined });
-      try {
-        userStore.setState({ user: await fetch.get(`/api/v1/users/${id}`) });
-      } catch (error: any) {
-        alertService.error(error);
-      }
+      router.push('/');
     },
     getCurrent: async () => {
       if (!currentUser) {
-        userStore.setState({
-          currentUser: await fetch.get(`${API_URL}/api/v1/users/current`),
-        });
+        const fetchedUser = await fetch.get(`${API_URL}/api/v1/users/current`);
+        userStore.setState({ currentUser: fetchedUser });
+        return fetchedUser;
       }
+      return currentUser;
     },
     create: async (user) => {
       await fetch.post('/api/v1/users/register', user);
     },
     update: async (id, params) => {
-      await fetch.put(`/api/v1/users/${id}`, params);
-
-      // update current user if the user updated their own record
-      if (id === currentUser?.id) {
-        userStore.setState({ currentUser: { ...currentUser, ...params } });
+      try {
+        return await fetch.put(`${API_URL}/api/v1/profile/${id}`, params);
+      } catch (error: any) {
+        alertService.error(error);
       }
     },
-    delete: async (id) => {
-      // set isDeleting prop to true on user
-      userStore.setState({
-        users: users!.map((x) => {
-          if (x.id === id) {
-            x.isDeleted = true;
-          }
-          return x;
-        }),
-      });
-
-      // delete user
-      const response = await fetch.delete(`/api/v1/users/${id}`);
-
-      // remove deleted user from state
-      userStore.setState({ users: users!.filter((x) => x.id !== id) });
-
-      // logout if the user deleted their own record
-      if (response.deletedSelf) {
-        router.push('/account/login');
+    upload: async (id, name, photoFile) => {
+      try {
+        return await fetch.post(
+          `${API_URL}/api/v1/users/${id}/upload`,
+          {
+            name,
+            file: photoFile,
+          },
+          true
+        );
+      } catch (error: any) {
+        console.log('error');
+        alertService.error(error);
       }
     },
+    // delete: async (id) => {
+    //   // set isDeleting prop to true on user
+    //   userStore.setState({
+    //     users: users!.map((x) => {
+    //       if (x.id === id) {
+    //         x.isDeleted = true;
+    //       }
+    //       return x;
+    //     }),
+    //   });
+
+    //   // delete user
+    //   const response = await fetch.delete(`/api/v1/users/${id}`);
+
+    //   // remove deleted user from state
+    //   userStore.setState({ users: users!.filter((x) => x.id !== id) });
+
+    //   // logout if the user deleted their own record
+    //   if (response.deletedSelf) {
+    //     router.push('/account/login');
+    //   }
+    // },
   };
 }
 
-// interfaces
-
+// Interfaces
 interface IUser {
   id: string;
   email: string;
   name: string;
   isDeleted: boolean;
+  profile?: Profile;
+}
+
+interface Profile {
+  displayName?: string;
+  gender?: string;
+  birthday?: string;
+  major?: string;
+  age?: number;
+  bio?: string;
+  imageUrls?: string[];
+  preferences?: Preference[];
+  isDeleted?: boolean;
+}
+
+interface Preference {
+  name: string;
 }
 
 interface IUserStore {
-  users?: IUser[];
-  user?: IUser;
+  matchedUsers?: IUser[];
+  undiscoveredUsers?: IUser[];
   currentUser?: IUser;
 }
 
@@ -136,11 +158,10 @@ interface IUserService extends IUserStore {
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (user: IUser) => Promise<void>;
-  getAll: () => Promise<void>;
-  getById: (id: string) => Promise<void>;
-  getCurrent: () => Promise<void>;
+  getCurrent: () => Promise<IUser>;
   create: (user: IUser) => Promise<void>;
-  update: (id: string, params: Partial<IUser>) => Promise<void>;
-  delete: (id: string) => Promise<void>;
+  update: (id: string, params: any) => Promise<IUser>;
+  upload: (id: string, name: string, photoFile: File) => Promise<string>;
+  // delete: (id: string) => Promise<void>;
   setUser: (user: IUser) => Promise<void>;
 }
