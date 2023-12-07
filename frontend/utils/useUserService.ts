@@ -98,6 +98,30 @@ function useUserService(): IUserService {
         alertService.error(error);
       }
     },
+    discover: async (id: string) => {
+      try {
+        const undiscoveredUsers = await fetch.get(
+          `${API_URL}/api/v1/users/${id}/fetch-random-5-unmatched`
+        );
+        userStore.setState({ undiscoveredUsers: undiscoveredUsers });
+        return undiscoveredUsers;
+      } catch (error: any) {
+        console.log('error');
+        alertService.error(error);
+      }
+    },
+    create_match_history: async (id1: string, id2: string, action: string) => {
+      try {
+        return await fetch.post(`${API_URL}/api/v1/match/add-match-history`, {
+          senderId: id1,
+          receiverId: id2,
+          behavior: action,
+        });
+      } catch (error: any) {
+        console.log('error');
+        alertService.error(error);
+      }
+    },
     // delete: async (id) => {
     //   // set isDeleting prop to true on user
     //   userStore.setState({
@@ -124,7 +148,7 @@ function useUserService(): IUserService {
 }
 
 // Interfaces
-interface IUser {
+export interface IUser {
   id: string;
   email: string;
   name: string;
@@ -164,4 +188,10 @@ interface IUserService extends IUserStore {
   upload: (id: string, name: string, photoFile: File) => Promise<string>;
   // delete: (id: string) => Promise<void>;
   setUser: (user: IUser) => Promise<void>;
+  discover: (id: string) => Promise<IUser[]>;
+  create_match_history: (
+    id1: string,
+    id2: string,
+    action: string
+  ) => Promise<void>;
 }

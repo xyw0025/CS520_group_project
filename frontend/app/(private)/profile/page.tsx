@@ -80,12 +80,19 @@ const Profile = () => {
     }),
   };
 
-  async function onSubmit({ username, gender, birthday, introduction }: any) {
+  async function onSubmit({
+    username,
+    gender,
+    major,
+    birthday,
+    introduction,
+  }: any) {
     if (currentUser && currentUser.id) {
       const updatedUser = await userService.update(currentUser.id, {
         displayName: username,
         gender,
         birthday,
+        major,
         bio: introduction,
         imageUrls: currentUser.profile?.imageUrls,
         preferences: selectedHobbies,
