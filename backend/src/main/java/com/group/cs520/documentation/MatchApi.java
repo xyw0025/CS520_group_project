@@ -16,6 +16,9 @@ public interface MatchApi {
     @Operation(summary = "Get all matches")
     public ResponseEntity<List<Match>> getAllMatches();
 
+    @Operation(summary = "Get all successful matches")
+    public ResponseEntity<List<Match>> getAllSuccessMatches();
+
     @Operation(summary = "get a match by user ids")
     public ResponseEntity<?> getMatchByUserIds(String userId1, String userId2);
 

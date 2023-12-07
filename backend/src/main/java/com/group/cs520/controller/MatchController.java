@@ -36,6 +36,7 @@ public class MatchController implements MatchApi {
         return ResponseEntity.ok(matches);
     }
 
+    @Override
     @GetMapping("matched")
     public ResponseEntity<List<Match>> getAllSuccessMatches() {
         List <Match> matches = matchService.allSuccessMatches().orElseThrow();
@@ -56,7 +57,7 @@ public class MatchController implements MatchApi {
     }
 
     @Override
-    @PutMapping("add-match-history")
+    @PostMapping("add-match-history")
     public ResponseEntity<?> updateMatchHistory(@RequestBody Map<String, Object> payload) {
         // senderId, receiverId, behavior
         try {
