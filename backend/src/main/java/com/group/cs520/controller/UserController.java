@@ -183,9 +183,9 @@ public class UserController implements UserApi {
         return recommendedUsers;
     }
 
-    @GetMapping("/{id}/fetch-random-10-unmatched")
-    public List<User> suggestRandomTenUnmatchedUsers(@PathVariable String id) {
-        List<User> recommendedUsers = userService.getRandomUsers(10, id);
+    @GetMapping("/{id}/fetch-random-5-unmatched")
+    public List<User> suggestRandomFiveUnmatchedUsers(@PathVariable String id) {
+        List<User> recommendedUsers = userService.getRandomUsers(5, id);
         return recommendedUsers;
     }
 
