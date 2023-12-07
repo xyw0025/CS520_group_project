@@ -29,7 +29,7 @@ public class Profile {
     @JsonSerialize(using = ToStringSerializer.class)
     @Id
     private ObjectId id;
-    private String displayName;
+    private String displayName = "New User";;
     private Integer gender;
     private LocalDate birthday;
     private Integer age;
@@ -37,12 +37,15 @@ public class Profile {
     @Size(min=0, max=4)
     private List<String> imageUrls;
 
+    @Size(max=30)
+    private String major;
+
     @Size(max=300)
     private String bio;
 
-    private Boolean isDeleted;
-    private Instant createdTime;
-    private Instant updatedTime;
+    private Boolean isDeleted = false;;
+    private Instant createdTime = Instant.now();
+    private Instant updatedTime = Instant.now();
 
     @DocumentReference
     private List<Preference> preferences;
@@ -53,6 +56,7 @@ public class Profile {
         this.birthday = DateUtil.dateFormatter((String) profileMap.get("birthday"), "yyyy-MM-dd");
         this.age = Integer.parseInt((String) profileMap.get("age"));
         this.imageUrls = TypeUtil.objectToListString(profileMap.get("imageUrls"));
+        this.major = (String) profileMap.get("major");
         this.bio = (String) profileMap.get("bio");
         this.createdTime = Instant.now();
         this.updatedTime = Instant.now();

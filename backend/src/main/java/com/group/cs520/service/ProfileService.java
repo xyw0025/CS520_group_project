@@ -60,7 +60,7 @@ public class ProfileService {
         return profile;
     }
 
-    public Profile update(String user_id, Map<String, Object> profileMap) {
+    public User update(String user_id, Map<String, Object> profileMap) {
         Profile profile = this.getProfileByUser(user_id);
         String[] skipFields = {"gender", "preferences"};
         Class<?> profileClass = Profile.class;
@@ -77,7 +77,8 @@ public class ProfileService {
         updatePreferences(profile, TypeUtil.objectToListString(profileMap.get("preferences")));
 
         profileRepository.save(profile);
-        return profile;
+        User user = userService.singleUser(user_id);
+        return user;
     }
 
 
@@ -95,4 +96,19 @@ public class ProfileService {
         User user = userService.singleUser(userId);
         return user.getProfile();
     }
+
+    public void setProfilePhoto(String userId, String photoURL){
+        Profile profile = getProfileByUser(userId);
+
+        if (profile != null) {
+            if (profile.getImageUrls() == null) {
+                profile.setImageUrls(new ArrayList<>());
+            }
+            profile.getImageUrls().add(photoURL);
+            profileRepository.save(profile);
+        } else {
+            throw new IllegalStateException("Profile not found for user id: " + userId);
+        }
+    }
+
 }
