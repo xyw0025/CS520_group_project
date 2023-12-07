@@ -1,11 +1,12 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './globals.css';
 import type { Metadata } from 'next';
 import { Open_Sans } from 'next/font/google';
 import Navbar from '../components/Navbar';
-
-const font = Open_Sans({ subsets: ['latin'] });
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { cn } from '@/lib/utils';
+
+const font = Open_Sans({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'UMassenger',

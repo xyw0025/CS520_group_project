@@ -5,6 +5,7 @@ import com.group.cs520.model.User;
 import com.group.cs520.model.Match;
 
 import com.group.cs520.repository.UserRepository;
+import com.group.cs520.repository.ProfileRepository;
 import com.group.cs520.service.JwtUtil;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.bson.types.ObjectId;
@@ -33,6 +34,9 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private ProfileRepository profileRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -57,7 +61,7 @@ public class UserService {
      * @throws IllegalArgumentException if the email is already in use
      */
     public User createUser(String email, String password) {
-        System.out.println("start check user information");
+        System.out.println("start checking user's information");
         //check email first
         Optional<User> existingUser = userRepository.findUserByEmail(email);
         if (existingUser.isPresent()) {
@@ -69,7 +73,10 @@ public class UserService {
         user.setIsActive(true);
         user.setCreatedTime(Instant.now());
         user.setUpdatedTime(Instant.now());
-        return userRepository.insert(user);
+        Profile profile = new Profile();
+        profileRepository.save(profile);
+        user.setProfile(profile);
+        return userRepository.save(user);
     }
 
     /**

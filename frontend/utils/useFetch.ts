@@ -13,15 +13,25 @@ function useFetch() {
   };
 
   function request(method: string) {
-    return (url: string, body?: any) => {
+    return (url: string, body?: any, isFileUpload?: boolean) => {
       const requestOptions: any = {
         method,
         credentials: 'include',
       };
-      if (body) {
+
+      if (isFileUpload && body) {
+        // For file uploads, use FormData
+        const formData = new FormData();
+        Object.keys(body).forEach((key) => {
+          formData.append(key, body[key]);
+        });
+        requestOptions.body = formData;
+      } else if (body) {
+        // For regular JSON data
         requestOptions.headers = { 'Content-Type': 'application/json' };
         requestOptions.body = JSON.stringify(body);
       }
+
       return fetch(url, requestOptions).then(handleResponse);
     };
   }
@@ -32,7 +42,7 @@ function useFetch() {
     const isJson = response.headers
       ?.get('content-type')
       ?.includes('application/json');
-    const data = isJson ? await response.json() : null;
+    const data = isJson ? await response.json() : await response.text();
 
     // check for error response
     if (!response.ok) {

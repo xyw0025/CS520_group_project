@@ -2,11 +2,12 @@
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import LoadingBox from '@/components/LoadingBox';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { useUserService } from 'utils';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -22,12 +23,15 @@ export default function Login() {
   const userService = useUserService();
   const { currentUser } = userService;
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
       userService.setUser(JSON.parse(storedUser));
       router.replace('/');
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
@@ -60,6 +64,14 @@ export default function Login() {
     await userService.login(email, password);
   }
 
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-32">
+        <LoadingBox />
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto py-32">
       <Card>
@@ -71,7 +83,7 @@ export default function Login() {
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="grid gap-4">
-            <div className="grid grid-cols-1 gap-6">
+            {/* <div className="grid grid-cols-1 gap-6">
               <Button variant="outline">
                 <Icons.google className="mr-2 h-4 w-4" />
                 Google
@@ -86,7 +98,7 @@ export default function Login() {
                   Or continue with
                 </span>
               </div>
-            </div>
+            </div> */}
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -137,10 +149,13 @@ export default function Login() {
             </span>
           </div>
         </div>
+
         <CardFooter>
-          <Button className="mx-auto place-self-center w-1/2" variant={'umass'}>
-            <Link href="/register">Register Now !</Link>
-          </Button>
+          <Link className="mx-auto flex justify-center w-full" href="/register">
+            <Button className="w-1/2" variant={'umass'}>
+              Register Now !
+            </Button>
+          </Link>
         </CardFooter>
       </Card>
     </div>

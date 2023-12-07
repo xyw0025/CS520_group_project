@@ -3,16 +3,20 @@ package com.group.cs520.controller;
 import com.group.cs520.model.Match;
 import com.group.cs520.model.User;
 import com.group.cs520.service.UserService;
+import com.group.cs520.service.ProfileService;
+import com.group.cs520.service.GCPStorageService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import com.group.cs520.documentation.UserApi;
+import java.io.IOException;
 
 import java.util.List;
 import java.util.Map;
@@ -23,6 +27,12 @@ import java.util.Collections;
 public class UserController implements UserApi {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ProfileService profileService;
+
+    @Autowired
+    private GCPStorageService gcpStorageService;
 
     /**
      * Retrieves all users.
@@ -128,15 +138,6 @@ public class UserController implements UserApi {
         return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("message", "Successfully logged out"));
     }
 
-    // TODO: Spring Security
-    //    @GetMapping("/current")
-    //    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
-    //        String token = (String) authentication.getCredentials();
-    //        System.out.println(token);
-    //        User user = userService.validateUser(token);
-    //        return ResponseEntity.ok(user);
-    //    }
-
     /**
      * Retrieves the current user.
      *
@@ -157,7 +158,7 @@ public class UserController implements UserApi {
             }
         }
         if (token == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.ok(null);
         }
         User user = userService.validateUser(token);
         return ResponseEntity.ok(user);
@@ -195,4 +196,10 @@ public class UserController implements UserApi {
         return ResponseEntity.ok(matches);
     }
 
+    @PostMapping("/{id}/upload")
+    public ResponseEntity<String> uploadImage(@PathVariable String id, @RequestParam("file") MultipartFile file) throws IOException {
+        String photoURL = gcpStorageService.uploadImage(file);
+        profileService.setProfilePhoto(id, photoURL);
+        return ResponseEntity.ok(photoURL);
+    }
 }
