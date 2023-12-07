@@ -54,4 +54,4 @@ buildNumber.properties
 mvnw
 mvnw.cmd
 
-quick_replica_key.json
+src/main/resources/*.json
