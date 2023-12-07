@@ -1,5 +1,6 @@
 package com.group.cs520.controller;
 
+import com.group.cs520.model.Match;
 import com.group.cs520.model.User;
 import com.group.cs520.service.UserService;
 import com.group.cs520.service.ProfileService;
@@ -19,7 +20,6 @@ import java.io.IOException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Collections;
 
 @RestController
@@ -184,12 +184,18 @@ public class UserController implements UserApi {
         return recommendedUsers;
     }
 
-    @GetMapping("/first-five")
-    public List<User> suggestFirstFiveMatches() {
-        List<User> recommendedUsers = userService.getFirstFiveUsers();
+    @GetMapping("/{id}/fetch-random-5-unmatched")
+    public List<User> suggestRandomFiveUnmatchedUsers(@PathVariable String id) {
+        List<User> recommendedUsers = userService.getRandomUsers(5, id);
         return recommendedUsers;
     }
 
+    @GetMapping("/{user_id}/match")
+    public ResponseEntity<List<Match>> getUserMatches(@PathVariable String id) {
+        List<Match> matches = userService.userMatches(id);
+        return ResponseEntity.ok(matches);
+    }
+    
     @PostMapping("/{id}/upload")
     public ResponseEntity<String> uploadImage(@PathVariable String id, @RequestParam("file") MultipartFile file) throws IOException {
         String photoURL = gcpStorageService.uploadImage(file);
