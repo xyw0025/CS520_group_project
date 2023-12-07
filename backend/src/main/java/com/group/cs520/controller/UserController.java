@@ -184,9 +184,9 @@ public class UserController implements UserApi {
         return recommendedUsers;
     }
 
-    @GetMapping("/first-five")
-    public List<User> suggestFirstFiveMatches() {
-        List<User> recommendedUsers = userService.getFirstFiveUsers();
+    @GetMapping("/{id}/fetch-random-5-unmatched")
+    public List<User> suggestRandomFiveUnmatchedUsers(@PathVariable String id) {
+        List<User> recommendedUsers = userService.getRandomUsers(5, id);
         return recommendedUsers;
     }
 
@@ -195,7 +195,7 @@ public class UserController implements UserApi {
         List<Match> matches = userService.userMatches(id);
         return ResponseEntity.ok(matches);
     }
-
+    
     @PostMapping("/{id}/upload")
     public ResponseEntity<String> uploadImage(@PathVariable String id, @RequestParam("file") MultipartFile file) throws IOException {
         String photoURL = gcpStorageService.uploadImage(file);
