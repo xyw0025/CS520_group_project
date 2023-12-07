@@ -4,7 +4,7 @@ import HobbyButton from '@/components/HobbyButton';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { useUserService, useAlertService } from '@/utils';
+import { useUserService } from '@/utils';
 import { useForm } from 'react-hook-form';
 import {
   Card,
@@ -23,7 +23,6 @@ const Profile = () => {
   const currentUser = userService.currentUser;
   const { register, handleSubmit, formState, clearErrors, reset } = useForm();
   const { errors } = formState;
-  const alertService = useAlertService();
 
   const MAX_HOBBIES = 5;
   const [selectedHobbies, setSelectedHobbies] = useState(
@@ -100,7 +99,6 @@ const Profile = () => {
       userService.setUser(updatedUser);
     } else {
       console.log('Can not get the currentUser');
-      alertService.error('Can not get the currentUser');
     }
   }
 
