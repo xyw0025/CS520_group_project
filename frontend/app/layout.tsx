@@ -9,6 +9,8 @@ import { Toaster } from '@/components/ui/toaster';
 
 const font = Open_Sans({ subsets: ['latin'] });
 
+const font = Open_Sans({ subsets: ['latin'] });
+
 export const metadata: Metadata = {
   title: 'UMassenger',
   description: 'UMass CS520 Project',
