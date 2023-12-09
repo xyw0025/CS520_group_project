@@ -66,5 +66,4 @@ public class TypeUtil {
     public static List<String> objectToListString(Object object) {
         return new ObjectMapper().convertValue(object, new TypeReference<List<String>>() {});
     }
-
 }

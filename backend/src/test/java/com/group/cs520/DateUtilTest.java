@@ -29,7 +29,6 @@ public class DateUtilTest {
         LocalDate result = DateUtil.dateFormatter(date);
         assertEquals(result, LocalDate.of(2019, 1, 1));
     }
-
     @Test
     public void testGetAgeWithValidBirthday() {
         int expectedAge = 34;
