@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/PasswordInput';
 
 export default function Login() {
   const userService = useUserService();
@@ -114,15 +115,7 @@ export default function Login() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                {...fields.password}
-                id="password"
-                type="password"
-                onChange={() => clearErrors()}
-              />
-            </div>
-            <div className="text-red-700 font-bold">
-              {errors.password?.message?.toString()}
+              <PasswordInput placeholder='' fields={{ password: fields.password }} />
             </div>
           </CardContent>
           <CardFooter>

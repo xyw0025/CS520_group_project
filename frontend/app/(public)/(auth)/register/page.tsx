@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/PasswordInput';
 
 export default function Register() {
   const userService = useUserService();
@@ -130,22 +131,14 @@ export default function Register() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                {...fields.password}
-                type="password"
-                onChange={() => clearErrors()}
-              />
+              <PasswordInput placeholder='' fields={{ password: fields.password }} />
               <div className="text-red-700 font-bold">
                 {errors.password?.message?.toString()}
               </div>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="confirmPassword">Confirm Password Again</Label>
-              <Input
-                {...fields.confirmPassword}
-                type="password"
-                onChange={() => clearErrors()}
-              />
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <PasswordInput placeholder='enter your password again' fields={{ password: fields.password }} />
               <div className="text-red-700 font-bold">
                 {errors.confirmPassword?.message?.toString()}
               </div>
