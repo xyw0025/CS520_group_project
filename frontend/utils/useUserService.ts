@@ -2,7 +2,8 @@
 
 import { create } from 'zustand';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAlertService, useFetch } from 'utils';
+import { useFetch } from 'utils';
+import { useToast } from '@/components/ui/use-toast';
 
 export { useUserService };
 
@@ -15,10 +16,10 @@ const initialState = {
 const userStore = create<IUserStore>(() => initialState);
 
 function useUserService(): IUserService {
-  const alertService = useAlertService();
   const fetch = useFetch();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { toast } = useToast();
   const { matchedUsers, undiscoveredUsers, currentUser } = userStore();
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -30,20 +31,30 @@ function useUserService(): IUserService {
       try {
         userStore.setState({ ...initialState, currentUser: user });
       } catch (error: any) {
-        alertService.error(error);
+        toast({
+          title: 'Uh oh! Something went wrong.',
+          description: error,
+          variant: 'destructive',
+        });
       }
     },
     register: async (user) => {
       try {
         await fetch.post(`${API_URL}/api/v1/users/register`, user);
-        alertService.success('Registration successful', true);
+        toast({
+          title: 'Register Successfully!',
+        });
         router.push('/login');
       } catch (error: any) {
-        alertService.error(error);
+        console.log(error);
+        toast({
+          title: 'Registration Failed',
+          description: error,
+          variant: 'destructive',
+        });
       }
     },
     login: async (email, password) => {
-      alertService.clear();
       try {
         const currentUser = await fetch.post(`${API_URL}/api/v1/users/login`, {
           email,
@@ -55,8 +66,15 @@ function useUserService(): IUserService {
         // get return url from query parameters or default to '/'
         const returnUrl = searchParams.get('returnUrl') || '/dashboard';
         router.push(returnUrl);
+        toast({
+          title: 'Login Successfully!',
+        });
       } catch (error: any) {
-        alertService.error(error);
+        toast({
+          title: 'Uh oh! Something went wrong.',
+          description: error,
+          variant: 'destructive',
+        });
       }
     },
     logout: async () => {
@@ -64,6 +82,9 @@ function useUserService(): IUserService {
       userStore.setState({ ...initialState });
       localStorage.removeItem('currentUser');
       router.push('/');
+      toast({
+        title: 'Logout Successfully!',
+      });
     },
     getCurrent: async () => {
       if (!currentUser) {
@@ -73,19 +94,26 @@ function useUserService(): IUserService {
       }
       return currentUser;
     },
-    create: async (user) => {
-      await fetch.post('/api/v1/users/register', user);
-    },
     update: async (id, params) => {
       try {
-        return await fetch.put(`${API_URL}/api/v1/profile/${id}`, params);
+        const updated_user = await fetch.put(
+          `${API_URL}/api/v1/profile/${id}`,
+          params
+        );
+        toast({
+          title: 'Update Profile Successfully!',
+        });
+        return updated_user;
       } catch (error: any) {
-        alertService.error(error);
+        toast({
+          title: 'Uh oh! Something went wrong.',
+          variant: 'destructive',
+        });
       }
     },
     upload: async (id, name, photoFile) => {
       try {
-        return await fetch.post(
+        const imageUrl = await fetch.post(
           `${API_URL}/api/v1/users/${id}/upload`,
           {
             name,
@@ -93,9 +121,16 @@ function useUserService(): IUserService {
           },
           true
         );
+        toast({
+          title: 'Upload photo Successfully!',
+        });
+        return imageUrl;
       } catch (error: any) {
-        console.log('error');
-        alertService.error(error);
+        console.log(error);
+        toast({
+          title: 'Uh oh! Something went wrong.',
+          variant: 'destructive',
+        });
       }
     },
     discover: async (id: string) => {
@@ -106,8 +141,7 @@ function useUserService(): IUserService {
         userStore.setState({ undiscoveredUsers: undiscoveredUsers });
         return undiscoveredUsers;
       } catch (error: any) {
-        console.log('error');
-        alertService.error(error);
+        console.log(error);
       }
     },
     create_match_history: async (id1: string, id2: string, action: string) => {
@@ -118,8 +152,7 @@ function useUserService(): IUserService {
           behavior: action,
         });
       } catch (error: any) {
-        console.log('error');
-        alertService.error(error);
+        console.log(error);
       }
     },
     // delete: async (id) => {
@@ -183,7 +216,6 @@ interface IUserService extends IUserStore {
   logout: () => Promise<void>;
   register: (user: IUser) => Promise<void>;
   getCurrent: () => Promise<IUser>;
-  create: (user: IUser) => Promise<void>;
   update: (id: string, params: any) => Promise<IUser>;
   upload: (id: string, name: string, photoFile: File) => Promise<string>;
   // delete: (id: string) => Promise<void>;

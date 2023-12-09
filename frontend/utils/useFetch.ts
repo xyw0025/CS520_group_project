@@ -50,9 +50,9 @@ function useFetch() {
         // api auto logs out on 401 Unauthorized, so redirect to login page
         router.push('/login');
       }
-
       // get error message from body or default to response status
-      const error = (data && data.message) || response.statusText;
+      const error =
+        (data && data.error) || (data && data.message) || response.statusText;
       return Promise.reject(error);
     }
 
