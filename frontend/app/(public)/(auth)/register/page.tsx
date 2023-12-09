@@ -131,7 +131,7 @@ export default function Register() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <PasswordInput placeholder='' fields={{ password: fields.password }} />
+              <PasswordInput fields={{ password: fields.password }} />
               <div className="text-red-700 font-bold">
                 {errors.password?.message?.toString()}
               </div>

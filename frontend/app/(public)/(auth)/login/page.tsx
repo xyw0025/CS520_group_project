@@ -115,7 +115,7 @@ export default function Login() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <PasswordInput placeholder='' fields={{ password: fields.password }} />
+              <PasswordInput fields={{ password: fields.password }} />
             </div>
           </CardContent>
           <CardFooter>

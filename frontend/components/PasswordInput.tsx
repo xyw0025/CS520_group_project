@@ -6,7 +6,7 @@ type PasswordInputProps = {
     fields: {
         password: {}
     };
-    placeholder: string;
+    placeholder?: string;
 };
 
 const PasswordInput = ({
