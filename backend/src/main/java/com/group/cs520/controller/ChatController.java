@@ -17,9 +17,7 @@ public class ChatController {
     @MessageMapping("/sendMessage")
     @SendTo("/room/messages")
     public Message sendMessage(@Payload Message chatMessage) {
-        System.out.println(chatMessage);
         Message savedMessage = messageRepository.save(chatMessage);
-        System.out.println(savedMessage);
         return savedMessage;
     }
 }

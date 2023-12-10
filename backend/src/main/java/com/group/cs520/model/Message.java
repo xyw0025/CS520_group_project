@@ -26,7 +26,7 @@ public class Message {
     private ObjectId senderId;
     private ObjectId receiverId;
     private String messageText;
-    private Instant timestamp;
+    private Instant timestamp = Instant.now();
 
 
     public Message(ObjectId senderId, ObjectId receiverId, String messageText) {

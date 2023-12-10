@@ -37,7 +37,7 @@ const Chat = () => {
 
     stompClient.publish({
       destination: '/app/sendMessage', // The destination endpoint
-      body: JSON.stringify({ message: JSON.stringify(chatMessage) }), // Message body
+      body: JSON.stringify(chatMessage), // Message body
     });
   }
 
