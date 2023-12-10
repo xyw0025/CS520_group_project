@@ -42,17 +42,6 @@ public class MatchService {
         return matchRepository.findByStatus(MatchConstants.STATUS.MATCHED.ordinal());
     }
 
-    public Match create(Map<String, Object> matchMap) {
-        Match match = new Match(matchMap);
-        matchRepository.insert(match);
-
-        List<String> userIds = TypeUtil.jsonStringArray(matchMap.get("userIds").toString());
-        for (String userId: userIds) {
-            userService.addMatch(userId, match);    
-        }
-        return match;
-    }
-
     public Match matchByUserIds(String id1, String id2) {
         List<ObjectId> userIds = Arrays.asList(TypeUtil.objectIdConverter(id1), TypeUtil.objectIdConverter(id2));
         return matchByUserIds(userIds).orElseThrow();

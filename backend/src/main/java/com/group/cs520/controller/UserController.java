@@ -189,25 +189,11 @@ public class UserController implements UserApi {
         List<User> recommendedUsers = userService.getRandomUsers(5, id);
         return recommendedUsers;
     }
-
-    @GetMapping("/{user_id}/match")
-    public ResponseEntity<List<Match>> getUserMatches(@PathVariable String id) {
-        List<Match> matches = userService.userMatches(id);
-        return ResponseEntity.ok(matches);
-    }
     
     @PostMapping("/{id}/upload")
     public ResponseEntity<String> uploadImage(@PathVariable String id, @RequestParam("file") MultipartFile file) throws IOException {
         String photoURL = gcpStorageService.uploadImage(file);
         profileService.setProfilePhoto(id, photoURL);
         return ResponseEntity.ok(photoURL);
-    }
-
-    @GetMapping("/match")
-    public ResponseEntity<List<User>> getMatchedUsers(@RequestParam("id") String userId) {
-
-        List<User> matchedUsers = userService.getMatchedUsers(userId);
-
-        return ResponseEntity.ok(matchedUsers);
     }
 }

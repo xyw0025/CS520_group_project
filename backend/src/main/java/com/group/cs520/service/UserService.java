@@ -162,37 +162,37 @@ public class UserService {
         mongoTemplate.save(user);
     }
 
-    public List<User> getMatchedUsers(String id) {
+//    public List<User> getMatchedUsers(String id) {
+//
+//        ObjectId userId = TypeUtil.objectIdConverter(id);
+//        // Find matchings where status is 1 and userIds array contains the provided userId
+//        List<Match> matches = matchRepository.findByStatusAndUserIdsContaining(1, userId);
+//
+//        // Extract the userIds and remove the provided userId
+//        List<ObjectId> matchedUserIds = matches.stream()
+//                .flatMap(match -> match.getUserIds().stream())
+//                .distinct()
+//                .filter(ids -> !ids.equals(userId))
+//                .collect(Collectors.toList());
+//
+//        // Find all users that match the userIds
+//        return userRepository.findAllById(matchedUserIds);
+//    }
 
-        ObjectId userId = TypeUtil.objectIdConverter(id);
-        // Find matchings where status is 1 and userIds array contains the provided userId
-        List<Match> matches = matchRepository.findByStatusAndUserIdsContaining(1, userId);
+//    public void addMatch(String user_id, Match match) {
+//        User user = this.singleUser(user_id);
+//        List<Match> matches = user.getMatches();
+//        matches.add(match);
+//        user.setMatches(matches);
+//        userRepository.save(user);
+//    }
 
-        // Extract the userIds and remove the provided userId
-        List<ObjectId> matchedUserIds = matches.stream()
-                .flatMap(match -> match.getUserIds().stream())
-                .distinct()
-                .filter(ids -> !ids.equals(userId))
-                .collect(Collectors.toList());
-
-        // Find all users that match the userIds
-        return userRepository.findAllById(matchedUserIds);
-    }
-
-    public void addMatch(String user_id, Match match) {
-        User user = this.singleUser(user_id);
-        List<Match> matches = user.getMatches();
-        matches.add(match);
-        user.setMatches(matches);
-        userRepository.save(user);
-    }
-
-    public List<Match> userMatches(String user_id) {
-        User user = this.singleUser(user_id);
-        List<Match> filteredMatches = user.getMatches().stream()
-                                      .filter(match -> match.getStatus() == 1)
-                                      .collect(Collectors.toList());
-
-        return filteredMatches;
-    }
+//    public List<Match> userMatches(String user_id) {
+//        User user = this.singleUser(user_id);
+//        List<Match> filteredMatches = user.getMatches().stream()
+//                                      .filter(match -> match.getStatus() == 1)
+//                                      .collect(Collectors.toList());
+//
+//        return filteredMatches;
+//    }
 }
