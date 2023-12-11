@@ -8,12 +8,15 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ChatService {
+
+    @Autowired
+    private MessageRepository messageRepository;
 
     @Autowired
     private ConversationRepository conversationRepository;
@@ -21,7 +24,6 @@ public class ChatService {
     public void handleConversationForMessage(Message message) {
         ObjectId senderId = message.getSenderId();
         ObjectId receiverId = message.getReceiverId();
-        ObjectId messageId = message.getId();
 
         // Find existing conversation or create a new one
         Optional<Conversation> existingConversation = conversationRepository
@@ -30,15 +32,18 @@ public class ChatService {
         Conversation conversation;
         if (existingConversation.isPresent()) {
             conversation = existingConversation.get();
-            conversation.getMessageIds().add(messageId);
+            conversation.getMessages().add(message);
         } else {
             conversation = new Conversation(senderId, receiverId);
-            List<ObjectId> messageIds = new ArrayList<>();
-            messageIds.add(messageId);
-            conversation.setMessageIds(messageIds);
+            List<Message> messages = new ArrayList<>();
+            messages.add(message);
+            conversation.setMessages(messages);
         }
-
-        // Save the conversation
         conversationRepository.save(conversation);
+    }
+
+    public List<Message> getConversationMessages(ObjectId user1Id, ObjectId user2Id) {
+        Optional<Conversation> conversation = conversationRepository.findConversationByUserIds(user1Id, user2Id);
+        return conversation.map(Conversation::getMessages).orElse(new ArrayList<>());
     }
 }

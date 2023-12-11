@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,7 +26,8 @@ public class Conversation {
     private ObjectId id;
     private ObjectId user1Id;
     private ObjectId user2Id;
-    private List<ObjectId> messageIds;
+    @DocumentReference
+    private List<Message> messages;
     private Instant createdAt = Instant.now();
 
     public Conversation(ObjectId user1Id, ObjectId user2Id) {

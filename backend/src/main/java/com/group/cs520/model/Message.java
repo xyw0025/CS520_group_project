@@ -23,7 +23,9 @@ public class Message {
     @Schema(type="string")
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId senderId;
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId receiverId;
     private String messageText;
     private Instant createdAt = Instant.now();
