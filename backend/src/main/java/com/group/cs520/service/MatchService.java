@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.group.cs520.constants.MatchConstants;
+import com.group.cs520.model.User;
 import com.group.cs520.model.Match;
 import com.group.cs520.model.MatchHistory;
+import com.group.cs520.repository.UserRepository;
 import com.group.cs520.repository.MatchRepository;
 import com.group.cs520.repository.MatchHistoryRepository;
 import java.util.ArrayList;
@@ -25,6 +27,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class MatchService {
+    @Autowired
+    private UserRepository userRepository;
+
     @Autowired
     private MatchRepository matchRepository;
 
@@ -110,5 +115,20 @@ public class MatchService {
         } else {
             match.setStatus(MatchConstants.STATUS.AWAIT.ordinal());
         }
+    }
+    public List<User> getMatchedUsers(String id) {
+        ObjectId userId = TypeUtil.objectIdConverter(id);
+        // Find matchings where status is 1 and userIds array contains the provided userId
+        List<Match> matches = matchRepository.findByStatusAndUserIdsContaining(1, userId);
+
+        // Extract the userIds and remove the provided userId
+        List<ObjectId> matchedUserIds = matches.stream()
+                .flatMap(match -> match.getUserIds().stream())
+                .distinct()
+                .filter(ids -> !ids.equals(userId))
+                .collect(Collectors.toList());
+
+        // Find all users that match the userIds
+        return userRepository.findAllById(matchedUserIds);
     }
 }

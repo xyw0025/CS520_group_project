@@ -67,4 +67,10 @@ public class MatchController implements MatchApi {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));
         }
     }
+
+    @GetMapping("/get-all-matched-users")
+    public ResponseEntity<List<User>> getMatchedUsers(@RequestParam("id") String userId) {
+        List<User> matchedUsers = matchService.getMatchedUsers(userId);
+        return ResponseEntity.ok(matchedUsers);
+    }
 }
