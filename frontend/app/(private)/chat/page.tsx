@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { IUser, Message } from '@/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { useUserService } from '@/utils';
@@ -26,8 +26,32 @@ const Chat = () => {
   );
   const [message, setMessage] = useState('');
 
+  //IMEComposing
+  const [isIMEComposing, setIsIMEComposing] = useState(false);
+  const handleCompositionStart = () => {
+    setIsIMEComposing(true);
+  };
+
+  const handleCompositionEnd = () => {
+    setIsIMEComposing(false);
+  };
+
+  //Handle new message scroll to bottom
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   useEffect(() => {
-    // Function to fetch conversation ID and messages
+    scrollToBottom();
+  }, [conversationMessages]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [conversationMessages]);
+
+  // Fetch conversation ID and messages
+  useEffect(() => {
     const fetchConversationData = async () => {
       if (currentUser && currentChatUser) {
         try {
@@ -53,6 +77,23 @@ const Chat = () => {
     fetchConversationData();
   }, [currentChatUser, currentUser]);
 
+  // Fetch matched users
+  useEffect(() => {
+    const fetchMatchedUsers = async () => {
+      try {
+        if (currentUser && currentUser.id) {
+          const fetchedUsers = await userService.getMatchedUsers(
+            currentUser.id
+          );
+          setMatchedUsers(fetchedUsers);
+        }
+      } catch (error) {
+        console.error('Error fetching matched users:', error);
+      }
+    };
+    fetchMatchedUsers();
+  }, []);
+
   // Connect to the WebSocket server
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const socket = new SockJS(`${API_URL}/chat`);
@@ -66,7 +107,7 @@ const Chat = () => {
     setCurrentChatUser(user);
   };
 
-  function sendMessage(message: String) {
+  const handleSendMessage = () => {
     if (!conversationId) {
       console.error('Conversation ID not set. Cannot send message.');
       return;
@@ -76,28 +117,16 @@ const Chat = () => {
       senderId: currentUser?.id,
       receiverId: currentChatUser?.id,
       messageText: message,
+      createdAt: new Date().toISOString(), // Assuming createdAt is a date string
     };
 
     // Send the message to the specific conversation channel
     stompClient.publish({
-      destination: `/app/room/${conversationId}/sendMessage`, // Updated destination endpoint
+      destination: `/app/room/${conversationId}/sendMessage`,
       body: JSON.stringify(chatMessage),
     });
-  }
 
-  const handleSendMessage = () => {
-    const newMessage = {
-      senderId: currentUser?.id,
-      receiverId: currentChatUser?.id,
-      messageText: message,
-      createdAt: new Date().toISOString(), // Assuming createdAt is a date string
-    };
-
-    // Add the new message to conversationMessages
-    setConversationMessages([...conversationMessages, newMessage]);
-
-    sendMessage(message);
-    setMessage('');
+    setMessage(''); // Clear the input field
   };
 
   // Subscribe to a room to receive messages by building a WebSocket
@@ -129,39 +158,6 @@ const Chat = () => {
       isSubscribed = false;
     };
   }, [conversationId]);
-
-  useEffect(() => {
-    // Function to fetch matched users
-    const fetchMatchedUsers = async () => {
-      try {
-        if (currentUser && currentUser.id) {
-          const fetchedUsers = await userService.getMatchedUsers(
-            currentUser.id
-          );
-          setMatchedUsers(fetchedUsers);
-        }
-      } catch (error) {
-        console.error('Error fetching matched users:', error);
-      }
-    };
-    fetchMatchedUsers();
-  }, []);
-
-  useEffect(() => {
-    // Function to fetch conversation
-    const fetchConversationMessages = async () => {
-      if (currentUser && currentChatUser) {
-        // Replace with your API call to fetch conversation messages
-        const response = await userService.getConversation(
-          currentUser.id,
-          currentChatUser.id
-        );
-        setConversationMessages(response);
-      }
-    };
-
-    fetchConversationMessages();
-  }, [currentChatUser]);
 
   return (
     <div className="container mx-auto shadow-lg rounded-lg my-1 h-5/6">
@@ -198,6 +194,7 @@ const Chat = () => {
                 createdAt={msg.createdAt}
               />
             ))}
+            <div ref={messagesEndRef} />
           </div>
           {currentChatUser && (
             <div className="flex items-center mt-2 p-3 bg-white border-t-2">
@@ -206,11 +203,18 @@ const Chat = () => {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
+                  if (
+                    e.key === 'Enter' &&
+                    !e.shiftKey &&
+                    message.trim() !== '' &&
+                    !isIMEComposing
+                  ) {
                     e.preventDefault(); // Prevents the default action (new line)
                     handleSendMessage();
                   }
                 }}
+                onCompositionStart={handleCompositionStart}
+                onCompositionEnd={handleCompositionEnd}
                 className="flex-grow" // Ensures textarea takes available space
               />
               <PaperPlaneIcon
