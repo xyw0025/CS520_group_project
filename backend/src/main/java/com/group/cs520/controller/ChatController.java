@@ -4,11 +4,13 @@ import com.group.cs520.model.Message;
 import com.group.cs520.service.ChatService;
 import com.group.cs520.repository.MessageRepository;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.bson.types.ObjectId;
 import java.util.List;
 
@@ -17,23 +19,36 @@ import java.util.List;
 public class ChatController {
 
     @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
     private MessageRepository messageRepository;
 
     @Autowired
     private ChatService chatService;
 
-    @MessageMapping("/sendMessage")
-    @SendTo("/room/messages")
-    public Message sendMessage(@Payload Message chatMessage) {
+    @MessageMapping("/room/{conversationId}/sendMessage")
+    public Message sendMessage(@DestinationVariable String conversationId, @Payload Message chatMessage) {
         // Save the message
         Message savedMessage = messageRepository.save(chatMessage);
         // Handle conversation
         chatService.handleConversationForMessage(savedMessage);
+        simpMessagingTemplate.convertAndSend("/room/" + conversationId, savedMessage);
         return savedMessage;
     }
 
     @GetMapping("/messages")
     public List<Message> getConversationMessages(@RequestParam ObjectId user1Id, @RequestParam ObjectId user2Id) {
         return chatService.getConversationMessages(user1Id, user2Id);
+    }
+
+    @GetMapping("/id")
+    public ResponseEntity<String> getConversationId(@RequestParam ObjectId user1Id, @RequestParam ObjectId user2Id) {
+        String conversationId = chatService.getConversationId(user1Id, user2Id);
+        if (conversationId != null) {
+            return ResponseEntity.ok(conversationId);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

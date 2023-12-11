@@ -191,6 +191,16 @@ function useUserService(): IUserService {
         console.log(error);
       }
     },
+    getConversationId: async (id1: string, id2: string) => {
+      try {
+        return await fetch.get(
+          `${API_URL}/api/v1/conversation/id?user1Id=${id1}&user2Id=${id2}`
+        );
+      } catch (error: any) {
+        console.log(error);
+      }
+    },
+
     // delete: async (id) => {
     //   // set isDeleting prop to true on user
     //   userStore.setState({
@@ -262,6 +272,7 @@ interface IUserService extends IUserStore {
   getCurrent: () => Promise<IUser>;
   getMatchedUsers: (id: string) => Promise<IUser[]>;
   getConversation: (id1: string, id2: string) => Promise<Message[]>;
+  getConversationId: (id1: string, id2: string) => Promise<string>;
   update: (id: string, params: any) => Promise<IUser>;
   upload: (id: string, name: string, photoFile: File) => Promise<string>;
   // delete: (id: string) => Promise<void>;

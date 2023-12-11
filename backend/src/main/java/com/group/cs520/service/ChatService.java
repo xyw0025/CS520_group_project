@@ -43,7 +43,12 @@ public class ChatService {
     }
 
     public List<Message> getConversationMessages(ObjectId user1Id, ObjectId user2Id) {
-        Optional<Conversation> conversation = conversationRepository.findConversationByUserIds(user1Id, user2Id);
-        return conversation.map(Conversation::getMessages).orElse(new ArrayList<>());
+        Optional<Conversation> foundConversation = conversationRepository.findConversationByUserIds(user1Id, user2Id);
+        return foundConversation.map(Conversation::getMessages).orElse(new ArrayList<>());
+    }
+
+    public String getConversationId(ObjectId user1Id, ObjectId user2Id) {
+        Optional<Conversation> foundConversation = conversationRepository.findConversationByUserIds(user1Id, user2Id);
+        return foundConversation.map(conversation -> conversation.getId().toString()).orElse(null);
     }
 }
