@@ -16,14 +16,14 @@ public interface UserRepository extends MongoRepository<User, ObjectId> {
     List<User> findByIsActiveTrue();
     Optional<User> findUserByEmail(String email);
 
-    @Aggregation(pipeline = { "{ $sample: { size: ?0 } }" })
-    List<User> findRandomUsers(int limit);
+//    @Aggregation(pipeline = { "{ $sample: { size: ?0 } }" })
+//    List<User> findRandomUsers(int limit);
 
-    @Aggregation(pipeline = {
-        "{ $match: { 'id': { $ne: ?1 } } }",
-        "{ $sample: { size: ?0 } }"
-    })
-    List<User> findRandomUsers(int limit, String user_id);
+//    @Aggregation(pipeline = {
+//        "{ $match: { 'id': { $ne: ?1 } } }",
+//        "{ $sample: { size: ?0 } }"
+//    })
+//    List<User> findRandomUsers(int limit, String user_id);
 
     @Query(value = "{ '_id': { $nin: ?0 } }")
     List<User> findByIdNotIn(List<ObjectId> ids, Pageable pageable);

@@ -178,11 +178,11 @@ public class UserController implements UserApi {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/random")
-    public List<User> suggestRandomMatches(){
-        List<User> recommendedUsers = userService.getRandomUsers(5);
-        return recommendedUsers;
-    }
+//    @GetMapping("/random")
+//    public List<User> suggestRandomMatches(){
+//        List<User> recommendedUsers = userService.getRandomUsers(5);
+//        return recommendedUsers;
+//    }
 
     @GetMapping("/{id}/fetch-random-5-unmatched")
     public List<User> suggestRandomFiveUnmatchedUsers(@PathVariable String id) {
