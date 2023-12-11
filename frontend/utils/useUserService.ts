@@ -94,6 +94,19 @@ function useUserService(): IUserService {
       }
       return currentUser;
     },
+    getMatchedUsers: async (id) => {
+      if (currentUser) {
+        const fetchedUsers = await fetch.get(
+          `${API_URL}/api/v1/match/get-all-matched-users/${id}`
+        );
+        userStore.setState((state) => ({
+          ...state,
+          matchedUsers: fetchedUsers,
+        }));
+        return fetchedUsers;
+      }
+      return [];
+    },
     update: async (id, params) => {
       try {
         const updated_user = await fetch.put(
@@ -216,6 +229,7 @@ interface IUserService extends IUserStore {
   logout: () => Promise<void>;
   register: (user: IUser) => Promise<void>;
   getCurrent: () => Promise<IUser>;
+  getMatchedUsers: (id: string) => Promise<IUser[]>;
   update: (id: string, params: any) => Promise<IUser>;
   upload: (id: string, name: string, photoFile: File) => Promise<string>;
   // delete: (id: string) => Promise<void>;
