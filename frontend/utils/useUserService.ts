@@ -64,7 +64,7 @@ function useUserService(): IUserService {
         userStore.setState({ ...initialState, currentUser });
 
         // get return url from query parameters or default to '/'
-        const returnUrl = searchParams.get('returnUrl') || '/dashboard';
+        const returnUrl = searchParams.get('returnUrl') || '/profile';
         router.push(returnUrl);
         toast({
           title: 'Login Successfully!',

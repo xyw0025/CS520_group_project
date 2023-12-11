@@ -20,14 +20,17 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   onDislike,
 }) => {
   return (
-    <Card className="bg-gradient-to-tl from-gray-100 to-gray-400 grid grid-cols-2 p-2 rounded-3xl dark:bg-gray-700 ">
-      <CardContent className="mt-5 pt-3 bg-gray-500 ring-2 ring-gray-600 rounded-2xl">
-        <Carousel>
+    <Card className="h-1000 bg-gradient-to-tl from-gray-100 to-gray-400 grid grid-cols-2 p-2 rounded-3xl dark:bg-gray-700 h-500 w-500 ">
+      <CardContent className="h-600 w-500 mt-5 pt-3 bg-gray-500 ring-2 ring-gray-600 rounded-2xl overflow-hidden">
+        <Carousel className="overflow-hidden">
           {user?.profile?.imageUrls &&
             user?.profile?.imageUrls.map((photoUrl: string) => (
-              <Carousel.Item key="photo">
+              <Carousel.Item
+                key="photo"
+                className="h-500 w-500 overflow-hidden"
+              >
                 <Image
-                  className="rounded-3xl"
+                  className="rounded-3xl overflow-hidden"
                   src={photoUrl}
                   alt="Photo"
                   width={500}

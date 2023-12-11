@@ -13,6 +13,8 @@ import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -35,7 +37,7 @@ public class Profile {
     private Integer age;
 
     @Size(min=0, max=4)
-    private List<String> imageUrls;
+    private List<String> imageUrls = new ArrayList<>(Arrays.asList("https://storage.googleapis.com/umassenger_api_development/images/64dcf4c9bd8c0900184e2626.webp"));
 
     @Size(max=30)
     private String major;

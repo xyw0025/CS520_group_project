@@ -145,7 +145,7 @@ const Profile = () => {
                 <select {...fields.gender}>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
-                  <option value="Other">Non-Binary</option>
+                  <option value="Others">Non-Binary</option>
                 </select>
 
                 <div className="text-red-700 font-bold">
