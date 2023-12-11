@@ -11,6 +11,7 @@ export { useUserService };
 const initialState = {
   matchedUsers: undefined,
   undiscoveredUsers: undefined,
+  discoverIndex: 0,
   currentUser: undefined,
 };
 const userStore = create<IUserStore>(() => initialState);
@@ -20,12 +21,14 @@ function useUserService(): IUserService {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const { matchedUsers, undiscoveredUsers, currentUser } = userStore();
+  const { matchedUsers, undiscoveredUsers, discoverIndex, currentUser } =
+    userStore();
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   return {
     matchedUsers,
     undiscoveredUsers,
+    discoverIndex,
     currentUser,
     setUser: async (user) => {
       try {
@@ -157,6 +160,17 @@ function useUserService(): IUserService {
         console.log(error);
       }
     },
+    setDiscoverIndex: async (index) => {
+      try {
+        userStore.setState({ discoverIndex: index });
+      } catch (error: any) {
+        toast({
+          title: 'Uh oh! Something went wrong.',
+          description: error,
+          variant: 'destructive',
+        });
+      }
+    },
     create_match_history: async (id1: string, id2: string, action: string) => {
       try {
         return await fetch.post(`${API_URL}/api/v1/match/add-match-history`, {
@@ -221,6 +235,7 @@ interface Preference {
 interface IUserStore {
   matchedUsers?: IUser[];
   undiscoveredUsers?: IUser[];
+  discoverIndex: number;
   currentUser?: IUser;
 }
 
@@ -235,6 +250,7 @@ interface IUserService extends IUserStore {
   // delete: (id: string) => Promise<void>;
   setUser: (user: IUser) => Promise<void>;
   discover: (id: string) => Promise<IUser[]>;
+  setDiscoverIndex: (index: number) => void;
   create_match_history: (
     id1: string,
     id2: string,

@@ -10,7 +10,7 @@ const Discover = () => {
   const [undiscoveredUsers, setUndiscoveredUsers] = useState(
     userService.undiscoveredUsers
   );
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(userService.discoverIndex);
 
   useEffect(() => {
     // Function to fetch undiscovered users
@@ -38,6 +38,7 @@ const Discover = () => {
       await userService.create_match_history(id1, id2, action);
       // Move to the next user
       setCurrentIndex((prevIndex) => prevIndex + 1);
+      userService.setDiscoverIndex(currentIndex);
     } catch (error) {
       console.error(`Error on ${action} action:`, error);
     }
