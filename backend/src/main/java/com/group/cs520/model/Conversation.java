@@ -1,6 +1,5 @@
 package com.group.cs520.model;
 
-import java.time.LocalDateTime;
 import org.bson.types.ObjectId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,27 +11,26 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
-@Document(collection = "messages")
+@Document(collection = "conversations")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Message {
+public class Conversation {
 
     @Id
     @Schema(type="string")
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
-    private ObjectId senderId;
-    private ObjectId receiverId;
-    private String messageText;
+    private ObjectId user1Id;
+    private ObjectId user2Id;
+    private List<ObjectId> messageIds;
     private Instant createdAt = Instant.now();
 
-
-    public Message(ObjectId senderId, ObjectId receiverId, String messageText) {
-        this.senderId = senderId;
-        this.receiverId = receiverId;
-        this.messageText = messageText;
+    public Conversation(ObjectId user1Id, ObjectId user2Id) {
+        this.user1Id = user1Id;
+        this.user2Id = user2Id;
         this.createdAt = Instant.now();
     }
 }

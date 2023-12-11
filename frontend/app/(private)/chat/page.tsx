@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { IUser } from '@/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { useUserService } from '@/utils';
+import { PaperPlaneIcon } from '@radix-ui/react-icons';
+
 import ChattingRoomUser from '@/components/ChattingRoomUser';
 import Message from '@/components/Message';
 import SockJS from 'sockjs-client';
@@ -31,8 +33,8 @@ const Chat = () => {
 
   function sendMessage(message: String) {
     const chatMessage = {
-      senderId: '656f8e446df5997883c67bf3',
-      receiverId: '656f8f076df5997883c67bf5',
+      senderId: currentUser?.id,
+      receiverId: currentChatUser?.id,
       messageText: message,
     };
 
@@ -68,22 +70,6 @@ const Chat = () => {
     setMessage('');
   };
 
-  //   return (
-  //     <div className="m-20">
-  //       <label htmlFor="" className="font-bold">
-  //         input
-  //       </label>
-  //       <input
-  //         type="text"
-  //         value={message}
-  //         onChange={(e) => setMessage(e.target.value)}
-  //       />
-  //       <button className="bg-blue-400" onClick={handleSendMessage}>
-  //         Send
-  //       </button>
-  //     </div>
-  //   );
-  // };
   return (
     <div className="container mx-auto shadow-lg rounded-lg h-600">
       {/* Chatting */}
@@ -113,7 +99,24 @@ const Chat = () => {
               }
             />
           </div>
-          <Textarea placeholder="Type your message here." />
+          <div className="flex items-center mt-5">
+            <Textarea
+              placeholder="Type your message here."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault(); // Prevents the default action (new line)
+                  handleSendMessage();
+                }
+              }}
+              className="flex-grow" // Ensures textarea takes available space
+            />
+            <PaperPlaneIcon
+              onClick={handleSendMessage}
+              className="text-blue-700 scale-150 cursor-pointer hover:scale-[2.0] ml-5"
+            />
+          </div>
         </div>
         {/* end message */}
         <div className="w-2/5 border-l-2 px-5">
