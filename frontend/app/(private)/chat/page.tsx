@@ -27,12 +27,12 @@ const Chat = () => {
   });
   const [message, setMessage] = useState('');
 
+  // Send Message to '/app/sendMessage'
   stompClient.onConnect = () => {
     console.log('Build WebSocket connection!');
   };
 
   stompClient.activate();
-
   function sendMessage(message: String) {
     const chatMessage = {
       senderId: currentUser?.id,
@@ -45,6 +45,45 @@ const Chat = () => {
       body: JSON.stringify(chatMessage), // Message body
     });
   }
+
+  const handleSendMessage = () => {
+    const newMessage = {
+      senderId: currentUser?.id,
+      receiverId: currentChatUser?.id,
+      messageText: message,
+      createdAt: new Date().toISOString(), // Assuming createdAt is a date string
+    };
+
+    // Add the new message to conversationMessages
+    setConversationMessages([...conversationMessages, newMessage]);
+
+    sendMessage(message);
+    setMessage('');
+  };
+
+  // Subscribe to a room to receive messages by building a WebSocket
+  useEffect(() => {
+    const stompClient = new Client({
+      webSocketFactory: () => new SockJS(`${API_URL}/chat`),
+      onConnect: () => {
+        console.log('Build WebSocket connection!');
+        // Subscribe to a room to receive messages
+        stompClient.subscribe('/room/messages', (message) => {
+          const receivedMessage = JSON.parse(message.body);
+          // Update state with the received message
+          setConversationMessages((prevMessages) => [
+            ...prevMessages,
+            receivedMessage,
+          ]);
+        });
+      },
+    });
+    stompClient.activate();
+
+    return () => {
+      stompClient.deactivate();
+    };
+  }, []);
 
   const handleUserSelect = (user: IUser) => {
     setCurrentChatUser(user);
@@ -83,15 +122,10 @@ const Chat = () => {
     fetchConversationMessages();
   }, [currentChatUser]);
 
-  const handleSendMessage = () => {
-    sendMessage(message);
-    setMessage('');
-  };
-
   return (
     <div className="container mx-auto shadow-lg rounded-lg my-1 h-5/6">
       {/* Chatting */}
-      <div className="flex flex-row justify-between bg-white h-5/6">
+      <div className="flex flex-row justify-between bg-white h-full">
         {/* chat list */}
         <div className="flex flex-col w-2/5 border-r-2 overflow-y-auto">
           {/* user list */}
@@ -107,9 +141,9 @@ const Chat = () => {
         </div>
         {/* end chat list */}
         {/* message */}
-        <div className="w-full px-5 flex flex-col justify-between">
+        <div className="w-full px-5 flex flex-col  justify-between">
           {/* Messages display */}
-          <div className="flex flex-col mt-5">
+          <div className="flex flex-col mt-5 flex-grow overflow-y-auto">
             {conversationMessages.map((msg) => (
               <MessageBox
                 text={msg.messageText}
@@ -125,7 +159,7 @@ const Chat = () => {
             ))}
           </div>
           {currentChatUser && (
-            <div className="flex items-center mt-5">
+            <div className="flex items-center mt-2 p-3 bg-white border-t-2">
               <Textarea
                 placeholder="Type your message here."
                 value={message}

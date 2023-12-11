@@ -242,8 +242,8 @@ interface Preference {
 }
 
 export interface Message {
-  senderId: string;
-  receiverId: string;
+  senderId?: string;
+  receiverId?: string;
   messageText: string;
   createdAt: string;
 }
