@@ -1,10 +1,10 @@
 'use client';
 
-import { IUser } from '@/utils';
+import { UserWithConversationData } from '@/utils';
 import Image from 'next/image';
 
 interface ChattingRoomUserProps {
-  user: IUser;
+  user: UserWithConversationData;
   onClick: () => void;
   isSelected: boolean;
 }
@@ -42,7 +42,16 @@ const ChattingRoomUser: React.FC<ChattingRoomUserProps> = ({
         >
           {user?.profile?.displayName}
         </div>
-        <span className="text-gray-500">Pick me at 9:00 AM</span>
+        <div className="grid grid-cols-8">
+          <span className="col-span-7 text-gray-500">
+            {user.lastMessage?.messageText}
+          </span>
+          {user.unreadCount > 0 && (
+            <div className=" flex items-center justify-center bg-blue-500 text-white rounded-full w-6 h-6">
+              {user.unreadCount}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

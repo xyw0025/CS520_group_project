@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import com.group.cs520.documentation.MatchApi;
 import com.group.cs520.model.Match;
 import com.group.cs520.model.User;
+import com.group.cs520.model.UserWithConversationData;
 import com.group.cs520.service.MatchService;
-
+import com.group.cs520.service.ChatService;
+import com.group.cs520.service.TypeUtil;
 
 
 @RestController
@@ -21,6 +24,9 @@ import com.group.cs520.service.MatchService;
 public class MatchController implements MatchApi {
     @Autowired
     MatchService matchService;
+
+    @Autowired
+    ChatService chatService;
 
     @Override
     @GetMapping
@@ -61,9 +67,10 @@ public class MatchController implements MatchApi {
         }
     }
 
-    @GetMapping("/get-all-matched-users/{userId}")
-    public ResponseEntity<List<User>> getMatchedUsers(@PathVariable String userId) {
-        List<User> matchedUsers = matchService.getMatchedUsers(userId);
-        return ResponseEntity.ok(matchedUsers);
+    @GetMapping("/get-all-matched-users/{id}")
+    public ResponseEntity<List<UserWithConversationData>> getMatchedUsers(@PathVariable String id) {
+        ObjectId userId = TypeUtil.objectIdConverter(id);
+        List<UserWithConversationData> userWithConversationData = chatService.getMatchedUsersWithConversationData(userId);
+        return ResponseEntity.ok(userWithConversationData);
     }
 }

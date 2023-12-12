@@ -1,6 +1,6 @@
 'use client';
 
-import { IUser } from '@/utils';
+import { UserWithConversationData } from '@/utils';
 import { Button } from './ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -8,7 +8,7 @@ import Carousel from 'react-bootstrap/Carousel';
 import Image from 'next/image';
 
 interface ProfileCardProps {
-  user: IUser;
+  user: UserWithConversationData;
 }
 const ChattingRoomProfile: React.FC<ProfileCardProps> = ({ user }) => {
   return (

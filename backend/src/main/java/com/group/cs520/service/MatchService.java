@@ -130,8 +130,7 @@ public class MatchService {
         }
     }
 
-    public List<User> getMatchedUsers(String id) {
-        ObjectId userId = TypeUtil.objectIdConverter(id);
+    public List<User> getMatchedUsers(ObjectId userId) {
         // Find matchings where status is 1 and userIds array contains the provided userId
         List<Match> matches = matchRepository.findByStatusAndUserIdsContaining(1, userId);
 

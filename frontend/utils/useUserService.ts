@@ -99,14 +99,14 @@ function useUserService(): IUserService {
     },
     getMatchedUsers: async (id) => {
       if (currentUser) {
-        const fetchedUsers = await fetch.get(
+        const userWithConversationData = await fetch.get(
           `${API_URL}/api/v1/match/get-all-matched-users/${id}`
         );
         userStore.setState((state) => ({
           ...state,
-          matchedUsers: fetchedUsers,
+          matchedUsers: userWithConversationData,
         }));
-        return fetchedUsers;
+        return userWithConversationData;
       }
       return [];
     },
@@ -259,10 +259,17 @@ export interface Message {
 }
 
 interface IUserStore {
-  matchedUsers?: IUser[];
+  matchedUsers?: UserWithConversationData[];
   undiscoveredUsers?: IUser[];
   discoverIndex: number;
   currentUser?: IUser;
+}
+
+export interface UserWithConversationData {
+  id: string;
+  profile?: Profile;
+  lastMessage?: Message;
+  unreadCount: number;
 }
 
 interface IUserService extends IUserStore {
@@ -270,7 +277,7 @@ interface IUserService extends IUserStore {
   logout: () => Promise<void>;
   register: (user: IUser) => Promise<void>;
   getCurrent: () => Promise<IUser>;
-  getMatchedUsers: (id: string) => Promise<IUser[]>;
+  getMatchedUsers: (id: string) => Promise<UserWithConversationData[]>;
   getConversation: (id1: string, id2: string) => Promise<Message[]>;
   getConversationId: (id1: string, id2: string) => Promise<string>;
   update: (id: string, params: any) => Promise<IUser>;

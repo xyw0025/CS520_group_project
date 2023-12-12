@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { IUser, Message } from '@/utils';
+import { UserWithConversationData, Message } from '@/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { useUserService } from '@/utils';
 import { PaperPlaneIcon } from '@radix-ui/react-icons';
@@ -22,12 +22,14 @@ const Chat = () => {
   const userService = useUserService();
   const currentUser = userService.currentUser;
   const [matchedUsers, setMatchedUsers] = useState(userService.matchedUsers);
-  const [currentChatUser, setCurrentChatUser] = useState<IUser | null>(null);
+  const [currentChatUser, setCurrentChatUser] =
+    useState<UserWithConversationData | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversationMessages, setConversationMessages] = useState<Message[]>(
     []
   );
   const [message, setMessage] = useState('');
+  const stompClientRef = useRef<Client | null>(null);
 
   //IMEComposing
   const [isIMEComposing, setIsIMEComposing] = useState(false);
@@ -49,10 +51,6 @@ const Chat = () => {
     scrollToBottom();
   }, [conversationMessages]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [conversationMessages]);
-
   // Fetch conversation ID and messages
   useEffect(() => {
     const fetchConversationData = async () => {
@@ -64,6 +62,7 @@ const Chat = () => {
             currentChatUser.id
           );
           setConversationId(fetchedConversationId);
+          setCurrentChatUser({ ...currentChatUser, unreadCount: 0 });
 
           // Fetch conversation messages
           const response = await userService.getConversation(
@@ -98,21 +97,64 @@ const Chat = () => {
   }, []);
 
   // Connect to the WebSocket server
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const socket = new SockJS(`${API_URL}/chat`);
-  const stompClient = new Client({
-    webSocketFactory: () => socket,
-  });
-  stompClient.onConnect = () => {};
-  stompClient.activate();
+  useEffect(() => {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
+    const socket = new SockJS(`${API_URL}/chat`);
+    const stompClient = new Client({
+      webSocketFactory: () => socket,
+      onConnect: () => {
+        console.log('WebSocket connected!');
+        console.log(currentUser);
+        if (currentUser) {
+          stompClient.subscribe(`/room/${currentUser.id}`, (notification) => {
+            const receivedNotification = JSON.parse(notification.body);
+            console.log(receivedNotification);
+          });
+        }
+      },
+    });
+    stompClient.activate();
 
-  const handleUserSelect = (user: IUser) => {
+    stompClientRef.current = stompClient;
+
+    return () => {
+      stompClient.deactivate();
+      console.log('stompClient deactivate');
+    };
+  }, []);
+
+  // Subscribe to a two user's conversation room
+  useEffect(() => {
+    if (conversationId && stompClientRef.current) {
+      const subscription = stompClientRef.current.subscribe(
+        `/room/${conversationId}`,
+        (message) => {
+          const receivedMessage = JSON.parse(message.body);
+          setConversationMessages((prevMessages) => [
+            ...prevMessages,
+            receivedMessage,
+          ]);
+        }
+      );
+
+      return () => {
+        subscription.unsubscribe();
+        console.log('subscription unsubscribe');
+      };
+    }
+  }, [conversationId]);
+
+  const handleUserSelect = (user: UserWithConversationData) => {
     setCurrentChatUser(user);
   };
 
   const handleSendMessage = () => {
     if (!conversationId) {
       console.error('Conversation ID not set. Cannot send message.');
+      return;
+    }
+    if (!stompClientRef.current) {
+      console.error('Stomp Client is not available.');
       return;
     }
 
@@ -124,43 +166,13 @@ const Chat = () => {
     };
 
     // Send the message to the specific conversation channel
-    stompClient.publish({
+    stompClientRef.current.publish({
       destination: `/app/room/${conversationId}/sendMessage`,
       body: JSON.stringify(chatMessage),
     });
 
     setMessage(''); // Clear the input field
   };
-
-  // Subscribe to a room to receive messages by building a WebSocket
-  useEffect(() => {
-    let isSubscribed = true;
-
-    const stompClient = new Client({
-      webSocketFactory: () => new SockJS(`${API_URL}/chat`),
-      onConnect: () => {
-        console.log('WebSocket connected!');
-
-        // Subscribe to the conversation channel if conversationId is available
-        if (conversationId && isSubscribed) {
-          stompClient.subscribe(`/room/${conversationId}`, (message) => {
-            const receivedMessage = JSON.parse(message.body);
-            setConversationMessages((prevMessages) => [
-              ...prevMessages,
-              receivedMessage,
-            ]);
-          });
-        }
-      },
-    });
-
-    stompClient.activate();
-
-    return () => {
-      stompClient.deactivate();
-      isSubscribed = false;
-    };
-  }, [conversationId]);
 
   const renderMessages = () => {
     let lastDate = '';

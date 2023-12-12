@@ -40,8 +40,11 @@ public class User {
     private String password;
 
     private Boolean isActive;
+    @JsonIgnore
     private Boolean isDeleted;
+    @JsonIgnore
     private Instant createdTime;
+    @JsonIgnore
     private Instant updatedTime;
 
     @DocumentReference
