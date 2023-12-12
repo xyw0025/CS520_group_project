@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.*;
 
 @Data
 @Document(collection = "conversations")
@@ -29,6 +29,20 @@ public class Conversation {
     @DocumentReference
     private List<Message> messages;
     private Instant createdAt = Instant.now();
+    private Map<ObjectId, Message> lastMessages = new HashMap<>();
+    private Map<ObjectId, Integer> unreadCounts = new HashMap<>();
+
+    public void updateLastMessage(ObjectId senderId, Message message) {
+        // Update the last message for this conversation
+        this.lastMessages.put(senderId, message);
+        // Identify the receiver
+        ObjectId receiverId = (senderId.equals(user1Id)) ? user2Id : user1Id;
+        // Increment the unread count for the receiver
+        this.unreadCounts.merge(receiverId, 1, Integer::sum);
+    }
+    public void markAsRead(ObjectId userId) {
+        this.unreadCounts.put(userId, 0);
+    }
 
     public Conversation(ObjectId user1Id, ObjectId user2Id) {
         this.user1Id = user1Id;

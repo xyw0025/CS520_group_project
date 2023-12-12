@@ -33,11 +33,17 @@ public class ChatService {
         if (existingConversation.isPresent()) {
             conversation = existingConversation.get();
             conversation.getMessages().add(message);
+            // Update last message for both users
+            conversation.updateLastMessage(senderId, message);
+
         } else {
             conversation = new Conversation(senderId, receiverId);
             List<Message> messages = new ArrayList<>();
             messages.add(message);
             conversation.setMessages(messages);
+
+            // Initialize last message and unread count
+            conversation.updateLastMessage(senderId, message);
         }
         conversationRepository.save(conversation);
     }
