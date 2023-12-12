@@ -167,4 +167,21 @@ public class UserService {
         user.setProfile(profile);
         mongoTemplate.save(user);
     }
+
+    public void addMatch(String user_id, Match match) {
+        User user = this.singleUser(user_id);
+        List<Match> matches = user.getMatches();
+        matches.add(match);
+        user.setMatches(matches);
+        userRepository.save(user);
+    }
+
+    public List<Match> userMatches(String user_id) {
+        User user = this.singleUser(user_id);
+        List<Match> filteredMatches = user.getMatches().stream()
+                                      .filter(match -> match.getStatus() == 1)
+                                      .collect(Collectors.toList());
+
+        return filteredMatches;
+    }
 }
