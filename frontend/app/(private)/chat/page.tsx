@@ -10,12 +10,14 @@ import MessageBox from '@/components/MessageBox';
 import ChattingRoomProfile from '@/components/ChattingRoomProfile';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
+import moment from 'moment';
 
 // Chatting Room Process
 // step 1. fetch matchedUsers
 // step 2. choose a user -> set currentChatUser -> fetch our conversation_id and conversation
 // step 3. stompClient connect to backend url
 // step 4. use conversation_id to send message and listen message in private room
+
 const Chat = () => {
   const userService = useUserService();
   const currentUser = userService.currentUser;
@@ -160,6 +162,34 @@ const Chat = () => {
     };
   }, [conversationId]);
 
+  const renderMessages = () => {
+    let lastDate = '';
+
+    return conversationMessages.map((msg, index) => {
+      const messageDate = moment(msg.createdAt).format('YYYY-MM-DD');
+      let showDate: string | undefined = undefined;
+
+      if (messageDate !== lastDate) {
+        showDate = moment(msg.createdAt).format('LL');
+        lastDate = messageDate;
+      }
+
+      return (
+        <MessageBox
+          text={msg.messageText}
+          isSender={msg.senderId === currentUser?.id}
+          imageUrl={
+            msg.senderId === currentUser?.id
+              ? currentUser?.profile?.imageUrls?.[0] || 'defaultImageUrl'
+              : currentChatUser?.profile?.imageUrls?.[0] || 'defaultImageUrl'
+          }
+          createdAt={msg.createdAt}
+          showDate={showDate}
+        />
+      );
+    });
+  };
+
   return (
     <div className="container mx-auto shadow-lg rounded-lg my-1 h-5/6">
       {/* Chatting */}
@@ -182,19 +212,7 @@ const Chat = () => {
         <div className="w-full px-5 flex flex-col  justify-between">
           {/* Messages display */}
           <div className="flex flex-col mt-5 flex-grow overflow-y-auto">
-            {conversationMessages.map((msg) => (
-              <MessageBox
-                text={msg.messageText}
-                isSender={msg.senderId === currentUser?.id}
-                imageUrl={
-                  msg.senderId === currentUser?.id
-                    ? currentUser?.profile?.imageUrls?.[0] || 'defaultImageUrl'
-                    : currentChatUser?.profile?.imageUrls?.[0] ||
-                      'defaultImageUrl'
-                }
-                createdAt={msg.createdAt}
-              />
-            ))}
+            {renderMessages()} {/* 使用函數渲染訊息 */}
             <div ref={messagesEndRef} />
           </div>
           {currentChatUser && (
