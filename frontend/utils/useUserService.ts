@@ -173,11 +173,27 @@ function useUserService(): IUserService {
     },
     create_match_history: async (id1: string, id2: string, action: string) => {
       try {
-        return await fetch.post(`${API_URL}/api/v1/match/add-match-history`, {
-          senderId: id1,
-          receiverId: id2,
-          behavior: action,
-        });
+        const match = await fetch.post(
+          `${API_URL}/api/v1/match/add-match-history`,
+          {
+            senderId: id1,
+            receiverId: id2,
+            behavior: action,
+          }
+        );
+        if (match && match?.status == 1) {
+          const newMatchedUser = await fetch.get(
+            `${API_URL}/api/v1/users/${id2}`
+          );
+          userStore.setState((state) => ({
+            ...state,
+            matchedUsers: [...(state.matchedUsers || []), newMatchedUser],
+          }));
+          toast({
+            title: 'Congratulation!',
+            description: ' Successfully Match!',
+          });
+        }
       } catch (error: any) {
         console.log(error);
       }
