@@ -33,7 +33,12 @@ public class ChatController {
         Message savedMessage = messageRepository.save(chatMessage);
         // Handle conversation
         chatService.handleConversationForMessage(savedMessage);
+        // send to conversation channel
         simpMessagingTemplate.convertAndSend("/room/" + conversationId, savedMessage);
+        // send to receiver notification channel
+        String receiverId = chatMessage.getReceiverId().toString();
+        simpMessagingTemplate.convertAndSend("/room/" + receiverId, savedMessage);
+
         return savedMessage;
     }
 
@@ -46,6 +51,8 @@ public class ChatController {
     public ResponseEntity<String> getConversationId(@RequestParam ObjectId user1Id, @RequestParam ObjectId user2Id) {
         String conversationId = chatService.getConversationId(user1Id, user2Id);
         if (conversationId != null) {
+            // user2Id is currentChatUser.id
+            chatService.markConversationAsRead(user2Id, new ObjectId(conversationId));
             return ResponseEntity.ok(conversationId);
         } else {
             return ResponseEntity.notFound().build();
