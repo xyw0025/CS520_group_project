@@ -62,7 +62,6 @@ const Chat = () => {
             currentChatUser.id
           );
           setConversationId(fetchedConversationId);
-          setCurrentChatUser({ ...currentChatUser, unreadCount: 0 });
 
           // Fetch conversation messages
           const response = await userService.getConversation(
