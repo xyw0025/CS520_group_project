@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { IUser } from '@/utils';
 import { Button } from './ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -19,6 +20,25 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   onLike,
   onDislike,
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const handleLike = async () => {
+    setIsSubmitting(true);
+    try {
+      await onLike();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDislike = async () => {
+    setIsSubmitting(true);
+    try {
+      await onDislike();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <Card className="h-1000 bg-gradient-to-tl from-gray-100 to-gray-400 grid grid-cols-2 p-2 rounded-3xl dark:bg-gray-700 h-500 w-500 ">
       <CardContent className="h-600 w-500 mt-5 pt-3 bg-gray-500 ring-2 ring-gray-600 rounded-2xl overflow-hidden">
@@ -64,17 +84,19 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       <CardFooter className="col-span-2 justify-center mt-3">
         <Button
           type="button"
+          disabled={isSubmitting}
           variant="umass"
           className="mx-5 w-40 bg-blue-300 border-3 border-blue-500"
-          onClick={onDislike}
+          onClick={handleDislike}
         >
           <Cross2Icon className="text-blue-600 scale-150" />
         </Button>
         <Button
           type="button"
+          disabled={isSubmitting}
           variant="umass"
           className="mx-5 w-40 bg-red-300 border-3 border-red-500 shadow-2xl"
-          onClick={onLike}
+          onClick={handleLike}
         >
           <HeartFilledIcon className="text-red-600 scale-150 " />
         </Button>

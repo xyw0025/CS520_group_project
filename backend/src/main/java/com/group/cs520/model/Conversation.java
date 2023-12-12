@@ -35,10 +35,8 @@ public class Conversation {
     public void updateLastMessage(ObjectId senderId, Message message) {
         // Update the last message for this conversation
         this.lastMessages.put(senderId, message);
-        // Identify the receiver
-        ObjectId receiverId = (senderId.equals(user1Id)) ? user2Id : user1Id;
-        // Increment the unread count for the receiver
-        this.unreadCounts.merge(receiverId, 1, Integer::sum);
+        // Increment the unread count for the sender
+        this.unreadCounts.merge(senderId, 1, Integer::sum);
     }
     public void markAsRead(ObjectId userId) {
         this.unreadCounts.put(userId, 0);

@@ -143,6 +143,8 @@ public class UserService {
                 .distinct()
                 .collect(Collectors.toList());
 
+        visitedUserIds.add(TypeUtil.objectIdConverter(userId));
+
         // Step 2: Find users who are not in visitedUserIds
         List<User> users = userRepository.findByIdNotIn(visitedUserIds, PageRequest.of(0, limit));
         return users;

@@ -94,7 +94,7 @@ const Chat = () => {
       }
     };
     fetchMatchedUsers();
-  }, []);
+  }, [currentUser]);
 
   // Connect to the WebSocket server
   useEffect(() => {
