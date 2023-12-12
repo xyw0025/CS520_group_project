@@ -108,7 +108,7 @@ const Chat = () => {
         if (currentUser) {
           stompClient.subscribe(`/room/${currentUser.id}`, (notification) => {
             const receivedNotification = JSON.parse(notification.body);
-            console.log(receivedNotification);
+            updateMatchedUsersWithNotification(receivedNotification);
           });
         }
       },
@@ -122,6 +122,21 @@ const Chat = () => {
       console.log('stompClient deactivate');
     };
   }, []);
+
+  const updateMatchedUsersWithNotification = (notification: Message) => {
+    setMatchedUsers((prevMatchedUsers) => {
+      return prevMatchedUsers?.map((user) => {
+        if (user.id === notification.senderId) {
+          return {
+            ...user,
+            unreadCount: user.unreadCount + 1,
+            lastMessage: notification,
+          };
+        }
+        return user;
+      });
+    });
+  };
 
   // Subscribe to a two user's conversation room
   useEffect(() => {
@@ -144,8 +159,19 @@ const Chat = () => {
     }
   }, [conversationId]);
 
-  const handleUserSelect = (user: UserWithConversationData) => {
-    setCurrentChatUser(user);
+  const handleUserSelect = (selectedUser: UserWithConversationData) => {
+    setCurrentChatUser(selectedUser);
+    setMatchedUsers((prevMatchedUsers) => {
+      return prevMatchedUsers?.map((user) => {
+        if (user.id === selectedUser.id) {
+          return {
+            ...user,
+            unreadCount: 0,
+          };
+        }
+        return user;
+      });
+    });
   };
 
   const handleSendMessage = () => {

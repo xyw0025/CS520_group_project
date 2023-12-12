@@ -16,9 +16,13 @@ const ChattingRoomProfile: React.FC<ProfileCardProps> = ({ user }) => {
       <div className="w-full h-200 mt-5 pt-3 bg-gray-200 rounded-2xl overflow-hidden">
         <Carousel className="overflow-hidden" interval={100000}>
           {user?.profile?.imageUrls &&
-            user?.profile?.imageUrls.map((photoUrl: string) => (
-              <Carousel.Item key="photo" className="overflow-hidden ">
+            user?.profile?.imageUrls.map((photoUrl: string, index) => (
+              <Carousel.Item
+                key={photoUrl + index}
+                className="overflow-hidden "
+              >
                 <Image
+                  key={photoUrl}
                   className="rounded-3xl overflow-hidden"
                   src={photoUrl}
                   alt="Photo"
@@ -41,7 +45,12 @@ const ChattingRoomProfile: React.FC<ProfileCardProps> = ({ user }) => {
         {user?.profile?.preferences && <Separator className="my-1 bg-black " />}
         <div>
           {user?.profile?.preferences?.map((preference) => (
-            <Button type="button" variant="umass2" className="m-1 cursor-none">
+            <Button
+              key={preference.name}
+              type="button"
+              variant="umass2"
+              className="m-1 cursor-none"
+            >
               {preference.name}
             </Button>
           ))}
