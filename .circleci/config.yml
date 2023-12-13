@@ -1,0 +1,73 @@
+version: 2.1
+
+orbs:
+  gcp-gcr: circleci/gcp-gcr@0.15.3
+
+jobs:
+  build-and-push-image:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install Google Cloud SDK
+          command: |
+            echo 'export PATH=$PATH:/usr/local/gcloud/google-cloud-sdk/bin' >> $BASH_ENV
+            curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-341.0.0-linux-x86_64.tar.gz
+            tar -xzvf google-cloud-sdk-341.0.0-linux-x86_64.tar.gz
+            ./google-cloud-sdk/install.sh --quiet
+            source /usr/local/gcloud/google-cloud-sdk/path.bash.inc
+      - run:
+          name: Authenticate with Google Cloud
+          command: |
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+      - run:
+          name: Configure Docker for GCR
+          command: |
+            gcloud auth configure-docker us-west1-docker.pkg.dev
+      - run:
+          name: Install Docker Compose
+          command: |
+            sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+      - run:
+          name: Build and Push Docker Images
+          command: |
+            docker-compose -f docker-compose.remote.yml build
+            docker-compose -f docker-compose.remote.yml push
+
+  deploy:
+    docker:
+      - image: google/cloud-sdk
+        auth:
+            username: $DOCKERHUB_USERNAME
+            password: $DOCKERHUB_PASSWORD
+    steps:
+      - run:
+          name: Deploy to GCP instance
+          command: |  # Add your GCP deployment commands here
+            sudo gcloud --quiet components update
+            echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud --quiet auth configure-docker us-west1-docker.pkg.dev
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+            gcloud compute instances update-container $INSTANCE_NAME \
+              --container-image $GCR_URL/$GOOGLE_PROJECT_ID/$IMAGE_NAME:$CIRCLE_SHA1 \
+              --zone $GOOGLE_COMPUTE_ZONE
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build-and-push-image:
+          filters:
+            branches:
+              only: staging
+      - deploy:
+          requires:
+            - build-and-push-image
+          filters:
+            branches:
+              only: staging
