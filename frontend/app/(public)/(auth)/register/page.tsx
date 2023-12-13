@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import LoadingBox from '@/components/LoadingBox';
 import { useForm } from 'react-hook-form';
 import { useUserService } from 'utils';
 import { useRouter } from 'next/navigation';
@@ -16,6 +17,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/PasswordInput';
 
 export default function Register() {
   const userService = useUserService();
@@ -26,12 +28,15 @@ export default function Register() {
   const { errors } = formState;
   const { currentUser } = userService;
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
       userService.setUser(JSON.parse(storedUser));
       router.replace('/');
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
@@ -43,38 +48,52 @@ export default function Register() {
         message: 'Invalid email address',
       },
     }),
-    password: register('password', {
-      required: 'Password is required',
-      minLength: {
-        value: 8,
-        message: 'Password must be at least 8 characters',
-      },
-      maxLength: {
-        value: 20,
-        message: 'Password must be less than 20 characters',
-      },
-    }),
-    confirmPassword: register('confirmPassword', {
-      required: 'Confirm Password is required',
-      minLength: {
-        value: 8,
-        message: 'Confirm Password must be at least 8 characters',
-      },
-      maxLength: {
-        value: 20,
-        message: 'Confirm Password must be less than 20 characters',
-      },
-      validate: (value) => {
-        const passwordValue = getValues('password');
-        if (value !== passwordValue) {
-          return 'Passwords do not match';
-        }
-      },
-    }),
+    password: {
+      ...register('password', {
+        required: 'Password is required',
+        minLength: {
+          value: 8,
+          message: 'Password must be at least 8 characters',
+        },
+        maxLength: {
+          value: 20,
+          message: 'Password must be less than 20 characters',
+        },
+      }),
+      errorMessage: errors.password?.message,
+    },
+    confirmPassword: {
+      ...register('confirmPassword', {
+        required: 'Confirm Password is required',
+        minLength: {
+          value: 8,
+          message: 'Confirm Password must be at least 8 characters',
+        },
+        maxLength: {
+          value: 20,
+          message: 'Confirm Password must be less than 20 characters',
+        },
+        validate: (value) => {
+          const passwordValue = getValues('password');
+          if (value !== passwordValue) {
+            return 'Passwords do not match';
+          }
+        },
+      }),
+      errorMessage: errors.confirmPassword?.message,
+    },
   };
 
   async function onSubmit(user: any) {
     await userService.register(user);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-32">
+        <LoadingBox />
+      </div>
+    );
   }
 
   return (
@@ -88,7 +107,7 @@ export default function Register() {
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="grid gap-4">
-            <div className="grid grid-cols-1 gap-6">
+            {/* <div className="grid grid-cols-1 gap-6">
               <Button variant="outline">
                 <Icons.google className="mr-2 h-4 w-4" />
                 Google
@@ -103,7 +122,7 @@ export default function Register() {
                   Or continue with
                 </span>
               </div>
-            </div>
+            </div> */}
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -118,22 +137,14 @@ export default function Register() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                {...fields.password}
-                type="password"
-                onChange={() => clearErrors()}
-              />
+              <PasswordInput fields={ fields.password } />
               <div className="text-red-700 font-bold">
                 {errors.password?.message?.toString()}
               </div>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="confirmPassword">Confirm Password Again</Label>
-              <Input
-                {...fields.confirmPassword}
-                type="password"
-                onChange={() => clearErrors()}
-              />
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <PasswordInput placeholder='enter your password again' fields={ fields.confirmPassword } />
               <div className="text-red-700 font-bold">
                 {errors.confirmPassword?.message?.toString()}
               </div>

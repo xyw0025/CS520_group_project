@@ -54,3 +54,4 @@ buildNumber.properties
 mvnw
 mvnw.cmd
 
+src/main/resources/*.json

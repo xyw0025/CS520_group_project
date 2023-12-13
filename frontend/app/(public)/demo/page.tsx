@@ -13,7 +13,7 @@ const Demo = () => {
             , This is the Demo page
           </h1>
 
-          <Link href="/sign-up">
+          <Link href="/register">
             <div className="rounded-full bg-[rgb(228,89,89)] shadow-lg shadow-gray-400 p-6 cursor-pointer hover:scale-110 ease-in duration-300">
               Register Now!
             </div>

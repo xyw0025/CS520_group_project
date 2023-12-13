@@ -52,11 +52,14 @@ const Navbar = () => {
             {currentUser ? (
               <>
                 <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
-                  <Link href="/dashboard">Dashboard</Link>
+                  <Link href="/chat">Chat</Link>
                 </li>
 
                 <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
                   <Link href="/profile">Profile</Link>
+                </li>
+                <li className="ml-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
+                  <Link href="/discover">Discover</Link>
                 </li>
 
                 <li className="mx-10 mt-2 text-lg dark:text-white uppercase hover:border-b">
