@@ -326,7 +326,7 @@ const Profile = () => {
       </Card>
       <div className="col-span-2 grid items-start gap-6 lg:col-span-2 lg:grid-cols-2 xl:col-span-1 xl:grid-cols-1">
         <CardContainer>
-          <Card className="m-10 flex-1 h-5/6">
+          <Card className="m-10 flex-1 h-[325px]">
             <CardHeader>
               <CardTitle>Reset Password</CardTitle>
             </CardHeader>
@@ -359,13 +359,13 @@ const Profile = () => {
               </CardFooter>
             </form>
           </Card>
-          <Card className="m-10 flex-1 h-5/6">
+          <Card className="m-10 flex-1 h-[325px]">
           <CardHeader>
             <CardTitle>Report an issue</CardTitle>
           </CardHeader>
           <form onSubmit={handleSubmitReport(onReportSubmit)}>
             <CardContent className="grid gap-6">
-              <div className="grid gap-2">
+              <div className="grid gap-2 h-[150px]">
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="content"
