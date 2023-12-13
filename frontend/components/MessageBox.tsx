@@ -22,8 +22,6 @@ const MessageBox: React.FC<MessageProps> = ({
       {showDate && (
         <div className="text-center text-xs text-gray-500">{showDate}</div>
       )}{' '}
-      {/* 顯示日期 */}
-      {/* 現有的訊息氣泡代碼 */}
       {isSender ? (
         <div className="flex justify-end mb-4">
           <span className="flex flex-col-reverse text-xs text-gray-500">

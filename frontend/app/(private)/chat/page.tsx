@@ -78,6 +78,20 @@ const Chat = () => {
     fetchConversationData();
   }, [currentChatUser, currentUser]);
 
+  // Sorted matched users
+  function sortedMatchedUsers(fetchedUsers: UserWithConversationData[]) {
+    const sortedUsers = fetchedUsers.sort((a, b) => {
+      const dateA = a.lastMessage
+        ? new Date(a.lastMessage.createdAt).getTime()
+        : 0;
+      const dateB = b.lastMessage
+        ? new Date(b.lastMessage.createdAt).getTime()
+        : 0;
+      return dateB - dateA; // For descending order
+    });
+    return sortedUsers;
+  }
+
   // Fetch matched users
   useEffect(() => {
     const fetchMatchedUsers = async () => {
@@ -86,7 +100,7 @@ const Chat = () => {
           const fetchedUsers = await userService.getMatchedUsers(
             currentUser.id
           );
-          setMatchedUsers(fetchedUsers);
+          setMatchedUsers(sortedMatchedUsers(fetchedUsers));
         }
       } catch (error) {
         console.error('Error fetching matched users:', error);
@@ -124,16 +138,22 @@ const Chat = () => {
 
   const updateMatchedUsersWithNotification = (notification: Message) => {
     setMatchedUsers((prevMatchedUsers) => {
-      return prevMatchedUsers?.map((user) => {
-        if (user.id === notification.senderId) {
-          return {
-            ...user,
-            unreadCount: user.unreadCount + 1,
-            lastMessage: notification,
-          };
-        }
-        return user;
-      });
+      if (prevMatchedUsers) {
+        // Update the matched users with the new notification
+        const updatedMatchedUsers = prevMatchedUsers.map((user) => {
+          if (user.id === notification.senderId) {
+            return {
+              ...user,
+              unreadCount: user.unreadCount + 1,
+              lastMessage: notification,
+            };
+          }
+          return user;
+        });
+        // Sort the updated matched users
+        return sortedMatchedUsers(updatedMatchedUsers);
+      }
+      return [];
     });
   };
 
@@ -249,7 +269,7 @@ const Chat = () => {
         <div className="w-full px-5 flex flex-col  justify-between">
           {/* Messages display */}
           <div className="flex flex-col mt-5 flex-grow overflow-y-auto">
-            {renderMessages()} {/* 使用函數渲染訊息 */}
+            {renderMessages()}
             <div ref={messagesEndRef} />
           </div>
           {currentChatUser && (

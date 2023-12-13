@@ -1,7 +1,10 @@
 package com.group.cs520.controller;
 
+import com.group.cs520.model.User;
 import com.group.cs520.model.Message;
+import com.group.cs520.model.UserWithConversationData;
 import com.group.cs520.service.ChatService;
+import com.group.cs520.service.UserService;
 import com.group.cs520.repository.MessageRepository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +29,9 @@ public class ChatController {
 
     @Autowired
     private ChatService chatService;
+
+    @Autowired
+    private UserService userService;
 
     @MessageMapping("/room/{conversationId}/sendMessage")
     public Message sendMessage(@DestinationVariable String conversationId, @Payload Message chatMessage) {
@@ -57,5 +63,12 @@ public class ChatController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/chatting-room-user/{id}")
+    public ResponseEntity<UserWithConversationData> getSingleUser(@PathVariable String id) {
+        User user = userService.singleUser(id);
+        UserWithConversationData userWithConversationData = new UserWithConversationData(user);
+        return ResponseEntity.ok(userWithConversationData);
     }
 }
