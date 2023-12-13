@@ -22,7 +22,6 @@ public class PreferenceControllerTest {
     @Test
     public void testGetAllPreferences() throws Exception {
         mockMvc.perform(get("/api/v1/preference"))
-                .andDo(print())  // Optional: prints request and response details
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
                 // Further assertions can be added here

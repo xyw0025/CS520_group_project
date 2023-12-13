@@ -72,8 +72,6 @@ public class ProfileControllerTest {
     @Test
     public void testUpdateProfile() throws Exception {
         User user = userRepository.findAll().getFirst();
-        System.out.print("....????");
-        System.out.print(user.getId().toString());
         String profileJson = "{\"displayName\": \"yoyoyo\", \"gender\": \"male\", \"birthday\": \"1999-11-01\", \"preferences\": []}"; // replace with valid payload
 
         mockMvc.perform(put("/api/v1/profile/" + user.getId())
