@@ -3,15 +3,15 @@ import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 
 type PasswordInputProps = {
-    fields: {
-        password: {}
-    };
+    fields: {},
     placeholder?: string;
+    id?: string;
 };
 
 const PasswordInput = ({
     fields,
-    placeholder
+    placeholder,
+    id
 }: PasswordInputProps) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -25,8 +25,8 @@ const PasswordInput = ({
   return (
     <div className="relative">
       <Input
-        {...fields.password}
-        id="password"
+        {...fields}
+        id={id ? id: "password"}
         type={showPassword ? "text" : "password"}
         value={password}
         onChange={(e) => {

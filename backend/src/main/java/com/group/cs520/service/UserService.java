@@ -178,4 +178,13 @@ public class UserService {
 
         return filteredMatches;
     }
+
+    public User updateUserPassword(String userId, String password) {
+        User user = this.singleUser(userId);
+        String encodedPassword = passwordEncoder.encode(password);
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+
+        return user;
+    }
 }

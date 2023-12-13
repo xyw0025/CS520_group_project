@@ -48,34 +48,40 @@ export default function Register() {
         message: 'Invalid email address',
       },
     }),
-    password: register('password', {
-      required: 'Password is required',
-      minLength: {
-        value: 8,
-        message: 'Password must be at least 8 characters',
-      },
-      maxLength: {
-        value: 20,
-        message: 'Password must be less than 20 characters',
-      },
-    }),
-    confirmPassword: register('confirmPassword', {
-      required: 'Confirm Password is required',
-      minLength: {
-        value: 8,
-        message: 'Confirm Password must be at least 8 characters',
-      },
-      maxLength: {
-        value: 20,
-        message: 'Confirm Password must be less than 20 characters',
-      },
-      validate: (value) => {
-        const passwordValue = getValues('password');
-        if (value !== passwordValue) {
-          return 'Passwords do not match';
-        }
-      },
-    }),
+    password: {
+      ...register('password', {
+        required: 'Password is required',
+        minLength: {
+          value: 8,
+          message: 'Password must be at least 8 characters',
+        },
+        maxLength: {
+          value: 20,
+          message: 'Password must be less than 20 characters',
+        },
+      }),
+      errorMessage: errors.password?.message,
+    },
+    confirmPassword: {
+      ...register('confirmPassword', {
+        required: 'Confirm Password is required',
+        minLength: {
+          value: 8,
+          message: 'Confirm Password must be at least 8 characters',
+        },
+        maxLength: {
+          value: 20,
+          message: 'Confirm Password must be less than 20 characters',
+        },
+        validate: (value) => {
+          const passwordValue = getValues('password');
+          if (value !== passwordValue) {
+            return 'Passwords do not match';
+          }
+        },
+      }),
+      errorMessage: errors.confirmPassword?.message,
+    },
   };
 
   async function onSubmit(user: any) {
@@ -131,14 +137,14 @@ export default function Register() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <PasswordInput fields={{ password: fields.password }} />
+              <PasswordInput fields={ fields.password } />
               <div className="text-red-700 font-bold">
                 {errors.password?.message?.toString()}
               </div>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <PasswordInput placeholder='enter your password again' fields={{ password: fields.password }} />
+              <PasswordInput placeholder='enter your password again' fields={ fields.confirmPassword } />
               <div className="text-red-700 font-bold">
                 {errors.confirmPassword?.message?.toString()}
               </div>

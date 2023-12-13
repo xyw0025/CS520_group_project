@@ -111,6 +111,23 @@ function useUserService(): IUserService {
         });
       }
     },
+    resetPassword: async (id, password) => {
+      try {
+        const updated_user = await fetch.put(
+          `${API_URL}/api/v1/users/${id}/reset-password`,
+          {password: password}
+        );
+        toast({
+          title: 'Password reset successfully!',
+        });
+        return updated_user;
+      } catch (error: any) {
+        toast({
+          title: `Uh oh! Something went wrong.`,
+          variant: 'destructive',
+        });
+      }
+    },
     upload: async (id, name, photoFile) => {
       try {
         const imageUrl = await fetch.post(
@@ -221,6 +238,7 @@ interface IUserService extends IUserStore {
   // delete: (id: string) => Promise<void>;
   setUser: (user: IUser) => Promise<void>;
   discover: (id: string) => Promise<IUser[]>;
+  resetPassword: (id: string, params: any) => Promise<IUser>;
   create_match_history: (
     id1: string,
     id2: string,

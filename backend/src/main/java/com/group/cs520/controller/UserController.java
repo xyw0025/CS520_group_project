@@ -202,4 +202,11 @@ public class UserController implements UserApi {
         profileService.setProfilePhoto(id, photoURL);
         return ResponseEntity.ok(photoURL);
     }
+
+
+    @PutMapping("/{id}/reset-password")
+    public ResponseEntity<?> updatePassword(@PathVariable String id, @RequestBody Map<String, String> payload) {
+        User user = userService.updateUserPassword(id, payload.get("password"));
+        return ResponseEntity.ok(user);
+    }
 }

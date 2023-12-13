@@ -17,11 +17,28 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import ProfilePhotos from '@/components/ProfilePhotos';
+import { cn } from '@/lib/utils';
+import { PasswordInput } from '@/components/PasswordInput'
+
+const CardContainer = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-center [&>div]:w-full",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
 
 const Profile = () => {
   const userService = useUserService();
   const currentUser = userService.currentUser;
   const { register, handleSubmit, formState, clearErrors, reset } = useForm();
+  const { register: registerReset, handleSubmit: handleSubmitReset, formState: formStateReset, getValues: getValuesReset } = useForm();
+  const { errors: errorsReset } = formStateReset;
   const { errors } = formState;
 
   const MAX_HOBBIES = 5;
@@ -85,6 +102,40 @@ const Profile = () => {
         message: 'Self-Introduction must be less than 500 characters',
       },
     }),
+    password: {
+      ...registerReset('password', {
+        required: 'Password is required',
+        minLength: {
+          value: 8,
+          message: 'Password must be at least 8 characters',
+        },
+        maxLength: {
+          value: 20,
+          message: 'Password must be less than 20 characters',
+        },
+      }),
+      errorMessage: errorsReset.password?.message,
+    },
+    confirmPassword: {
+      ...registerReset('confirmPassword', {
+        required: 'Confirm Password is required',
+        minLength: {
+          value: 8,
+          message: 'Confirm Password must be at least 8 characters',
+        },
+        maxLength: {
+          value: 20,
+          message: 'Confirm Password must be less than 20 characters',
+        },
+        validate: (value) => {
+          const passwordValue = getValuesReset('password');
+          if (value !== passwordValue) {
+            return 'Passwords do not match';
+          }
+        },
+      }),
+      errorMessage: errorsReset.confirmPassword?.message,
+    },
   };
 
   async function onSubmit({
@@ -109,6 +160,16 @@ const Profile = () => {
       console.log('Can not get the currentUser');
     }
   }
+
+  async function onResetSubmit({ password }: any) {
+    if (currentUser && currentUser.id) {
+      const updatedUser = await userService.resetPassword(currentUser.id, password);
+      userService.setUser(updatedUser);
+    } else {
+      console.log('Cannot get the currentUser');
+    }
+  }
+
 
   return (
     <div id="profile" className=" w-full h-screen">
@@ -254,6 +315,43 @@ const Profile = () => {
           </CardFooter>
         </form>
       </Card>
+      <div className="col-span-2 grid items-start gap-6 lg:col-span-2 lg:grid-cols-2 xl:col-span-1 xl:grid-cols-1">
+        <CardContainer>
+          <Card className="m-10 flex-1">
+            <CardHeader>
+              <CardTitle>Reset Password</CardTitle>
+            </CardHeader>
+            <form onSubmit={handleSubmitReset(onResetSubmit)}>
+              <CardContent className="grid gap-6">
+                <div className="grid gap-2">
+                  <Label htmlFor="password">Password</Label>
+                  <PasswordInput fields={fields.password} />
+                  <div className="text-red-700 font-bold">
+                  {errorsReset.password?.message?.toString()}
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <PasswordInput placeholder='Please verify your password' id="confirmPassword" fields={fields.confirmPassword} />
+                  <div className="text-red-700 font-bold">
+                  {errorsReset.confirmPassword?.message?.toString()}
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="justify-between space-x-2">
+                <Button 
+                  type="submit" 
+                  disabled={formStateReset.isSubmitting}
+                  className="mx-auto place-self-center w-1/2"
+                  variant={'umass2'}
+                >
+                  {formStateReset.isSubmitting ? 'Submitting...' : 'Reset'}
+                </Button>
+              </CardFooter>
+            </form>
+          </Card>
+        </CardContainer>
+      </div>
     </div>
   );
 };
