@@ -1,6 +1,5 @@
 package com.group.cs520.model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

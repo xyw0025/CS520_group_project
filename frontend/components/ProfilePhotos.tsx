@@ -64,7 +64,6 @@ const ProfilePhotos = () => {
       }
       return updatedPhotos;
     });
-    console.log(currentUser);
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -96,6 +95,7 @@ const ProfilePhotos = () => {
     <div className="grid grid-cols-2 gap-2 w-full h-full mx-auto p-2 justify-items-center items-start">
       {photos.map((photoUrl) => (
         <PhotoCard
+          key={photoUrl}
           photoUrl={photoUrl}
           onRemove={handleRemovePhoto}
           className="w-[300px]"
