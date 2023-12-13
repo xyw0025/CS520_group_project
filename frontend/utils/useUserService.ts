@@ -215,6 +215,17 @@ function useUserService(): IUserService {
         console.log(error);
       }
     },
+    report: async(id: string, content: string) => {
+      try {
+        await fetch.post(
+          `${API_URL}/api/v1/report/${id}`,
+          {content: content}
+        );
+        toast({title: 'Report submitted successfully!'});
+      } catch (error: any) {
+        console.log(error);
+      }
+    },
     getConversation: async (id1: string, id2: string) => {
       try {
         return await fetch.get(
@@ -319,6 +330,7 @@ interface IUserService extends IUserStore {
   setUser: (user: IUser) => Promise<void>;
   discover: (id: string) => Promise<IUser[]>;
   resetPassword: (id: string, params: any) => Promise<IUser>;
+  report: (id: string, params: any) => Promise<void>;
   setDiscoverIndex: (index: number) => void;
   create_match_history: (
     id1: string,

@@ -37,6 +37,7 @@ const Profile = () => {
   const userService = useUserService();
   const currentUser = userService.currentUser;
   const { register, handleSubmit, formState, clearErrors, reset } = useForm();
+  const { register: registerReport, formState: formStateReport, handleSubmit: handleSubmitReport } = useForm();
   const { register: registerReset, handleSubmit: handleSubmitReset, formState: formStateReset, getValues: getValuesReset } = useForm();
   const { errors: errorsReset } = formStateReset;
   const { errors } = formState;
@@ -170,6 +171,14 @@ const Profile = () => {
     }
   }
 
+  async function onReportSubmit({ content }: any) {
+    if (currentUser && currentUser.id) {
+      console.log(`${content}`)
+      await userService.report(currentUser.id, content);
+    } else {
+      console.log('Cannot get the currentUser');
+    }
+  }
 
   return (
     <div id="profile" className=" w-full h-screen">
@@ -317,7 +326,7 @@ const Profile = () => {
       </Card>
       <div className="col-span-2 grid items-start gap-6 lg:col-span-2 lg:grid-cols-2 xl:col-span-1 xl:grid-cols-1">
         <CardContainer>
-          <Card className="m-10 flex-1">
+          <Card className="m-10 flex-1 h-[325px]">
             <CardHeader>
               <CardTitle>Reset Password</CardTitle>
             </CardHeader>
@@ -349,6 +358,33 @@ const Profile = () => {
                 </Button>
               </CardFooter>
             </form>
+          </Card>
+          <Card className="m-10 flex-1 h-[325px]">
+          <CardHeader>
+            <CardTitle>Report an issue</CardTitle>
+          </CardHeader>
+          <form onSubmit={handleSubmitReport(onReportSubmit)}>
+            <CardContent className="grid gap-6">
+              <div className="grid gap-2 h-[150px]">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="content"
+                  placeholder="Please include all information relevant to your issue."
+                  {...registerReport('content')} 
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="justify-between space-x-2">
+              <Button 
+                type="submit" 
+                disabled={formStateReport.isSubmitting}
+                className="mx-auto place-self-center w-1/2" 
+                variant={'umass2'}>
+              Submit
+              {formStateReport.isSubmitting}
+              </Button>
+            </CardFooter>
+          </form>
           </Card>
         </CardContainer>
       </div>
