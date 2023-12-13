@@ -21,10 +21,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressContentEditableWarning>
-      <body className={cn(font.className, 'bg-while dark:bg-[#282a30]')}>
+      <body className={cn(font.className, 'bg-white dark:bg-[#282a30]')}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="white"
           enableSystem={false}
           storageKey="UMassenger"
         >

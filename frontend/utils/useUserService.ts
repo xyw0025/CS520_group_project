@@ -11,6 +11,7 @@ export { useUserService };
 const initialState = {
   matchedUsers: undefined,
   undiscoveredUsers: undefined,
+  discoverIndex: 0,
   currentUser: undefined,
 };
 const userStore = create<IUserStore>(() => initialState);
@@ -20,12 +21,14 @@ function useUserService(): IUserService {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const { matchedUsers, undiscoveredUsers, currentUser } = userStore();
+  const { matchedUsers, undiscoveredUsers, discoverIndex, currentUser } =
+    userStore();
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   return {
     matchedUsers,
     undiscoveredUsers,
+    discoverIndex,
     currentUser,
     setUser: async (user) => {
       try {
@@ -64,7 +67,7 @@ function useUserService(): IUserService {
         userStore.setState({ ...initialState, currentUser });
 
         // get return url from query parameters or default to '/'
-        const returnUrl = searchParams.get('returnUrl') || '/dashboard';
+        const returnUrl = searchParams.get('returnUrl') || '/profile';
         router.push(returnUrl);
         toast({
           title: 'Login Successfully!',
@@ -93,6 +96,19 @@ function useUserService(): IUserService {
         return fetchedUser;
       }
       return currentUser;
+    },
+    getMatchedUsers: async (id) => {
+      if (currentUser) {
+        const userWithConversationData = await fetch.get(
+          `${API_URL}/api/v1/match/get-all-matched-users/${id}`
+        );
+        userStore.setState((state) => ({
+          ...state,
+          matchedUsers: userWithConversationData,
+        }));
+        return userWithConversationData;
+      }
+      return [];
     },
     update: async (id, params) => {
       try {
@@ -144,17 +160,63 @@ function useUserService(): IUserService {
         console.log(error);
       }
     },
+    setDiscoverIndex: async (index) => {
+      try {
+        userStore.setState({ discoverIndex: index });
+      } catch (error: any) {
+        toast({
+          title: 'Uh oh! Something went wrong.',
+          description: error,
+          variant: 'destructive',
+        });
+      }
+    },
     create_match_history: async (id1: string, id2: string, action: string) => {
       try {
-        return await fetch.post(`${API_URL}/api/v1/match/add-match-history`, {
-          senderId: id1,
-          receiverId: id2,
-          behavior: action,
-        });
+        const match = await fetch.post(
+          `${API_URL}/api/v1/match/add-match-history`,
+          {
+            senderId: id1,
+            receiverId: id2,
+            behavior: action,
+          }
+        );
+        if (match && match?.status == 1) {
+          const newMatchedUser = await fetch.get(
+            `${API_URL}/api/v1/users/${id2}`
+          );
+          userStore.setState((state) => ({
+            ...state,
+            matchedUsers: [...(state.matchedUsers || []), newMatchedUser],
+          }));
+          toast({
+            title: 'Congratulation!',
+            description: ' Successfully Match!',
+          });
+        }
       } catch (error: any) {
         console.log(error);
       }
     },
+    getConversation: async (id1: string, id2: string) => {
+      try {
+        return await fetch.get(
+          `${API_URL}/api/v1/conversation/messages?user1Id=${id1}&user2Id=${id2}`
+        );
+      } catch (error: any) {
+        console.log(error);
+      }
+    },
+    getConversationId: async (id1: string, id2: string) => {
+      try {
+        return await fetch.get(
+          `${API_URL}/api/v1/conversation/id?user1Id=${id1}&user2Id=${id2}`
+        );
+      } catch (error: any) {
+        console.log(error);
+      }
+    },
+
     // delete: async (id) => {
     //   // set isDeleting prop to true on user
     //   userStore.setState({
@@ -205,10 +267,25 @@ interface Preference {
   name: string;
 }
 
+export interface Message {
+  senderId?: string;
+  receiverId?: string;
+  messageText: string;
+  createdAt: string;
+}
+
 interface IUserStore {
-  matchedUsers?: IUser[];
+  matchedUsers?: UserWithConversationData[];
   undiscoveredUsers?: IUser[];
+  discoverIndex: number;
   currentUser?: IUser;
+}
+
+export interface UserWithConversationData {
+  id: string;
+  profile?: Profile;
+  lastMessage?: Message;
+  unreadCount: number;
 }
 
 interface IUserService extends IUserStore {
@@ -216,11 +293,15 @@ interface IUserService extends IUserStore {
   logout: () => Promise<void>;
   register: (user: IUser) => Promise<void>;
   getCurrent: () => Promise<IUser>;
+  getMatchedUsers: (id: string) => Promise<UserWithConversationData[]>;
+  getConversation: (id1: string, id2: string) => Promise<Message[]>;
+  getConversationId: (id1: string, id2: string) => Promise<string>;
   update: (id: string, params: any) => Promise<IUser>;
   upload: (id: string, name: string, photoFile: File) => Promise<string>;
   // delete: (id: string) => Promise<void>;
   setUser: (user: IUser) => Promise<void>;
   discover: (id: string) => Promise<IUser[]>;
+  setDiscoverIndex: (index: number) => void;
   create_match_history: (
     id1: string,
     id2: string,

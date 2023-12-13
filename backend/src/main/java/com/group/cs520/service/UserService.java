@@ -133,24 +133,30 @@ public class UserService {
 
         List<Match> matches = matchRepository.findByUserIdsContains(TypeUtil.objectIdConverter(userId));
 
-        // Extract userIds from matches and flatten the list
-        List<ObjectId> matchedUserIds = matches.stream()
-                                               .flatMap(match -> match.getUserIds().stream())
-                                               .distinct()
-                                               .collect(Collectors.toList());
+        List<ObjectId> visitedUserIds = matches.stream()
+                // Filter matches based on the new conditions
+                .filter(match -> match.getStatus() == 1 ||
+                        (match.getStatus() == 0 && !match.getMatchHistories().isEmpty() &&
+                                match.getMatchHistories().get(0).getSenderId().equals(TypeUtil.objectIdConverter(userId))))
+                // Extract userIds from the filtered matches
+                .flatMap(match -> match.getUserIds().stream())
+                .distinct()
+                .collect(Collectors.toList());
 
-        // Step 2: Find users who are not in matchedUserIds
-        List<User> users = userRepository.findByIdNotIn(matchedUserIds, PageRequest.of(0, limit));
+        visitedUserIds.add(TypeUtil.objectIdConverter(userId));
+
+        // Step 2: Find users who are not in visitedUserIds
+        List<User> users = userRepository.findByIdNotIn(visitedUserIds, PageRequest.of(0, limit));
         return users;
     }
 
-    public List<User> getRandomUsers(int limit) {
-        return userRepository.findRandomUsers(limit);
-    }
+//    public List<User> getRandomUsers(int limit) {
+//        return userRepository.findRandomUsers(limit);
+//    }
 
-    public List<User> getFirstFiveUsers() {
-        return userRepository.findAll().stream().limit(5).collect(Collectors.toList());
-    }
+//    public List<User> getFirstFiveUsers() {
+//        return userRepository.findAll().stream().limit(5).collect(Collectors.toList());
+//    }
 
     public Optional<User> singleUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
