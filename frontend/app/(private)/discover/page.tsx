@@ -10,7 +10,19 @@ const Discover = () => {
   const [undiscoveredUsers, setUndiscoveredUsers] = useState(
     userService.undiscoveredUsers
   );
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(userService.discoverIndex);
+
+  // Todo: Should store in backend
+  useEffect(() => {
+    const savedIndex = localStorage.getItem('discoverIndex');
+    if (savedIndex) {
+      setCurrentIndex(parseInt(savedIndex, 0));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('discoverIndex', currentIndex.toString());
+  }, [currentIndex]);
 
   useEffect(() => {
     // Function to fetch undiscovered users
@@ -30,7 +42,7 @@ const Discover = () => {
       fetchUndiscoveredUsers();
       setCurrentIndex(0);
     }
-  }, [currentIndex]);
+  }, [currentUser, currentIndex]);
 
   const handleLikeDislike = async (id1: any, id2: any, action: string) => {
     // Replace 'apiEndpoint' with your API endpoint and 'action' with like/dislike
@@ -38,6 +50,7 @@ const Discover = () => {
       await userService.create_match_history(id1, id2, action);
       // Move to the next user
       setCurrentIndex((prevIndex) => prevIndex + 1);
+      userService.setDiscoverIndex(currentIndex);
     } catch (error) {
       console.error(`Error on ${action} action:`, error);
     }
