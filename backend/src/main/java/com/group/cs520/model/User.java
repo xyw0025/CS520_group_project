@@ -48,6 +48,10 @@ public class User {
     private Profile profile;
 
     @DocumentReference
+    private List<Report> reports;
+
+
+    @DocumentReference
     private List<Match> matches;
 
     public User(String email, String password) {
